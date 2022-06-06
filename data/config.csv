@@ -112,7 +112,7 @@ then,chance,What do your students need most?,Choose any adjustment or design you
 then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,3,0
 then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,4,0
 ,,,,,,
-flow,chart,"Start, If, Cards, <Players>, Vote, Discuss, Next round",,,,
+flow,chart,"Start,If,Cards,<Players>,Vote,Discuss, Next round",,,,
 string,leadStart,"You are the lead teacher for this round. When you are ready to start, click on the <b>IF button</b>  to choose an issue to explore.",,,,
 string,teacherStart,Please wait for this round to start. You will be presented with an issue to explore.,,,,
 string,pickHand,Choose up to three cards to play.,,,,
