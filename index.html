@@ -12,17 +12,17 @@
 		 body { 			font-family:Verdana,Geneva,sans-serif;font-size:13px; box-sizing:border-box; 
 							padding:0;margin:0; position: fixed; width:100%;
 							}
-		.lz-splash { 		color:#999; text-align:center; margin-top:5%;  display:none;
+		.lz-splash { 		color:#999; text-align:center; margin-top:10%; display:none;
 							}
-		.lz-main { 			width:100%; height:var(--maxvh); background-color: #ddd; display:none; text-align:center;
+		.lz-main { 			width:100%; height:var(--maxvh); display:none; text-align:center;
 							}
-		.lz-dialog {		position: absolute; top:16px; left:16px; background-color: #eee; border: 1px solid #aaa;
+		.lz-dialog {		position:absolute; top:16px; left:16px; background-color: #eee; border: 1px solid #aaa;
 							padding:16px; border-radius: 16px; width: 600px;
 							}
-		.lz-confirm {		position: absolute;  width: 300px; padding: 16px; left: calc(50% - 150px); top: calc(50% - 50px); user-select: none;	
+		.lz-confirm {		position:absolute;  width:300px; padding: 16px; left:calc(50% - 150px); top:calc(50vh - 50px); user-select: none;	
 							border-radius: 8px; background-color: #fff; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
 							}
-		.lz-popup {			position: absolute;  width: auto; max-width:200px; padding: 12px; left: calc(50% - 100px); top: calc(66% - 50px);
+		.lz-popup {			position:absolute;  width: auto; max-width:200px; padding: 12px; left: calc(50% - 100px); top: calc(66% - 50px);
 			border-radius: 8px; background-color: #eee; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
 			font-size: 14px; text-align:center; display: none;
 			}
@@ -44,9 +44,13 @@
 
 </style>
 	<body>
-
-		<div class="lz-main">
-			Hello
+		<div class="lz-main" id="mainDiv">Hello</div>
+		<div id="splashDiv" class="lz-splash">
+			<img src="img/ACTlogo.png" style='width:200px' alt="logo"><br>
+			<br><p style="color:#000;font-size:14px"><em>A game to practice teaching techniques</em></p>
+			<br><p style="color:#000;font-size:14px"><b>Please type in your email below</b></p>
+			<p></p><input class='lz-is'  type='text' id='lz-login'></p>
+			<br><br><br><br><div style="font-size:11px">&copy; 2022 StageTools </div>
 		</div>
 	
 <script>
@@ -55,14 +59,28 @@
 // APP 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-var app=null;																						// Holds app
-var isMobile=false;																					// Mobile?
-var noNode=true;																					// No node js?
+	var app=null;																					// Holds app
+	var isMobile=false;																				// Mobile?
+	var noNode=true;																				// No node js?
 
-	$(document).ready(function() {								           						// ON PAGE LOADED
+	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
+		if (window.location.host != "localhost") 													// Not in debug
+			$("#splashDiv").fadeIn(2000);															// Fade in splash page
+		else{																						// Debug
+			$("#mainDiv").fadeIn(0);																// Load fast
+			app.StartRound();																		// Start round	
+			}
+	
+		$("#lz-login").on("change",()=> { 															// ON LOG IN
+			app.playerId=$("#lz-login").val().trim();												// Set player id
+			$("#splashDiv").fadeOut();																// Fade out splash
+			$("#mainDiv").fadeIn(2000);																// Fade in main
+			app.StartRound();																		// Start round on login
+			});
+
 		$(window).on("keydown",function(e) {														// HANDLE KEYPRESS
-			if ((e.which == 81) && e.ctrlKey)	{										// Test key (CTL-Q)
+			if ((e.which == 81) && e.ctrlKey)	{													// Test key (CTL-Q)
 				Test500s();
 				}
 			});
@@ -78,12 +96,14 @@ class App  {
 	{
 		app=this;
 		this.sessionId="1";																				// Session id
+		this.playerId="bill";																				// Player id
 		this.ifs=[];																					// Holds ifs
 		this.thens=[];																					// Holds thens
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
-		this.stuPos=[1,0,2,0,5];																		// Student track positions
+		this.stuPos=[];																					// Student track positions
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
+		this.phase=0;
 		this.LoadConfig();																				// Load config file
 		this.InitSocketServer();
 	}
@@ -104,6 +124,18 @@ class App  {
 				for (i=0;i<this.flow.length;++i) 		this.flow[i]=this.flow[i].trim();				// Trim
 				})
 	}
+
+	StartRound()																					// START A NEW ROUND
+	{
+		this.phase=0;																					// Start at beginning
+		this.stuPos=[1,0,2,0,5];																		// Student track positions
+		this.DrawTrack(this.stuPos);																	// Draw track
+	//	this.VideoChat();
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// SOCKET 
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
 	InitSocketServer()																				// INIT SOCKET SERVER
 	{
@@ -142,11 +174,60 @@ class App  {
 		if (!event.data)			 return;															// Quit if no data
 		let v=event.data.split("|");																	// Get params
 		if (v[0] != this.sessionId)	return;																// Quit if wrong session
-		if ((v[3] == "SPEAKING") && (this.role != v[4])) {												// SPEAKING
-			Prompt((v[6] == "1") ? v[4]+" speaking..." : "", "on");										// Show status				
-			}	
+		if (v[3] == "VIDEO")  	{ if (!$("#lz-videoChat").length) this.VideoChat();	}					// VIDEO
 	}
-}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// DRAW 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+	VideoChat(pct=66)																				// OPEN VIDEO CHAT
+	{
+		$("#lz-videoChat").remove(); 																	// Remove old one
+		let hgt=$(window).width()*.5625*pct/100;														// Set height
+		let top=($(window).height()-hgt)/2;																// Width
+		let link="japp.htm?AgileGameChat~Session~"+app.sessionId;										// Make link
+		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
+			width:${pct}%;height:${hgt}px;top:${top}px;left:250px;display:none">
+			<iframe style="width:100%;height:100%" src="${link}" 
+			allow=camera;microphone;autoplay frameborder="0" allowfullscreen>
+			</iframe>`;
+		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
+		$("#lz-videoChat").show("slide",{ direction:"up" },1000);										// Slide down 
+	}
+
+	DrawTrack(pos)																					// DRAW STUDENT TRACK	
+	{
+	}
+
+	SetPhase(num)																					// SET PHASE OF GAME
+	{
+	}
+
+	ShowVideo(player)																				// SHOW VIDEO
+	{
+	}
+
+	ShowCard(x, y, width, o)																		// SHOW THEN CARD
+	{
+	}
+
+	Pick(cards)																						// PICK CARDS
+	{
+	}
+
+	Vote()																							// VOTE
+	{
+	}
+
+
+
+
+
+} // CLASS CLOSURE
+
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // HELPERS 
@@ -195,6 +276,7 @@ class App  {
 
 	function GetTextBox(title, content, def, callback)											// GET TEXT LINE BOX
 	{
+		trace(123)
 		$("#confirmBoxDiv").remove();																	// Remove 
 		$("body").append("<div class='lz-confirm' id='confirmBoxDiv'></div>");							// Add box								
 		var str="<img src='img/smlogo.png' width='64' style='vertical-align:-8px'/>&nbsp;&nbsp;";								
