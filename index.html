@@ -57,7 +57,7 @@
 
 var app=null;																						// Holds app
 var isMobile=false;																					// Mobile?
-var noNode=false;																					// No node js?
+var noNode=true;																					// No node js?
 
 	$(document).ready(function() {								           						// ON PAGE LOADED
 		app=new App();																				// Load app
@@ -77,15 +77,16 @@ class App  {
 	constructor()   																				// CONSTRUCTOR
 	{
 		app=this;
+		this.sessionId="1";																				// Session id
 		this.ifs=[];																					// Holds ifs
 		this.thens=[];																					// Holds thens
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
-		this.students=[];
+		this.stuPos=[1,0,2,0,5];																		// Student track positions
+		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.LoadConfig();																				// Load config file
-//		InitSocketServer();
+		this.InitSocketServer();
 	}
-
 
 	LoadConfig()																					// LOAD CONFIG FILE
 	{	
@@ -102,6 +103,48 @@ class App  {
 					}
 				for (i=0;i<this.flow.length;++i) 		this.flow[i]=this.flow[i].trim();				// Trim
 				})
+	}
+
+	InitSocketServer()																				// INIT SOCKET SERVER
+	{
+		if (noNode) {																					// If no nodeJs backend
+			this.ws={};																					// Fake socket
+			this.ws.send=(msg)=> { this.SocketIn({data:msg});	}										// Send calls socketIn
+			return;																						// Quit
+			}
+		this.secs=0;																					// Time
+		this.retryWS=false;																				// Reconnecting to web socket
+		if (window.location.host == "localhost") this.ws=new WebSocket('ws://'+window.location.host+':8080');	// Open insecure websocket											
+		else									 this.ws=new WebSocket('wss://'+window.location.host+':8080');	// Secure											
+		this.ws.onmessage=(e)=>{ this.SocketIn(e); };													// ON INCOMING MESSAGE
+		this.ws.onclose=()=>   { console.log('disconnected'); this.ws=null; this.retryWS=true; Sound("delete") };		// ON CLOSE
+		this.ws.onerror=(e)=>  { console.log('error',e);	};											// ON ERROR
+		this.ws.onopen=()=> { 																			// ON OPEN
+			console.log('connected'); 																	// Show connected
+			this.ws.send(this.sessionId+"|"+this.activityId+"|"+this.userId+"|INIT");					// Init																	
+			this.pollTimer= window.setInterval( ()=>{													// INIT POLLING SERVER
+			++this.secs;																				// Another second 
+			if (this.retryWS) {																			// If reconnecting to websocket
+				if (window.location.host == "localhost") this.ws=new WebSocket('ws://'+window.location.host+':8080');	// Open insecure websocket											
+				else									 this.ws=new WebSocket('wss://'+window.location.host+':8080');	// Secure											
+				this.ws.onmessage=(e)=>{ this.SocketIn(e); };											// ON INCOMING MESSAGE
+				this.ws.onclose=()=>   { this.retryWS=true; console.log('disconnected'); };				// ON CLOSE
+				this.ws.onopen=()=>    { console.log('re-connected'); };								// ON OPEN  
+				this.retryWS=false;																		// Not retrying	anymore
+				}
+			},1000)
+		}
+	}
+
+	SocketIn(event)																					// A WEBSOCKET MESSAGE FROM NODE WS SERVER
+	{
+		let o;
+		if (!event.data)			 return;															// Quit if no data
+		let v=event.data.split("|");																	// Get params
+		if (v[0] != this.sessionId)	return;																// Quit if wrong session
+		if ((v[3] == "SPEAKING") && (this.role != v[4])) {												// SPEAKING
+			Prompt((v[6] == "1") ? v[4]+" speaking..." : "", "on");										// Show status				
+			}	
 	}
 }
 
