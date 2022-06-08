@@ -16,6 +16,8 @@
 							}
 		.lz-main { 			width:100%; height:var(--maxvh); display:none; text-align:center;
 							}
+		.lz-flow { 			position: absolute; display:table; top:0; left:0; height:100%; width:100%; margin-left:24px; width:200px; text-align:center;
+							}
 		.lz-dialog {		position:absolute; top:16px; left:16px; background-color: #eee; border: 1px solid #aaa;
 							padding:16px; border-radius: 16px; width: 600px;
 							}
@@ -30,7 +32,7 @@
 							border:1px solid #999; font-size: 13px;
 							}
 		.lz-bs {			cursor: pointer; color:#fff; text-align: center; border-radius: 16px; display: inline-block;
-							font-size: 12px; background-color: #27ae60; padding: 2px 8px 2px 8px; vertical-align:3px;user-select: none;
+							font-size: 16px; background-color: #27ae60; padding: 4px 12px 4px 12px; vertical-align:3px;user-select: none;
 							} 
 
 		:root  {			--maxvh: 100vh  }
@@ -45,10 +47,12 @@
 </style>
 	<body>
 		<div class="lz-main" id="mainDiv">
-			<svg id="lz-trackSVG" width="100%" height="100%"></svg>
-			<img src="img/smlogo.png" style="position:absolute;left:calc(100% - 120px);top:18px;width:96px">
+			<svg id="lz-trackSVG" width="100%" height="100%" style="position:absolute;left:0;top:0"></svg>
+			<div id="lz-flowDiv" class="lz-flow"></div>
+			<div id="lz-infieldDiv" class="lz-1phase"></div>
+			<img src="img/smlogo.png" style="position:absolute;left:calc(100% - 120px);top:18px;width:5%">
 		</div>
-		<div id="splashDiv" class="lz-splash">
+			<div id="splashDiv" class="lz-splash">
 			<img src="img/ACTlogo.png" style='width:200px' alt="logo"><br>
 			<br><p style="color:#000;font-size:14px"><em>A game to practice teaching techniques</em></p>
 			<br><p style="color:#000;font-size:14px"><b>Please type in your first name below</b></p>
@@ -72,14 +76,14 @@
 			$("#splashDiv").fadeIn(2000);															// Fade in splash page
 		else{																						// Debug
 			$("#mainDiv").fadeIn(0);																// Load fast
-			app.StartRound();																		// Start round	
+			app.LoadConfig();																		// Load config to start round	
 			}
 	
 		$("#lz-login").on("change",()=> { 															// ON LOG IN
 			app.playerId=$("#lz-login").val().trim();												// Set player id
 			$("#splashDiv").fadeOut();																// Fade out splash
 			$("#mainDiv").fadeIn(2000);																// Fade in main
-			app.StartRound();																		// Start round on login
+			app.LoadConfig();																		// Load config to start round	
 			});
 
 		$(window).on("keydown",function(e) {														// HANDLE KEYPRESS
@@ -92,6 +96,9 @@
 	$(window).on("resize orientationchange", ()=>{                                       		 // ON WINDOW RESIZE
 		document.documentElement.style.setProperty("--maxvh", window.innerHeight+"px");				// Set CSS var for IOS 100vh isssue
 		app.Draw();																					// Redraw to fit screen
+		let hgt=$(window).width()*.5625*app.vidSize/100;											// Height
+		let top=($(window).height()-hgt)/2;															// Top
+		$("#lz-videoChat").css({width:app.vidSize+"%",height:hgt+"px",top:top+"px"});				// Resize mvideo if open
 		});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,17 +111,19 @@ class App  {
 	{
 		app=this;
 		this.sessionId="1";																				// Session id
+		this.role="lead"
 		this.playerId="bill@192.168.1.1";																// Player id
 		this.ifs=[];																					// Holds ifs
+		this.players=[];																				// Game players
 		this.thens=[];																					// Holds thens
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
+		this.vidSize=70;																				// Width of video screen
 		this.stuPos=[];																					// Student track positions
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.curIf="";																					// Current if
-		this.phase=0;																					// Current phase
-		this.LoadConfig();																				// Load config file
-		this.InitSocketServer();
+		this.curPhase=0;																				// Current phase
+		this.InitSocketServer();																		// Start socket server
 	}
 
 	LoadConfig()																					// LOAD CONFIG FILE
@@ -131,14 +140,16 @@ class App  {
 					else if (d[i].type == "flow")		this.flow=d[i].title.split(",");				// Add flow										
 					}
 				for (i=0;i<this.flow.length;++i) 		this.flow[i]=this.flow[i].trim();				// Trim
+				this.players[0]=this.playerId;															// Add me
+	this.players[1]="Sara@1";	this.players[2]="Kim@2";	this.players[3]="Sasha@3";
+				this.StartRound();																		// Start round 
 				})
 	}
 
 	StartRound()																					// START A NEW ROUND
 	{
-		this.phase=0;																					// Start at beginning
-		this.Draw(this.phase);																			// Draw phase
-//		this.VideoChat();
+		this.curPhase=0;																				// Start at beginning
+		this.Draw(this.curPhase);																		// Draw phase
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,17 +158,17 @@ class App  {
 
 	Draw()
 	{
+			
 		this.DrawTrack(this.stuPos);																	// Draw track
-		this.DrawFlow(this.phase);																		// Draw phase flow chart
+		this.DrawFlow();																				// Draw phase flow chart
+		this.DrawClock(22);																				// Draw clock
 		this.DrawHourGlass(70)
-		this.DrawClock(22);
-
-		//		this.VideoChat()
-
+		this.VideoChat(70)
 }
 
 	VideoChat(pct=50)																				// OPEN VIDEO CHAT
 	{
+		app.vidSize=pct;																				// Save width in case of resize
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let hgt=$(window).width()*.5625*pct/100;														// Set height
 		let top=($(window).height()-hgt)/2;																// Width
@@ -187,7 +198,7 @@ class App  {
 		$("#lz-trackSVG").html(str);																	// Set SVG
 		
 		function drawBand(num, col, step) {	
-			step=step+4
+			step=step+4;
 			o=(num*(sw+2));																				// Line offset
 			let y=24+o;																					// Y pos
 			let x=w/5*Math.min(step,5);																	// Position in straight-away
@@ -208,7 +219,7 @@ class App  {
 	{
 		$("#lz-hourGlass").remove();																	// Remove old one
 		let hgt=wid*3;																					// Set hgt
-		if (!x)	x=$(window).width()-90-(($(window).height()-48)/20);									// X pos
+		if (!x)	x=$(window).width()-120-(($(window).height()-48)/20);									// X pos
 		if (!y)	y=$(window).height()/2-hgt/2;															// Y
 		let str=`<div id="lz-hourGlass" style="position:absolute;overflow:hidden;
 			width:${wid}px;height:${hgt}px;left:${x}px;top:${y}px;height:${hgt}px">
@@ -216,13 +227,14 @@ class App  {
 			<img src="img/hourtop.png" style="position:absolute;width:100%;height:100%">
 			<img src="img/sandbot.png" style="position:absolute;width:100%;height:100%;top:${hgt*(100-pct)/200}px">
 			<img src="img/hourglass.png" style="position:absolute;width:100%;height:100%"></div>`;
-			$("body").append(str); 
+			$("body").append(str); 																		// Add to body
 	}
 
-	DrawClock(mins, tot=45, rad=50)																	// DRAW CLOCK
+	DrawClock(mins, tot=45)																			// DRAW CLOCK
 	{
 		let i,x1,y1,col;
-			let x=$(window).width()-rad-rad-20;																// X pos
+		let rad=$(window).height()/20;																	// Radius based on height
+		let x=$(window).width()-rad-rad-20;																// X pos
 		let y=$(window).height()-rad-rad-20;															// Y
 		let step=(2*Math.PI)/tot;																		// Dot step
 		let ang=-Math.PI/2;																				// Start straight up
@@ -237,11 +249,28 @@ class App  {
 			}
 		str+=`<text x="${rad+3}" y="${rad*1.3}" text-anchor="middle" fill="#666" font-size="${rad}">${i}</text>`;	// Number						
 		str+=`<text x="${rad+3}" y="${rad*1.6}" text-anchor="middle" fill="#666" font-size="${rad/4}">minutes</text></svg>`; // Label						
-		$("body").append(str); 
+		$("#mainDiv").append(str); 
 	}
 
 	DrawFlow(phase)																					// DRAW PHASE FLOW CHART
 	{
+		let i,j=0;
+		let str=`<div style="display: table-cell; vertical-align: middle">`;
+		for (i=0;i<this.flow.length;++i) {																// For each item
+			trace(j)
+			if (this.flow[i] == "<Players>") {															// If list of players
+				for (j=0;j<this.players.length;++j)														// For each one		
+					str+=addItem(i+j,this.players[j].split("@")[0]);									// Add player's name
+				}
+			else 	str+=addItem(i+j,this.flow[i])														// Add phase
+			}
+		$("#lz-flowDiv").html(str+"</div>")
+	
+		function addItem(num, name) {
+			let col=(num == app.curPhase) ? "#27ae60" : "#999";											// Hilite curPhase
+			let s=`<div class="lz-bs" style="background-color:${col}">${name.toUpperCase()}</div><br><br>`;
+			return s;
+			}
 	}
 
 	SetPhase(phase)																					// SET PHASE OF GAME
@@ -307,10 +336,6 @@ InitSocketServer()																				// INIT SOCKET SERVER
 		if (v[0] != this.sessionId)	return;																// Quit if wrong session
 		if (v[3] == "VIDEO")  	{ if (!$("#lz-videoChat").length) this.VideoChat();	}					// VIDEO
 	}
-
-
-
-
 
 } // CLASS CLOSURE
 
