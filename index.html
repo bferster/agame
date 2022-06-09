@@ -9,14 +9,18 @@
 		<script src="lib/papaparse.min.js"></script>
 	</head>
 	<style>
-		 body { 			font-family:Verdana,Geneva,sans-serif;font-size:13px; box-sizing:border-box; 
+		 body { 			font-family:Segoe UI,Verdana,Geneva,sans-serif; font-size:16px; box-sizing:border-box; 
 							padding:0; margin:0; position:fixed; width:100%; 
 							}
 		.lz-splash { 		color:#999; text-align:center; margin-top:10%; display:none;
 							}
-		.lz-main { 			width:100%; height:var(--maxvh); display:none; text-align:center;
+		.lz-main { 			width:100%; height:var(--maxvh); display:none;
 							}
-		.lz-flow { 			position: absolute; display:table; top:0; left:0; height:100%; width:100%; margin-left:24px; width:200px; text-align:center;
+		.lz-if { 			position:absolute; top:12%; left:250px; font-size:32px; font-weight:normal; width:66%
+							}
+		.lz-infield { 		position:absolute; top:calc(12% + 50px); left:250px; text-align:left;
+							}
+		.lz-flow { 			position:absolute; display:table; top:0; left:0; height:100%; width:100%; margin-left:24px; width:200px; text-align:center;
 							}
 		.lz-dialog {		position:absolute; top:16px; left:16px; background-color: #eee; border: 1px solid #aaa;
 							padding:16px; border-radius: 16px; width: 600px;
@@ -49,8 +53,9 @@
 		<div class="lz-main" id="mainDiv">
 			<svg id="lz-trackSVG" width="100%" height="100%" style="position:absolute;left:0;top:0"></svg>
 			<div id="lz-flowDiv" class="lz-flow"></div>
-			<div id="lz-infieldDiv" class="lz-1phase"></div>
-			<img src="img/smlogo.png" style="position:absolute;left:calc(100% - 120px);top:18px;width:5%">
+			<div id="lz-ifDiv" class="lz-if"></div>
+			<div id="lz-infieldDiv" class="lz-infield"></div>
+			<img src="img/smlogo.png" style="position:absolute;left:93%; top:18px;width:4%">
 		</div>
 			<div id="splashDiv" class="lz-splash">
 			<img src="img/ACTlogo.png" style='width:200px' alt="logo"><br>
@@ -88,7 +93,6 @@
 
 		$(window).on("keydown",function(e) {														// HANDLE KEYPRESS
 			if ((e.which == 81) && e.ctrlKey)	{													// Test key (CTL-Q)
-				Test500s();
 				}
 			});
 	});
@@ -98,7 +102,7 @@
 		app.Draw();																					// Redraw to fit screen
 		let hgt=$(window).width()*.5625*app.vidSize/100;											// Height
 		let top=($(window).height()-hgt)/2;															// Top
-		$("#lz-videoChat").css({width:app.vidSize+"%",height:hgt+"px",top:top+"px"});				// Resize mvideo if open
+		$("#lz-videoChat").css({width:app.vidSize+"%",height:hgt+"px",top:top+"px"});				// Resize video if open
 		});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -137,19 +141,22 @@ class App  {
 					if (d[i].type == "if")				this.ifs.push(d[i].title);						// Add if
 					else if (d[i].type == "then")		this.thens.push(d[i]);							// Add then											
 					else if (d[i].type == "string")		this.strings[d[i].category]=d[i].title;			// Add string										
-					else if (d[i].type == "flow")		this.flow=d[i].title.split(",");				// Add flow										
+					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					}
-				for (i=0;i<this.flow.length;++i) 		this.flow[i]=this.flow[i].trim();				// Trim
 				this.players[0]=this.playerId;															// Add me
 	this.players[1]="Sara@1";	this.players[2]="Kim@2";	this.players[3]="Sasha@3";
-				this.StartRound();																		// Start round 
-				})
+				this.SetPhase(0);																		// Show instructions
+				this.Draw();
+			})
 	}
 
 	StartRound()																					// START A NEW ROUND
 	{
-		this.curPhase=0;																				// Start at beginning
-		this.Draw(this.curPhase);																		// Draw phase
+		let r=Math.floor(Math.random()*this.ifs.length);												// Random number
+		this.curIf=this.ifs[r];																			// Get an if
+		this.ifs.splice(r,1);																			// Remove it
+		this.SetPhase(0);																				// Restart
+		this.DrawHourGlass(66);																			// Show hour glass 
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,18 +165,18 @@ class App  {
 
 	Draw()
 	{
-			
+		
+		$("#lz-ifDiv").html(this.curIf ? "<b><i>IF... </i></b>"+this.curIf : "");							// Show if
 		this.DrawTrack(this.stuPos);																	// Draw track
 		this.DrawFlow();																				// Draw phase flow chart
 		this.DrawClock(22);																				// Draw clock
-		this.DrawHourGlass(70)
-		this.VideoChat(70)
-}
+	}
 
-	VideoChat(pct=50)																				// OPEN VIDEO CHAT
+	VideoChat(pct)																				// OPEN VIDEO CHAT
 	{
 		app.vidSize=pct;																				// Save width in case of resize
 		$("#lz-videoChat").remove(); 																	// Remove old one
+		if (!pct)	return;																				// Quit if no size
 		let hgt=$(window).width()*.5625*pct/100;														// Set height
 		let top=($(window).height()-hgt)/2;																// Width
 		let link="japp.htm?AgileGameChat~Session~"+app.sessionId;										// Make link
@@ -252,32 +259,48 @@ class App  {
 		$("#mainDiv").append(str); 
 	}
 
-	DrawFlow(phase)																					// DRAW PHASE FLOW CHART
+	DrawFlow()																						// DRAW PHASE FLOW CHART
 	{
 		let i,j=0;
 		let str=`<div style="display: table-cell; vertical-align: middle">`;
 		for (i=0;i<this.flow.length;++i) {																// For each item
-			trace(j)
-			if (this.flow[i] == "<Players>") {															// If list of players
+			if (this.flow[i].category == "player") { 													// If list of players
 				for (j=0;j<this.players.length;++j)														// For each one		
 					str+=addItem(i+j,this.players[j].split("@")[0]);									// Add player's name
 				}
-			else 	str+=addItem(i+j,this.flow[i])														// Add phase
+			else	str+=addItem(i+Math.min(j,this.players.length-1),this.flow[i].title)				// Add action phase
 			}
-		$("#lz-flowDiv").html(str+"</div>")
-	
+		$("#lz-flowDiv").html(str+"</div>");															// Add flowchart
+		$("[id^=lz-phase-]").on("click", (e)=>{	this.SetPhase(e.target.id.substring(9)-0) });			// ON ITEM CLICK 
+			
 		function addItem(num, name) {
 			let col=(num == app.curPhase) ? "#27ae60" : "#999";											// Hilite curPhase
-			let s=`<div class="lz-bs" style="background-color:${col}">${name.toUpperCase()}</div><br><br>`;
-			return s;
+			let s=`<div class="lz-bs" id="lz-phase-${num}"" style="background-color:${col}">${name.toUpperCase()}</div><br><br>`;
+			return s;																					// Return item markup
 			}
 	}
 
 	SetPhase(phase)																					// SET PHASE OF GAME
 	{
+		trace(phase)
+		if (phase == 0) {																			// HELP
+			 $("#lz-infieldDiv").html(this.strings["help"]);									
+			 this.VideoChat();																		// Kill video chat	
+			}
+		else if (phase == 1) {																		// START 
+	//		this.VideoChat(66);																		// Open video chat	
+			if (this.curPhase != 0)	return;															// Only at beginning		
+			this.StartRound();																		// Start round													
+			this.curPhase=phase;																	// Set phase
+			$("#lz-infieldDiv").html("");															// Clear infield	
+			}
+		else if (phase == 2) {																		// START 
+			if (this.curPhase != 1)	return;															// Only at beginning		
+			}
+		this.Draw();																				// Redraw
 	}
 
-	ShowVideo(player)																				// SHOW VIDEO
+	DealCards()																						// DEAL CARDS
 	{
 	}
 
@@ -385,7 +408,6 @@ InitSocketServer()																				// INIT SOCKET SERVER
 		$("#pu-close").click(function() { $("#popupDiv").remove(); });									// Remove on click of close but
 		$("#popupDiv").fadeIn(500).delay(time ? time*1000 : 3000).fadeOut(500);							// Animate in and out		
 	}
-
 
 	function GetTextBox(title, content, def, callback)											// GET TEXT LINE BOX
 	{

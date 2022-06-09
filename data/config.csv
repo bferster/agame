@@ -102,19 +102,35 @@ then,options,Total teacher assignment,Teacher assigns different required tasks f
 then,options,Total student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
 then,options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,4"
 ,,,,,,
-then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,1,0
-then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,2,0
-then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,2,0
-then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,1,0
-then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,1,0
-then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,2,0
-then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,3,0
-then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,3,0
-then,chance,What do your students need most?,Choose any adjustment or design your own! ,Choose two students,4,0
+then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,1,0
+then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,2,0
+then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,2,0
+then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,1,0
+then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,1,0
+then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,2,0
+then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,3,0
+then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,3,0
+then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,4,0
 ,,,,,,
-flow,chart,"Start,If,Cards,<Players>,Vote,Discuss, Next round",,,,
-string,leadStart,"You are the lead teacher for this round. When you are ready to start, click on the <b>IF button</b>  to choose an issue to explore.",,,,
-string,teacherStart,Please wait for this round to start. You will be presented with an issue to explore.,,,,
+phase,action,INSTRUCTIONS,,,,
+phase,action,START,,,,
+phase,action,DEAL CARDS,,,,
+phase,player,,,,,
+phase,action,VOTE,,,,
+phase,action,DISCUSS,,,,
+phase,action,NEXT ROUND,,,,
+,,,,,,
+string,help,"<br><br><b>How to play the game:</b><br><r><ol style="line-height:1.8"><li>Press the <b>START</b> button to begin the game</li>
+<li>You will enter a Zoom-like video chat with the other three players</li>
+<li>The screen will show a classroom situation you need to address</li>
+<li>Discuss it, and when you all are ready, press the <b>DEAL CARDS</b> button</li>
+<li>Six cards will be shown to you. Pick the best three that will move the students forward</li>
+<li>The video chat will reappear, and each teacher will explain their choices to the other players</li>
+<li>Clicking on your name will show the cards you have selected</li>
+<li>You will be asked to vote on the best player's solution</li>
+<li>After everyone has voted, the winner is shown and you can discuss it</li>
+<li>Press the <b>NEXT ROUND</b> button to play again, until the the 45 minute period is up</li></ol>
+Anyime you see an hourglass, you have until the sand runs out before going to the next phase"
 string,pickHand,Choose up to three cards to play.,,,,
 string,explainHand,Explain why you chose these cards.,,,,
 string,vote,Vote for the card set you think is the best,,,,
