@@ -1,128 +1,119 @@
-type,category,title,subtitle,desc,time,students
-if,1,Two students were absent yesterday,,,,
-if,1,Some students need background knowledge,,,,
-if,1,Some students did not hear the directions,,,,
-if,1,Students are not furthering partner discussions– they are repeating or just agreeing,,,,
-if,1,One student is not writing,,,,
-if,1,Two students were absent yesterday,,,,
-if,1,Students are bored because they know this information,,,,
-if,1,This information contrasts with one student's life experiences,,,,
-if,1,Students won't stop raising their hands. They are clearly confused.,,,,
-if,2,Student questions are off topic and taking time,,,,
-if,2,Many students are involved in related activities outside of school,,,,
-if,2,Students need more practice with vocabulary,,,,
-if,2,Students misunderstand the text,,,,
-if,2,Some students are making connection to a previous unit,,,,
-if,2,Students know a lot about this topic and are excited,,,,
-if,2,Students are bored because they know this information,,,,
-if,2,This information contrasts with one student's life experiences,,,,
-if,2,Students won't stop raising their hands. They are clearly confused.,,,,
-,,,,,,
-then,structure,Discusion routine - whole group,Rumors,"To look for patterns in ideas, learners circulate around the room carrying their response written on a paper. They listen to a partner's idea, share their own idea, and swap papers. Then they find a new partner to: listen, share, & swap - looking for patterns in responses.",1,1
-then,structure,Individual thinking routine,I used to think.. Now I think... So next I will,"This thinking routine is used for students to monitor how and why their thinking has changed. This sentence starter prompts push students to consider their next learning steps, completing a cycle of self-regulation.",2,2
-then,structure,Discusion routine - whole group,Idea Carousel,"Post topics and chart paper around the room (one topic per chart paper). Ask participants to go to a topic that interests them most. Ask students to write down knowledge, questions, or concerns about the topic on the chart paper. Ask students to rotate to the next chart and repeat this process.",2,3
-then,structure,Discusion routine - pairs,Dialogue Lines,"Dialogue Lines or Dialogue Circles is a learning routine in which students move from one partner discussion to another, rehearsing a common way of talking about a particular topic.",1,5
-then,structure,Discusion routine - pairs,Questions Only,"Students work in pairs to generate questions around a prompt, image, or data set. ",4,"1,4"
-then,structure,Discusion routine - pairs,Turn - Exchange - Sort,"Students are assigned the role or listener and speaker, taking turns to exchange their thinking (answer, question, opinion, observation). Then the pair sorts the thinking (prioritize, compare, sequence, or summarize).",3,"2,3"
-then,structure,Discusion routine - small groups,Think - Talk - Open Exchange,"This is a routine for students in small groups to share ideas, listen to one another, and build upon each others’ ideas.",3,"4,5"
-then,structure,Discusion routine - small groups,Read - Generate - Sort - Solve,This is a routine that promotes student engagement in problem-solving by helping students make their thinking transparent along the way.,3,"1,2,3"
-then,structure,Discusion routine - whole group,Domino Share,"This routine helps groups share efficiently, giving each person an opportunity to participate. ",4,"1,4,5"
-then,structure,Explicit instruction,Mini-Lesson,Teacher provides a short mini-lesson.,1,4
-then,structure,Individual task,Star Most Interesting & Box Most Challenging,Students place a star next to the most interesting word/problem/question and draw a box around the most challenging aspect.,2,1
-then,structure,Discussion routine,Idea Carousel,"Post chart papers with different topics around the room. Ask participants to go to a topic that interests them most. Ask students to write on chart paper knowledge, questions, or concerns about the topic. Ask students to rotate to the next chart and repeat this process.",2,2
-then,structure,Free discussion,Turn and Talk,A completely unstructured time to talk and listen to others in a small group. ,1,3
-then,structure,Free discussion,Talk to Peers,A completely unstructured time to talk and listen to others in a small group. ,4,"4,5"
-then,structure,Discussion routine,Elbow Exchange and Sort,"Students are assigned the role of listener or speaker, taking turns to exchange their thinking (answer, question, opinion, observation). Then the pair sorts the thinking (prioritize, compare, sequence, or summarize).",3,"1,2"
-then,structure,Explicit instruction,Short Movie Clip,Students watch a short movie clip to find information to answer a question.,3,"3,5"
-then,structure,Individual task,Check and Circle,Students independently read or scan a text placing a check next to three words that are familar and circling one thing that seems new.,3,"1,2,4"
-then,structure,Discussion routine,Domino Share,A representative from each group shares a response. Listeners listen for missing ideas/patterns and contribute additional ideas after the representatives share. Teachers record and evaluate the responses.,4,"3,4,5"
-then,structure,Explicit instruction,Mini-lesson,"Teacher demonstrates a concept, defines vocabulary, or provides an example.",3,5
-then,structure,Individual task,I used to think... Now I think... So next I will..,"Independently, students monitor how and why their thinking has changed by completing the sentence prompt,  ""I used to think...""",2,4
-then,structure,Discussion routine,Rumors,"To look for patterns in ideas, learners circulate around the room carrying their response written on a paper. They listen to a partner's idea, share their own idea, and swap papers. Then they find a new partner to: listen, share, & swap - looking for patterns in responses.",4,1
-then,structure,Free discussion,Turn and Talk,A completely unstructured time to talk and listen to others in a small group.,1,2
-then,structure,Individual task,Questions Only,"Students generate questions around a prompt, image, or data set.",4,"3,5"
-then,structure,Individual task,Silent Think Time,Students silently think in their head. No writing or speaking.,3,"1,4"
-then,structure,Explicit instruction,Short Movie Clip,Students watch a short movie clip to find information to answer a question.,3,"2,3,5"
-then,structure,Discussion routine,Dialogue Lines,"Students form two lines, one line speaks first, then the other, finally they have a short conversation and then one line moves one step to meet a new partner. The process is repeated until students have conversed with two or three different partners.",3,"1,4,2"
-then,structure,Discussion routine,Domino Share,Each student in a group shares a response. Listeners listen for missing ideas/patterns and contribute ideas after the share. Students use criteria to prepare a reporter to share a high quality response.,4,"3,4,5"
-,,,,,,
-then,help resource,Individual,Sentence Frames,,1,3
-then,help resource,Individual,Graphic Organizer,,2,5
-then,help resource,Group,Concept Map,,2,4
-then,help resource,Individual,Rubric,,1,1
-then,help resource,Individual,Materials and Tools,"(i.e. calculator, ruler)",4,"2,3"
-then,help resource,Group,Routine Directions Posted,,3,"4,5"
-then,help resource,Individual,Dictionary,,3,"1,2"
-then,help resource,Individualize practice,Learning App,,3,"3,4,5"
-then,help resource,Individual,Vocabulary list,,4,"1,2,3"
-then,help resource,Individual scaffold,Sentence Frames,,1,5
-then,help resource,Individual scaffold,Graphic Organizer,,2,4
-then,help resource,Group scaffold,Word Wall,,2,1
-then,help resource,Individual scaffold,Rubric,,1,2
-then,help resource,Individual scaffold,Materials and Tools,"(i.e. calculator, ruler)",4,"3,5"
-then,help resource,Group scaffold,Routine Directions Posted,,3,"1,4"
-then,help resource,Individual scaffold,Dictionary,,3,2.3
-then,help resource,Individualize practice,Learning App,,3,"1,4,5"
-then,help resource,Individual scaffold,Vocabulary list,,4,"2,3,5"
-then,help resource,Individual scaffold,Sentence Frames,,1,4
-then,help resource,Individual scaffold,Graphic Organizer,,2,1
-then,help resource,Group scaffold,Word Wall,,2,2
-then,help resource,Individual scaffold,Rubric,,1,3
-then,help resource,Individual scaffold,Materials and Tools,"(i.e. calculator, ruler)",4,"4,5"
-then,help resource,Group scaffold,Routine Directions Posted,,3,"1,2"
-then,help resource,Individual scaffold,Dictionary,,3,"3,5"
-then,help resource,Individualize practice,Learning App,,3,"1,2,4"
-then,help resource,Individual scaffold,Vocabulary list,,4,"3,4,5"
-,,,,,,
-then,options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,2
-then,options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
-then,options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
-then,options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,4
-then,options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
-then,options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
-then,options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
-then,options,Total student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
-then,options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,5"
-then,options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,1
-then,options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,2
-then,options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,3
-then,options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,5
-then,options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,4
-then,options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"1,2"
-then,options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"3,5"
-then,options,Total student choice,Students generate their own project to demonstrate learning,,3,"1,2,4"
-then,options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"2,3,5"
-then,options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,2
-then,options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
-then,options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
-then,options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,4
-then,options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
-then,options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
-then,options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
-then,options,Total student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
-then,options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,4"
-,,,,,,
-then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,1,0
-then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,2,0
-then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,2,0
-then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,1,0
-then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,1,0
-then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,2,0
-then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,3,0
-then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,3,0
-then,chance,What do your students need most?,Choose any adjustment or design your own!,Choose two students,4,0
-,,,,,,
-phase,action,INSTRUCTIONS,,,,
-phase,action,START,,,,
-phase,action,DEAL CARDS,,,,
-phase,player,,,,,
-phase,action,VOTE,,,,
-phase,action,DISCUSS,,,,
-phase,action,NEXT ROUND,,,,
-,,,,,,
-string,help,"<br><br><b>How to play the game:</b><br><r><ol style="line-height:1.8"><li>Press the <b>START</b> button to begin the game</li>
+type,category,title,subtitle,desc,time,students,pic
+if,1,Two students were absent yesterday,,,,,
+if,1,Some students need background knowledge,,,,,
+if,1,Some students did not hear the directions,,,,,
+if,1,Students are not furthering partner discussions– they are repeating or just agreeing,,,,,
+if,1,One student is not writing,,,,,
+if,1,Two students were absent yesterday,,,,,
+if,1,Students are bored because they know this information,,,,,
+if,1,This information contrasts with one student's life experiences,,,,,
+if,1,Students won't stop raising their hands. They are clearly confused.,,,,,
+if,2,Student questions are off topic and taking time,,,,,
+if,2,Many students are involved in related activities outside of school,,,,,
+if,2,Students need more practice with vocabulary,,,,,
+if,2,Students misunderstand the text,,,,,
+if,2,Some students are making connection to a previous unit,,,,,
+if,2,Students know a lot about this topic and are excited,,,,,
+if,2,Students are bored because they know this information,,,,,
+if,2,This information contrasts with one student's life experiences,,,,,
+if,2,Students won't stop raising their hands. They are clearly confused.,,,,,
+
+then,Structure,Discusion routine (whole_group),Rumors,"To look for patterns in ideas, learners circulate around the room carrying their response written on a paper. They listen to a partner's idea, share their own idea, and swap papers. Then they find a new partner to: listen, share, & swap - looking for patterns in responses.",1,1,
+then,Structure,Individual thinking routine,I used to think.. Now I think... So next I will,"This thinking routine is used for students to monitor how and why their thinking has changed. This sentence starter prompts push students to consider their next learning steps, completing a cycle of self-regulation.",2,2,
+then,Structure,Discusion routine (whole_group),Idea Carousel,"Post topics and chart paper around the room (one topic per chart paper). Ask participants to go to a topic that interests them most. Ask students to write down knowledge, questions, or concerns about the topic on the chart paper. Ask students to rotate to the next chart and repeat this process.",2,3,
+then,Structure,Discusion routine (pairs),Dialogue Lines,"Dialogue Lines or Dialogue Circles is a learning routine in which students move from one partner discussion to another, rehearsing a common way of talking about a particular topic.",1,5,
+then,Structure,Discusion routine (pairs),Questions Only,"Students work in pairs to generate questions around a prompt, image, or data set. ",4,"1,4",
+then,Structure,Discusion routine (pairs),Turn - Exchange - Sort,"Students are assigned the role or listener and speaker, taking turns to exchange their thinking (answer, question, opinion, observation). Then the pair sorts the thinking (prioritize, compare, sequence, or summarize).",3,"2,3",
+then,Structure,Discusion routine (small_groups),Think - Talk - Open Exchange,"This is a routine for students in small groups to share ideas, listen to one another, and build upon each others’ ideas.",3,"4,5",
+then,Structure,Discusion routine (small_groups),Read - Generate - Sort - Solve,This is a routine that promotes student engagement in problem-solving by helping students make their thinking transparent along the way.,3,"1,2,3",
+then,Structure,Discusion routine (whole_group),Domino Share,"This routine helps groups share efficiently, giving each person an opportunity to participate. ",4,"1,4,5",
+then,Structure,Explicit instruction,Mini-Lesson,Teacher provides a short mini-lesson.,1,4,assets/teacher.png
+then,Structure,Individual task,Star Most Interesting & Box Most Challenging,Students place a star next to the most interesting word/problem/question and draw a box around the most challenging aspect.,2,1,assets/book.png
+then,Structure,Discussion routine,Idea Carousel,"Post chart papers with different topics around the room. Ask participants to go to a topic that interests them most. Ask students to write on chart paper knowledge, questions, or concerns about the topic. Ask students to rotate to the next chart and repeat this process.",2,2,assets/people.png
+then,Structure,Free discussion,Turn and Talk,A completely unstructured time to talk and listen to others in a small group. ,1,3,assets/table.png
+then,Structure,Free discussion,Talk to Peers,A completely unstructured time to talk and listen to others in a small group. ,4,"4,5",assets/table.png
+then,Structure,Discussion routine,Elbow Exchange and Sort,"Students are assigned the role of listener or speaker, taking turns to exchange their thinking (answer, question, opinion, observation). Then the pair sorts the thinking (prioritize, compare, sequence, or summarize).",3,"1,2",assets/people.png
+then,Structure,Explicit instruction,Short Movie Clip,Students watch a short movie clip to find information to answer a question.,3,"3,5",assets/teacher.png
+then,Structure,Individual task,Check and Circle,Students independently read or scan a text placing a check next to three words that are familar and circling one thing that seems new.,3,"1,2,4",assets/book.png
+then,Structure,Discussion routine,Domino Share,A representative from each group shares a response. Listeners listen for missing ideas/patterns and contribute additional ideas after the representatives share. Teachers record and evaluate the responses.,4,"3,4,5",assets/people.png
+then,Structure,Explicit instruction,Mini-lesson,"Teacher demonstrates a concept, defines vocabulary, or provides an example.",3,5,assets/teacher.png
+then,Structure,Individual task,I used to think... Now I think... So next I will..,"Independently, students monitor how and why their thinking has changed by completing the sentence prompt,  ""I used to think...""",2,4,assets/book.png
+then,Structure,Discussion routine,Rumors,"To look for patterns in ideas, learners circulate around the room carrying their response written on a paper. They listen to a partner's idea, share their own idea, and swap papers. Then they find a new partner to: listen, share, & swap - looking for patterns in responses.",4,1,assets/people.png
+then,Structure,Free discussion,Turn and Talk,A completely unstructured time to talk and listen to others in a small group.,1,2,assets/table.png
+then,Structure,Individual task,Questions Only,"Students generate questions around a prompt, image, or data set.",4,"3,5",assets/book.png
+then,Structure,Individual task,Silent Think Time,Students silently think in their head. No writing or speaking.,3,"1,4",assets/book.png
+then,Structure,Explicit instruction,Short Movie Clip,Students watch a short movie clip to find information to answer a question.,3,"2,3,5",assets/teacher.png
+then,Structure,Discussion routine,Dialogue Lines,"Students form two lines, one line speaks first, then the other, finally they have a short conversation and then one line moves one step to meet a new partner. The process is repeated until students have conversed with two or three different partners.",3,"1,4,2",assets/people.png
+then,Structure,Discussion routine,Domino Share,Each student in a group shares a response. Listeners listen for missing ideas/patterns and contribute ideas after the share. Students use criteria to prepare a reporter to share a high quality response.,4,"3,4,5",assets/people.png
+
+then,Help resource,Individual,Sentence Frames,,1,3
+then,Help resource,Individual,Graphic Organizer,,2,5
+then,Help resource,Group,Concept Map,,2,4
+then,Help resource,Individual,Rubric,,1,1
+then,Help resource,Individual,Materials and Tools,"(i.e. calculator, ruler)",4,"2,3"
+then,Help resource,Group,Routine Directions Posted,,3,"4,5"
+then,Help resource,Individual,Dictionary,,3,"1,2"
+then,Help resource,Individualize practice,Learning App,,3,"3,4,5"
+then,Help resource,Individual,Vocabulary list,,4,"1,2,3"
+then,Help resource,Individual scaffold,Sentence Frames,,1,5
+then,Help resource,Individual scaffold,Graphic Organizer,,2,4
+then,Help resource,Group scaffold,Word Wall,,2,1
+then,Help resource,Individual scaffold,Rubric,,1,2
+then,Help resource,Individual scaffold,Materials and Tools,"(i.e. calculator, ruler)",4,"3,5"
+then,Help resource,Group scaffold,Routine Directions Posted,,3,"1,4"
+then,Help resource,Individual scaffold,Dictionary,,3,2.3
+then,Help resource,Individualize practice,Learning App,,3,"1,4,5"
+then,Help resource,Individual scaffold,Vocabulary list,,4,"2,3,5"
+then,Help resource,Individual scaffold,Sentence Frames,,1,4
+then,Help resource,Individual scaffold,Graphic Organizer,,2,1
+then,Help resource,Group scaffold,Word Wall,,2,2
+then,Help resource,Individual scaffold,Rubric,,1,3
+then,Help resource,Individual scaffold,Materials and Tools,"(i.e. calculator, ruler)",4,"4,5"
+then,Help resource,Group scaffold,Routine Directions Posted,,3,"1,2"
+then,Help resource,Individual scaffold,Dictionary,,3,"3,5"
+then,Help resource,Individualize practice,Learning App,,3,"1,2,4"
+then,Help resource,Individual scaffold,Vocabulary list,,4,"3,4,5"
+
+then.OptionsTotal teacher assignment,Teacher assigns required task - same task for all students,,1,2
+then.OptionsTotal student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
+then.OptionsTeacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
+then.OptionsTotal teacher assignment,Teachers assigns individualized practice tasks,,1,4
+then.OptionsTotal student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
+then.OptionsTeacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
+then.OptionsTotal teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
+then.OptionsTotal student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
+then.OptionsTeacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,5"
+then.OptionsTotal teacher assignment,Teacher assigns required task - same task for all students,,1,1
+then.OptionsTotal student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,2
+then.OptionsTeacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,3
+then.OptionsTotal teacher assignment,Teachers assigns individualized practice tasks,,1,5
+then.OptionsTotal student choice,"Students respond by drawing, writing, or making a list. ",,1,4
+then.OptionsTeacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"1,2"
+then.OptionsTotal teacher assignment,Teacher assigns different required tasks for small group work,,3,"3,5"
+then.OptionsTotal student choice,Students generate their own project to demonstrate learning,,3,"1,2,4"
+then.OptionsTeacher-structured student choice,pic(assets/optionpic1.png),,4,"2,3,5"
+then.OptionsTotal teacher assignment,Teacher assigns required task - same task for all students,,1,2
+then.OptionsTotal student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
+then.OptionsTeacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
+then.OptionsTotal teacher assignment,Teachers assigns individualized practice tasks,,1,4
+then.OptionsTotal student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
+then.OptionsTeacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
+then.OptionsTotal teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
+then.OptionsTotal student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
+then.OptionsTeacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,4"
+
+then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,1,0
+then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,2,0
+then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,2,0
+then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,1,0
+then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,1,0
+then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,2,0
+then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,3,0
+then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,3,0
+then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,4,0
+
+string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1.8""><li>Press the <b>START</b> button to begin the game</li>
 <li>You will enter a Zoom-like video chat with the other three players</li>
-<li>The screen will show a classroom situation you need to address</li>
 <li>Discuss it, and when you all are ready, press the <b>DEAL CARDS</b> button</li>
 <li>Six cards will be shown to you. Pick the best three that will move the students forward</li>
 <li>The video chat will reappear, and each teacher will explain their choices to the other players</li>
@@ -130,7 +121,9 @@ string,help,"<br><br><b>How to play the game:</b><br><r><ol style="line-height:1
 <li>You will be asked to vote on the best player's solution</li>
 <li>After everyone has voted, the winner is shown and you can discuss it</li>
 <li>Press the <b>NEXT ROUND</b> button to play again, until the the 45 minute period is up</li></ol>
-Anyime you see an hourglass, you have until the sand runs out before going to the next phase"
-string,pickHand,Choose up to three cards to play.,,,,
-string,explainHand,Explain why you chose these cards.,,,,
-string,vote,Vote for the card set you think is the best,,,,
+<p><b><i>Tips</i></b></p>
+Anytime you see an hourglass, you have until the sand runs out before going to the next phase.<br>
+The clock on the right shows how many minutes left in the game"
+string,pickHand,Choose up to three cards to play.
+string,explainHand,Explain why you chose these cards.
+string,vote,Vote for the card set you think is the best

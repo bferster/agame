@@ -16,11 +16,12 @@
 							}
 		.lz-main { 			width:100%; height:var(--maxvh); display:none;
 							}
-		.lz-if { 			position:absolute; top:12%; left:250px; font-size:32px; font-weight:normal; width:66%
+		.lz-if { 			position:absolute; top:90px; left:calc(12.5% + 24px); font-size:28px; font-weight:normal; width:70%
 							}
-		.lz-infield { 		position:absolute; top:calc(12% + 50px); left:250px; text-align:left;
+		.lz-infield { 		position:absolute; top:150px; left:calc(12.5% + 24px); text-align:left;
 							}
-		.lz-flow { 			position:absolute; display:table; top:0; left:0; height:100%; width:100%; margin-left:24px; width:200px; text-align:center;
+		.lz-flow { 			position:absolute; display:table; top:0; left:0; height:100%; width:calc(12.5% ); 
+							text-align:right;
 							}
 		.lz-dialog {		position:absolute; top:16px; left:16px; background-color: #eee; border: 1px solid #aaa;
 							padding:16px; border-radius: 16px; width: 600px;
@@ -29,8 +30,8 @@
 							border-radius: 8px; background-color: #fff; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
 							}
 		.lz-popup {			position:absolute;  width: auto; max-width:200px; padding: 12px; left: calc(50% - 100px); top: calc(66% - 50px);
-			border-radius: 8px; background-color: #eee; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
-			font-size: 14px; text-align:center; display: none;
+							border-radius: 8px; background-color: #eee; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
+							font-size: 14px; text-align:center; display: none;
 			}
 		.lz-is {			border-radius:16px; padding:0 8px; width:250px; height: 24px;
 							border:1px solid #999; font-size: 13px;
@@ -41,7 +42,6 @@
 
 		:root  {			--maxvh: 100vh  }
 		table  {			border-spacing: 0px;  }
-		@font-face {  		font-family: Chalk; src: url(img/Inkfree.ttf);   }
 
 		body ::-webkit-scrollbar { width: 9px; height:8px } 
 		body ::-webkit-scrollbar-track { background: transparent; }
@@ -74,6 +74,8 @@
 	var app=null;																					// Holds app
 	var isMobile=false;																				// Mobile?
 	var noNode=true;																				// No node js?
+
+let test=0;
 
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
@@ -115,7 +117,6 @@ class App  {
 	{
 		app=this;
 		this.sessionId="1";																				// Session id
-		this.role="lead"
 		this.playerId="bill@192.168.1.1";																// Player id
 		this.ifs=[];																					// Holds ifs
 		this.players=[];																				// Game players
@@ -145,8 +146,8 @@ class App  {
 					}
 				this.players[0]=this.playerId;															// Add me
 	this.players[1]="Sara@1";	this.players[2]="Kim@2";	this.players[3]="Sasha@3";
-				this.SetPhase(0);																		// Show instructions
-				this.Draw();
+				$("#lz-infieldDiv").html(this.strings["help"]);											// Start with help
+				this.Draw();																			// Draw screen
 			})
 	}
 
@@ -155,8 +156,6 @@ class App  {
 		let r=Math.floor(Math.random()*this.ifs.length);												// Random number
 		this.curIf=this.ifs[r];																			// Get an if
 		this.ifs.splice(r,1);																			// Remove it
-		this.SetPhase(0);																				// Restart
-		this.DrawHourGlass(66);																			// Show hour glass 
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,8 +164,7 @@ class App  {
 
 	Draw()
 	{
-		
-		$("#lz-ifDiv").html(this.curIf ? "<b><i>IF... </i></b>"+this.curIf : "");							// Show if
+		$("#lz-ifDiv").html(this.curIf ? "<b><i>IF... </i></b>"+this.curIf : "");						// Show if
 		this.DrawTrack(this.stuPos);																	// Draw track
 		this.DrawFlow();																				// Draw phase flow chart
 		this.DrawClock(22);																				// Draw clock
@@ -191,30 +189,30 @@ class App  {
 
 	DrawTrack(pos)																					// DRAW STUDENT TRACK	
 	{
-		let i
-		let sw=($(window).height()-48)/120;																// Band height
-		let r=($(window).height()-48)*.3333;															// Corner size
-		let o=(this.stuCols.length*(sw+2));																// Band offset
-		let w=($(window).width()-48-r)																	// Straight-away
-		let str=`<text x="${w/2}" y="${24+o+sw*2}" text-anchor="middle" fill="#666" font-size="${sw*2}">LEARNING</text>`;					// Label						
-		str+=`<text x="${w+r-o+sw*2}" y="${$(window).height()/2}" text-anchor="middle" style="writing-mode: tb;text-orientation:upright" fill="#666" font-size="${sw*2}">THRIVING</text>`;	// Label						
-		str+=`<text x="${w/2}" y="${$(window).height()-24-o}" text-anchor="middle" fill="#666" font-size="${sw*2}">LIBERATING</text>`;		// Label						
+		let i,sw=8;
+		let left=$(window).width()/8+24;
+		let bend=($(window).height()-48)*.3333;															// Corner size
+		let w=($(window).width()-left-24-bend)															// Straight-away
+		let bh=this.stuCols.length*(sw+2);																// Band height
+		let str=`<text x="${w/2+left}" y="${24+bh+12}" letter-spacing="8" text-anchor="middle" fill="#666" font-size="16">LEARNING</text>`;								
+		str+=`<text x="${w+bend+left-bh-12}" y="${$(window).height()/2}" text-anchor="middle" style="writing-mode: tb;text-orientation:upright" fill="#666" font-size="16">THRIVING</text>`;						
+		str+=`<text x="${w/2+left-8}" y="${$(window).height()-24-bh}" letter-spacing="8" text-anchor="middle" fill="#666" font-size="16">LIBERATING</text>`;						
 
 		for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,"#cccccc", 10);								// Gray base
 		for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,this.stuCols[i],i);							// Colored rings
 		$("#lz-trackSVG").html(str);																	// Set SVG
 		
-		function drawBand(num, col, step) {	
-			step=step+4;
-			o=(num*(sw+2));																				// Line offset
-			let y=24+o;																					// Y pos
+		function drawBand(num, col, step) {																// DRAW STUDENT BAND
+step=step+4;
+			bh=(num*(sw+2));																		// Line offset
+			let y=24+bh;																				// Y pos
 			let x=w/5*Math.min(step,5);																	// Position in straight-away
 			let s=`<path style="fill:none;stroke:${col};stroke-width:${sw};
-				stroke-linecap:round;stroke-linejoin:round"	d="M 24 ${y} `;								// Start line
-				s+=` L ${x+24} ${y} `;																	// Add straight-away
-				if (step > 5)	s+=` a ${r-o} ${r-o} 0 0 1 ${r-o} ${r-o} `;								// Top curve
-				if (step > 6)	s+=` l 0 ${r} `;														// Middle 
-				if (step > 7)	s+=` a ${-r+o} ${-r+o} 0 0 1 ${-r+o} ${r-o} `;							// Bottom curve
+				stroke-linecap:round;stroke-linejoin:round"	d="M ${left} ${y} `;						// Start line
+				s+=`L ${x+left} ${y} `;																	// Add straight-away
+				if (step > 5)	s+=` a ${bend-bh} ${bend-bh} 0 0 1 ${bend-bh} ${bend-bh} `;				// Top curve
+				if (step > 6)	s+=` l 0 ${bend} `;														// Middle 
+				if (step > 7)	s+=` a ${-bend+bh} ${-bend+bh} 0 0 1 ${-bend+bh} ${bend-bh} `;			// Bottom curve
 				if (step > 8)	s+=` l ${-w/2} 0 `;														// Add last leg 1
 				if (step > 9)	s+=` l ${-w/2} 0 `;														// Add last leg 1
 				s+=`"/>`;																				// Close line
@@ -222,14 +220,15 @@ class App  {
 			}
 	}
 
-	DrawHourGlass(pct, x=0, y=0, wid=32)															// DRAW HOURGLASS
+	DrawHourGlass(pct, time=60)																		// DRAW HOURGLASS
 	{
 		$("#lz-hourGlass").remove();																	// Remove old one
+		let wid=50;																						// Set width
 		let hgt=wid*3;																					// Set hgt
-		if (!x)	x=$(window).width()-120-(($(window).height()-48)/20);									// X pos
-		if (!y)	y=$(window).height()/2-hgt/2;															// Y
+		let	x=$(window).width()-160;																	// X pos
+		let y=$(window).height()/2-hgt/2;																// Y
 		let str=`<div id="lz-hourGlass" style="position:absolute;overflow:hidden;
-			width:${wid}px;height:${hgt}px;left:${x}px;top:${y}px;height:${hgt}px">
+			width:${wid}px;height:${hgt}px;left:${x}px;top:${y}px">
 			<img src="img/sandtop.png" style="position:absolute;width:100%;height:100%;top:${hgt*pct/200}px">
 			<img src="img/hourtop.png" style="position:absolute;width:100%;height:100%">
 			<img src="img/sandbot.png" style="position:absolute;width:100%;height:100%;top:${hgt*(100-pct)/200}px">
@@ -261,51 +260,91 @@ class App  {
 
 	DrawFlow()																						// DRAW PHASE FLOW CHART
 	{
-		let i,j=0;
-		let str=`<div style="display: table-cell; vertical-align: middle">`;
-		for (i=0;i<this.flow.length;++i) {																// For each item
-			if (this.flow[i].category == "player") { 													// If list of players
-				for (j=0;j<this.players.length;++j)														// For each one		
-					str+=addItem(i+j,this.players[j].split("@")[0]);									// Add player's name
-				}
-			else	str+=addItem(i+Math.min(j,this.players.length-1),this.flow[i].title)				// Add action phase
-			}
-		$("#lz-flowDiv").html(str+"</div>");															// Add flowchart
-		$("[id^=lz-phase-]").on("click", (e)=>{	this.SetPhase(e.target.id.substring(9)-0) });			// ON ITEM CLICK 
-			
+		let i=1,j;
+		let fh=Math.max($(window).width()/120,13);
+		let y=$(window).height()-59;
+		let str=`<div class="lz-bs" id="lz-botbut" style="font-size:${fh}px;background-color:#ccc;position:absolute;top:${y}px;right:0">NEXT ROUND</div>`;
+		str+=`<div style="height:100%; width:100%;">
+		<div class="lz-bs" id="lz-topbut" style="font-size:${fh}px;background-color:${(this.curPhase == 0) ? "#27ae60" : "#ccc"};margin-top:30px">START THE GAME!</div><br><br>`;		
+		str+=addItem(i++,"DISCUSS IF...")																// Add IF phase
+		str+=addItem(i++,"DEAL CARDS")																	// DEAL
+		for (j=0;j<this.players.length;++j)																// For player	
+			str+=addItem(i++,this.players[j].split("@")[0]+" TALKS");									// Add player's name
+		str+=addItem(i++,"VOTE")																		// VOTE
+		str+=addItem(i++,"DISCUSS")																		// DISCUSS
+		$("#lz-flowDiv").html(str);																		// Add flowchart
+
+		$("#lz-topbut").on("click", ()=>{ this.SetPhase(1); });											// ON START CLICK
+		$("#lz-botbut").on("click", ()=>{ this.SetPhase(1); });											// ON NEXT CLICK
+
+		$("[id^=lz-phase-]").on("click", (e)=>{	this.SetPhase(e.target.id.substring(9)-0) });	// ON ITEM CLICK 
 		function addItem(num, name) {
-			let col=(num == app.curPhase) ? "#27ae60" : "#999";											// Hilite curPhase
-			let s=`<div class="lz-bs" id="lz-phase-${num}"" style="background-color:${col}">${name.toUpperCase()}</div><br><br>`;
+			let col=(num == app.curPhase) ? "#27ae60" : "#ccc";											// Hilite curPhase
+			let s=`<p><div class="lz-bs" id="lz-phase-${num}" style="font-size:${fh}px;background-color:${col}">${name.toUpperCase()}</div></p>`;
 			return s;																					// Return item markup
 			}
 	}
 
 	SetPhase(phase)																					// SET PHASE OF GAME
 	{
-		trace(phase)
-		if (phase == 0) {																			// HELP
-			 $("#lz-infieldDiv").html(this.strings["help"]);									
-			 this.VideoChat();																		// Kill video chat	
+		if (phase == 1) {																				// START 
+			if (this.curPhase != 0)	return;																// Only at beginning		
+	//		this.VideoChat(66);																			// Open video chat	
+			Sound("ding");																				// Ding
+			this.StartRound();																			// Start round													
+			this.DrawHourGlass(66,5);																	// Show hour glass 
+			$("#lz-infieldDiv").html("");																// Clear infield	
 			}
-		else if (phase == 1) {																		// START 
-	//		this.VideoChat(66);																		// Open video chat	
-			if (this.curPhase != 0)	return;															// Only at beginning		
-			this.StartRound();																		// Start round													
-			this.curPhase=phase;																	// Set phase
-			$("#lz-infieldDiv").html("");															// Clear infield	
+		else if (phase == 2) {																			// DEAL 
+			if (this.curPhase != 1)	return;																// Only at beginning		
+			this.DealCards();																			// Deal cards
 			}
-		else if (phase == 2) {																		// START 
-			if (this.curPhase != 1)	return;															// Only at beginning		
-			}
-		this.Draw();																				// Redraw
+		this.curPhase=phase;																			// Set phase
+		this.Draw();																					// Redraw
+	}
+
+	DrawCard(num, id, x, y, hgt)																		// DRAW CARD
+	{
+		let o=this.thens[num];
+		let cols=[];
+		cols["Structure"]="cyan"; 	cols["Help resource"]="magenta";	
+		cols["Options"]="#d4dd46"; 	cols["Chance"]="#ccc";
+		let title=o.title.split(" ").join("<br>")
+		let str=`<div id="${id}" style="width:${hgt*.75}px;height:${hgt}px;background-color:#fff;
+			position:absolute;border:2px solid #999;margin:2px;border-radius:6px;left:${x}px;top:${y}px">
+			<div style="background-color:${cols[o.category]};font-size:2.5vh;text-align:center;
+				padding:0 0 2px 0;border-bottom:1px solid #999">
+				<b>${o.category}</b></div>
+				<div style="text-align:left;padding:8px;top:25%;line-height:1;height:18%">		
+					<img src="img/clock.png" style="width:24%;float:right">
+					<div style="position:absolute;font-size:1.1vh;color:#333;left:80%;top:23%"><b>${o.time+" min"}</b></div>`;
+					if (o.pic) str+=`<img src="${o.pic}" style="width:20%;float:right;margin-right:8px">`;
+					str+=`<b style="color:#888;font-size:1.9vh;float:left">${title.replace(/_/g," ")}</b>
+				</div>
+			<div style="text-align:center;font-size:2vh;padding:0 8px;color:#333;line-height:1"><b>${o.subtitle}</b></div>
+			<div style="text-align:left;font-size:1.5vh;color:#333;line-height:1;padding:12px">${o.desc}</div></div>`;
+			let i,v=o.students.split(",");
+			for (i=0;i<v.length;++i)str+=`<div style="display:inline-block;background-color:${this.stuCols[v[i]]};
+				border-radius:25px;width:25px;height:25px;position:absolute;top:${hgt-25}px;left:${8+i*29}px"></div>`
+			str+="</div>";
+		return str;
 	}
 
 	DealCards()																						// DEAL CARDS
 	{
-	}
+		let x=0,y=24;
+		let h=$(window).height()/3.2;
+		let w=h*.75+12;
 
-	ShowCard(x, y, width, o)																		// SHOW THEN CARD
-	{
+		let i,str="";
+		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
+		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
+		str+=this.DrawCard(test++,77,x,y,h);	x=0;	y+=h+12;
+		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
+		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
+		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
+		
+		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add it
 	}
 
 	Pick(cards)																						// PICK CARDS
