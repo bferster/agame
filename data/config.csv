@@ -74,33 +74,33 @@ then,Help resource,Individual scaffold,Dictionary,,3,"3,5"
 then,Help resource,Individualize practice,Learning App,,3,"1,2,4"
 then,Help resource,Individual scaffold,Vocabulary list,,4,"3,4,5"
 
-then.OptionsTotal teacher assignment,Teacher assigns required task - same task for all students,,1,2
-then.OptionsTotal student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
-then.OptionsTeacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
-then.OptionsTotal teacher assignment,Teachers assigns individualized practice tasks,,1,4
-then.OptionsTotal student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
-then.OptionsTeacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
-then.OptionsTotal teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
-then.OptionsTotal student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
-then.OptionsTeacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,5"
-then.OptionsTotal teacher assignment,Teacher assigns required task - same task for all students,,1,1
-then.OptionsTotal student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,2
-then.OptionsTeacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,3
-then.OptionsTotal teacher assignment,Teachers assigns individualized practice tasks,,1,5
-then.OptionsTotal student choice,"Students respond by drawing, writing, or making a list. ",,1,4
-then.OptionsTeacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"1,2"
-then.OptionsTotal teacher assignment,Teacher assigns different required tasks for small group work,,3,"3,5"
-then.OptionsTotal student choice,Students generate their own project to demonstrate learning,,3,"1,2,4"
-then.OptionsTeacher-structured student choice,pic(assets/optionpic1.png),,4,"2,3,5"
-then.OptionsTotal teacher assignment,Teacher assigns required task - same task for all students,,1,2
-then.OptionsTotal student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
-then.OptionsTeacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
-then.OptionsTotal teacher assignment,Teachers assigns individualized practice tasks,,1,4
-then.OptionsTotal student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
-then.OptionsTeacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
-then.OptionsTotal teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
-then.OptionsTotal student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
-then.OptionsTeacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,4"
+then.Options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,2
+then.Options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
+then.Options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
+then.Options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,4
+then.Options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
+then.Options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
+then.Options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
+then.Options,Total student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
+then.Options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,5"
+then.Options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,1
+then.Options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,2
+then.Options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,3
+then.Options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,5
+then.Options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,4
+then.Options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"1,2"
+then.Options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"3,5"
+then.Options,Total student choice,Students generate their own project to demonstrate learning,,3,"1,2,4"
+then.Options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"2,3,5"
+then.Options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,2
+then.Options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
+then.Options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
+then.Options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,4
+then.Options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
+then.Options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
+then.Options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
+then.Options,Total student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
+then.Options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,4"
 
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,1,0
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,2,0

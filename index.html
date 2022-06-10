@@ -296,7 +296,7 @@ step=step+4;
 			$("#lz-infieldDiv").html("");																// Clear infield	
 			}
 		else if (phase == 2) {																			// DEAL 
-			if (this.curPhase != 1)	return;																// Only at beginning		
+//			if (this.curPhase != 1)	return;																// Only at beginning		
 			this.DealCards();																			// Deal cards
 			}
 		this.curPhase=phase;																			// Set phase
@@ -310,30 +310,33 @@ step=step+4;
 		cols["Structure"]="cyan"; 	cols["Help resource"]="magenta";	
 		cols["Options"]="#d4dd46"; 	cols["Chance"]="#ccc";
 		let title=o.title.split(" ").join("<br>")
-		let str=`<div id="${id}" style="width:${hgt*.75}px;height:${hgt}px;background-color:#fff;
-			position:absolute;border:2px solid #999;margin:2px;border-radius:6px;left:${x}px;top:${y}px">
-			<div style="background-color:${cols[o.category]};font-size:2.5vh;text-align:center;
-				padding:0 0 2px 0;border-bottom:1px solid #999">
-				<b>${o.category}</b></div>
-				<div style="text-align:left;padding:8px;top:25%;line-height:1;height:18%">		
-					<img src="img/clock.png" style="width:24%;float:right">
-					<div style="position:absolute;font-size:1.1vh;color:#333;left:80%;top:23%"><b>${o.time+" min"}</b></div>`;
-					if (o.pic) str+=`<img src="${o.pic}" style="width:20%;float:right;margin-right:8px">`;
-					str+=`<b style="color:#888;font-size:1.9vh;float:left">${title.replace(/_/g," ")}</b>
-				</div>
-			<div style="text-align:center;font-size:2vh;padding:0 8px;color:#333;line-height:1"><b>${o.subtitle}</b></div>
-			<div style="text-align:left;font-size:1.5vh;color:#333;line-height:1;padding:12px">${o.desc}</div></div>`;
+
+		let str=`<div id="${id}" style="position:absolute;left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px;
+			background-color:#fff;border:2px solid #999;border-radius:6px;
+			display:grid;align-items:start;  grid-template-rows: 1fr 2fr 1fr 1fr 3fr 1fr;
+			grid-template-areas:'category category category category' 'title title pic time' 
+			'subtitle subtitle subtitle subtitle' 'desc desc desc desc''students students students students'">
+
+			<div style="grid-area:category;background-color:${cols[o.category]};font-size:${hgt/12.5}px;text-align:center;
+				padding:0 0 2px 0;border-bottom:1px solid #999">${o.category}</div>
+			<div style="grid-area:title;padding:8px;color:#999;font-size:${hgt/24}px"><b>${title.replace(/_/g," ")}</b></div>
+			<div style="grid-area:subtitle;padding:0 8px;text-align:center;color:#000;font-size:${hgt/24}px"><b>${o.subtitle}</b></div>
+			<div style="grid-area:desc;padding:0 12px;font-size:${hgt/24}px">${o.desc}</div>
+			<div style="grid-area:time;text-align:right;padding:8px"><img src="img/clock.png" style="width:${hgt/6}px"></div>
+			<div style="grid-area:pic;text-align:center;padding-top:8px">`;
+			if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/6}px">`;
+			str+=`</div><div style="grid-area:students;padding-left:12px">`;
 			let i,v=o.students.split(",");
-			for (i=0;i<v.length;++i)str+=`<div style="display:inline-block;background-color:${this.stuCols[v[i]]};
-				border-radius:25px;width:25px;height:25px;position:absolute;top:${hgt-25}px;left:${8+i*29}px"></div>`
-			str+="</div>";
+			for (i=0;i<v.length;++i)str+=`<span style="display:inline-block;background-color:${this.stuCols[v[i]]};
+				margin-right:3px;border-radius:25px;width:${hgt/15}px;height:${hgt/15}px"></span>`
+			str+="</div></div>";
 		return str;
 	}
 
 	DealCards()																						// DEAL CARDS
 	{
 		let x=0,y=24;
-		let h=$(window).height()/3.2;
+		let h=($(window).height()-300)/2;
 		let w=h*.75+12;
 
 		let i,str="";
