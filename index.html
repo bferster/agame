@@ -223,44 +223,6 @@ step=step+4;
 			}
 	}
 
-	DrawHourGlass(pct, time=60)																		// DRAW HOURGLASS
-	{
-		$("#lz-hourGlass").remove();																	// Remove old one
-		let wid=50;																						// Set width
-		let hgt=wid*3;																					// Set hgt
-		let	x=$(window).width()-160;																	// X pos
-		let y=$(window).height()/2-hgt/2;																// Y
-		let str=`<div id="lz-hourGlass" style="position:absolute;overflow:hidden;
-			width:${wid}px;height:${hgt}px;left:${x}px;top:${y}px">
-			<img src="img/sandtop.png" style="position:absolute;width:100%;height:100%;top:${hgt*pct/200}px">
-			<img src="img/hourtop.png" style="position:absolute;width:100%;height:100%">
-			<img src="img/sandbot.png" style="position:absolute;width:100%;height:100%;top:${hgt*(100-pct)/200}px">
-			<img src="img/hourglass.png" style="position:absolute;width:100%;height:100%"></div>`;
-			$("body").append(str); 																		// Add to body
-	}
-
-	DrawClock(mins, tot=45)																			// DRAW CLOCK
-	{
-		let i,x1,y1,col;
-		let rad=$(window).height()/20;																	// Radius based on height
-		let x=$(window).width()-rad-rad-20;																// X pos
-		let y=$(window).height()-rad-rad-20;															// Y
-		let step=(2*Math.PI)/tot;																		// Dot step
-		let ang=-Math.PI/2;																				// Start straight up
-		$("#lz-clockSVG").remove();																		// Remove old one
-		let str=`<svg id="lz-clockSVG" width="100%" height="100%" style="position:absolute;left:${x}px;top:${y}px">`;
-		for	(i=0;i<tot;++i) {																			// For each mark
-			x1= rad+4+rad*Math.cos(ang);																// Calc x
-			y1= rad+4+rad*Math.sin(ang);																// Y
-			ang+=step;																					// Next angle
-			col=(i < mins) ? "#25aa54" : "#cccccc";														// Set color
-			str+=`<circle cx="${x1}" cy="${y1}" r="3" fill="${col}" />`;								// Draw dot
-			}
-		str+=`<text x="${rad+3}" y="${rad*1.3}" text-anchor="middle" fill="#666" font-size="${rad}">${i}</text>`;	// Number						
-		str+=`<text x="${rad+3}" y="${rad*1.6}" text-anchor="middle" fill="#666" font-size="${rad/4}">minutes</text></svg>`; // Label						
-		$("#mainDiv").append(str); 
-	}
-
 	DrawFlow()																						// DRAW PHASE FLOW CHART
 	{
 		let i=1,j;
@@ -295,11 +257,11 @@ step=step+4;
 	//		this.VideoChat(66);																			// Open video chat	
 			Sound("ding");																				// Ding
 			this.StartRound();																			// Start round													
-			this.DrawHourGlass(66,5);																	// Show hour glass 
 			$("#lz-infieldDiv").html("");																// Clear infield	
 			}
 		else if (phase == 2) {																			// DEAL 
 //			if (this.curPhase != 1)	return;																// Only at beginning		
+			this.DrawHourGlass(10,5);																	// Show hour glass 
 			this.DealCards();																			// Deal cards
 			}
 		this.curPhase=phase;																			// Set phase
@@ -370,6 +332,43 @@ step=step+4;
 	Vote()																							// VOTE
 	{
 	}
+
+
+	DrawHourGlass(pct, time=60)																		// DRAW HOURGLASS
+	{
+		pct=90
+		$("#lz-hourGlass").remove();																	// Remove old one
+		let str=`<div id="lz-hourGlass" style="position:absolute;overflow:hidden;
+			width:4vh;height:12vh;right:8vw;top:44vh">
+			<img src="img/sandtop.png" style="position:absolute;width:100%;height:100%;top:${pct*.8/2}%">
+			<img src="img/hourtop.png" style="position:absolute;width:100%;height:100%">
+			<img src="img/sandbot.png" style="position:absolute;width:100%;height:100%;top:${(100-pct)*.8/2}%">
+			<img src="img/hourglass.png" style="position:absolute;width:100%;height:100%"></div>`;
+			$("body").append(str); 																		// Add to body
+	}
+
+	DrawClock(mins, tot=45)																			// DRAW CLOCK
+	{
+		let i,x1,y1,col;
+		let rad=$(window).height()/20;																	// Radius based on height
+		let x=$(window).width()-rad-rad-20;																// X pos
+		let y=$(window).height()-rad-rad-20;															// Y
+		let step=(2*Math.PI)/tot;																		// Dot step
+		let ang=-Math.PI/2;																				// Start straight up
+		$("#lz-clockSVG").remove();																		// Remove old one
+		let str=`<svg id="lz-clockSVG" width="100%" height="100%" style="position:absolute;left:${x}px;top:${y}px">`;
+		for	(i=0;i<tot;++i) {																			// For each mark
+			x1= rad+4+rad*Math.cos(ang);																// Calc x
+			y1= rad+4+rad*Math.sin(ang);																// Y
+			ang+=step;																					// Next angle
+			col=(i < mins) ? "#25aa54" : "#cccccc";														// Set color
+			str+=`<circle cx="${x1}" cy="${y1}" r="3" fill="${col}" />`;								// Draw dot
+			}
+		str+=`<text x="${rad+3}" y="${rad*1.3}" text-anchor="middle" fill="#666" font-size="${rad}">${i}</text>`;	// Number						
+		str+=`<text x="${rad+3}" y="${rad*1.6}" text-anchor="middle" fill="#666" font-size="${rad/4}">minutes</text></svg>`; // Label						
+		$("#mainDiv").append(str); 
+	}
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // SOCKET 
