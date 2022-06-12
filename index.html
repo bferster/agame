@@ -14,11 +14,11 @@
 							}
 		.lz-splash { 		color:#999; text-align:center; margin-top:10%; display:none;
 							}
-		.lz-main { 			width:100%; height:var(--maxvh); display:none;
+		.lz-main { 			width:100%; height:var(--maxvh);  user-select: none; display:none;
 							}
-		.lz-if { 			position:absolute; top:90px; left:calc(12.5% + 24px); font-size:28px; font-weight:normal; width:70%
+		.lz-if { 			position:absolute; top:108px; left:calc(12.5% + 24px); font-size:1.8vw; color:#27ae60; font-weight:bold;
 							}
-		.lz-infield { 		position:absolute; top:150px; left:calc(12.5% + 24px); text-align:left;
+		.lz-infield { 		position:absolute; top:150px; left:calc(12.5% + 24px); text-align:left; 
 							}
 		.lz-flow { 			position:absolute; display:table; top:0; left:0; height:100%; width:calc(12.5% ); 
 							text-align:right;
@@ -164,7 +164,10 @@ class App  {
 
 	Draw()
 	{
-		$("#lz-ifDiv").html(this.curIf ? "<b><i>IF... </i></b>"+this.curIf : "");						// Show if
+		let str=`<div style="display:inline-block;height:2.4vw;width:2.4vw;border-radius:100px;
+			background-color:#27ae60;color:#fff;text-align:center">IF</div> &nbsp;`;
+		
+		$("#lz-ifDiv").html(this.curIf ? str+this.curIf : "");						// Show if
 		this.DrawTrack(this.stuPos);																	// Draw track
 		this.DrawFlow();																				// Draw phase flow chart
 		this.DrawClock(22);																				// Draw clock
@@ -303,7 +306,7 @@ step=step+4;
 		this.Draw();																					// Redraw
 	}
 
-	DrawCard(num, id, x, y, hgt)																		// DRAW CARD
+	DrawCard(num, id, x, y, check, hgt)																// DRAW CARD
 	{
 		let o=this.thens[num];
 		let cols=[];
@@ -311,26 +314,32 @@ step=step+4;
 		cols["Options"]="#d4dd46"; 	cols["Chance"]="#ccc";
 		let title=o.title.split(" ").join("<br>")
 
-		let str=`<div id="${id}" style="position:absolute;left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px;
-			background-color:#fff;border:2px solid #999;border-radius:6px;
-			display:grid;align-items:start;  grid-template-rows: 1fr 2fr 1fr 1fr 3fr 1fr;
+		let str=`<div style="position:absolute;left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px;
+			background-color:#fff;border:2px solid #999;border-radius:6px;overflow:hidden;
+			display:grid;align-items:start;  grid-template-rows: 1fr 2fr 2fr 8fr 1fr;
 			grid-template-areas:'category category category category' 'title title pic time' 
 			'subtitle subtitle subtitle subtitle' 'desc desc desc desc''students students students students'">
 
 			<div style="grid-area:category;background-color:${cols[o.category]};font-size:${hgt/12.5}px;text-align:center;
-				padding:0 0 2px 0;border-bottom:1px solid #999">${o.category}</div>
-			<div style="grid-area:title;padding:8px;color:#999;font-size:${hgt/24}px"><b>${title.replace(/_/g," ")}</b></div>
+				padding:0 0 2px 0;border-bottom:1px solid #999"><b>${o.category}</b>`;
+			if (check)  str+=`<img id="${id}" src="img/check.png" style="float:left;height:2vh;margin:1vh 0 0 1vh;cursor:pointer">`;
+			str+=`</div><div style="grid-area:title;padding:8px;color:#999;font-size:${hgt/20}px"><b>${title.replace(/_/g," ")}</b></div>
 			<div style="grid-area:subtitle;padding:0 8px;text-align:center;color:#000;font-size:${hgt/24}px"><b>${o.subtitle}</b></div>
-			<div style="grid-area:desc;padding:0 12px;font-size:${hgt/24}px">${o.desc}</div>
-			<div style="grid-area:time;text-align:right;padding:8px"><img src="img/clock.png" style="width:${hgt/6}px"></div>
+			<div style="grid-area:desc;padding:0 8px;overflow:hidden;font-size:${hgt/26}px">${o.desc}</div>
+			<div style="grid-area:time;padding:8px;font-size:${hgt/30}px;text-align:center">
+				<div style="width:${hgt/6}px;float:right"><img src="img/clock.png" style="width:100%">
+					<div style="margin-top:-40%">${o.time} mins</div>
+				</div>
+			</div>
 			<div style="grid-area:pic;text-align:center;padding-top:8px">`;
-			if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/6}px">`;
-			str+=`</div><div style="grid-area:students;padding-left:12px">`;
+			if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/7}px">`;
+			str+=`</div><div style="grid-area:students;padding-left:8px;align-self:end">`;
 			let i,v=o.students.split(",");
-			for (i=0;i<v.length;++i)str+=`<span style="display:inline-block;background-color:${this.stuCols[v[i]]};
+			for (i=0;i<v.length;++i)str+=`<span style="display:inline-block;background-color:${this.stuCols[v[i]-1]};
 				margin-right:3px;border-radius:25px;width:${hgt/15}px;height:${hgt/15}px"></span>`
 			str+="</div></div>";
-		return str;
+
+			return str;
 	}
 
 	DealCards()																						// DEAL CARDS
@@ -338,16 +347,20 @@ step=step+4;
 		let x=0,y=24;
 		let h=($(window).height()-300)/2;
 		let w=h*.75+12;
-
 		let i,str="";
-		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
-		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
-		str+=this.DrawCard(test++,77,x,y,h);	x=0;	y+=h+12;
-		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
-		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
-		str+=this.DrawCard(test++,77,x,y,h);	x+=w;	
-		
+		str+=this.DrawCard(test++,"lz-card-0",x,y,1,h);	x+=w;	
+		str+=this.DrawCard(test++,"lz-card-1",x,y,1,h);	x+=w;	
+		str+=this.DrawCard(test++,"lz-card-2",x,y,1,h);	x=0;	y+=h+12;
+		str+=this.DrawCard(test++,"lz-card-3",x,y,1,h);	x+=w;	
+		str+=this.DrawCard(test++,"lz-card-4",x,y,1,h);	x+=w;	
+		str+=this.DrawCard(test++,"lz-card-5",x,y,1,h);	x+=w;	
+
+		str+=`<div style="position:absolute;top:${24}px;left:${x+12}px;width:${w/2}px">${this.strings["pickHand"]}</div>`;
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add it
+		$("[id^=lz-card-]").on("click", (e)=>{														// ON CARD CHECKBOX CLICK 
+			$("#"+e.target.id).prop("src", $("#"+e.target.id).prop("src").match(/checked/) ? "img/check.png" : "img/checked.png");
+		});	
+	
 	}
 
 	Pick(cards)																						// PICK CARDS

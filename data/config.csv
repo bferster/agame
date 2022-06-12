@@ -24,7 +24,7 @@ then,Structure,Discusion routine (whole_group),Idea Carousel,"Post topics and ch
 then,Structure,Discusion routine (pairs),Dialogue Lines,"Dialogue Lines or Dialogue Circles is a learning routine in which students move from one partner discussion to another, rehearsing a common way of talking about a particular topic.",1,5,
 then,Structure,Discusion routine (pairs),Questions Only,"Students work in pairs to generate questions around a prompt, image, or data set. ",4,"1,4",
 then,Structure,Discusion routine (pairs),Turn - Exchange - Sort,"Students are assigned the role or listener and speaker, taking turns to exchange their thinking (answer, question, opinion, observation). Then the pair sorts the thinking (prioritize, compare, sequence, or summarize).",3,"2,3",
-then,Structure,Discusion routine (small_groups),Think - Talk - Open Exchange,"This is a routine for students in small groups to share ideas, listen to one another, and build upon each others’ ideas.",3,"4,5",
+then,Structure,Discusion routine (small_groups),Think - Talk - Open Exchange,"This is a routine for students in small groups to share ideas, listen to one another, and build upon each others' ideas.",3,"4,5",
 then,Structure,Discusion routine (small_groups),Read - Generate - Sort - Solve,This is a routine that promotes student engagement in problem-solving by helping students make their thinking transparent along the way.,3,"1,2,3",
 then,Structure,Discusion routine (whole_group),Domino Share,"This routine helps groups share efficiently, giving each person an opportunity to participate. ",4,"1,4,5",
 then,Structure,Explicit instruction,Mini-Lesson,Teacher provides a short mini-lesson.,1,4,assets/teacher.png
@@ -74,33 +74,33 @@ then,Help resource,Individual scaffold,Dictionary,,3,"3,5"
 then,Help resource,Individualize practice,Learning App,,3,"1,2,4"
 then,Help resource,Individual scaffold,Vocabulary list,,4,"3,4,5"
 
-then.Options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,2
-then.Options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
-then.Options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
-then.Options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,4
-then.Options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
-then.Options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
-then.Options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
-then.Options,Total student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
-then.Options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,5"
-then.Options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,1
-then.Options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,2
-then.Options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,3
-then.Options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,5
-then.Options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,4
-then.Options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"1,2"
-then.Options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"3,5"
-then.Options,Total student choice,Students generate their own project to demonstrate learning,,3,"1,2,4"
-then.Options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"2,3,5"
-then.Options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,2
-then.Options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
-then.Options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
-then.Options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,4
-then.Options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
-then.Options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
-then.Options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
-then.Options,Total student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
-then.Options,Teacher-structured student choice,pic(assets/optionpic1.png),,4,"1,2,4"
+then,Options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,2
+then,Options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
+then,Options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
+then,Options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,4
+then,Options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
+then,Options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
+then,Options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
+then,Options,Total student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
+then,Options,Teacher-structured student choice,,,4,"1,2,5"
+then,Options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,1
+then,Options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,2
+then,Options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,3
+then,Options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,5
+then,Options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,4
+then,Options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"1,2"
+then,Options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"3,5"
+then,Options,Total student choice,Students generate their own project to demonstrate learning,,3,"1,2,4"
+then,Options,Teacher-structured student choice,,,4,"2,3,5"
+then,Options,Total teacher assignment,Teacher assigns required task - same task for all students,,1,2
+then,Options,Total student choice,Offer different options ,"(i.e., texts, tasks): students choose according to their interests",2,3
+then,Options,Teacher-structured student choice,Teacher requires 3 and students choose 2 additional questions,,2,5
+then,Options,Total teacher assignment,Teachers assigns individualized practice tasks,,1,4
+then,Options,Total student choice,"Students respond by drawing, writing, or making a list. ",,1,"1,2"
+then,Options,Teacher-structured student choice,Tic Tac Toe,Students complete 3 out of 9 tasks. (One must be the center box),2,"3,5"
+then,Options,Total teacher assignment,Teacher assigns different required tasks for small group work,,3,"1,4"
+then,Options,Total student choice,Students generate their own project to demonstrate learning,,3,"2,3,5"
+then,Options,Teacher-structured student choice,,,4,"1,2,4"
 
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,1,0
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,Choose two students,2,0
@@ -124,6 +124,6 @@ string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1
 <p><b><i>Tips</i></b></p>
 Anytime you see an hourglass, you have until the sand runs out before going to the next phase.<br>
 The clock on the right shows how many minutes left in the game"
-string,pickHand,Choose up to three cards to play.
+string,pickHand,"<i>You can choose up to three cards to play.<br><br>When the timer is up, each player will be asked to explain their choices in the video chat.</i>"
 string,explainHand,Explain why you chose these cards.
 string,vote,Vote for the card set you think is the best
