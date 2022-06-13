@@ -28,13 +28,13 @@
 		parentNode: document.querySelector('body'),
 		};
 
-	if (v[2] && v[2].match(/lead/i)) {
-		options.interfaceConfigOverwrite["TOOLBAR_BUTTONS"].push("mute-everyone");
-		options.interfaceConfigOverwrite["TOOLBAR_BUTTONS"].push("security");
-		}
+	options.interfaceConfigOverwrite["TOOLBAR_BUTTONS"].push("mute-everyone");
 	const api = new JitsiMeetExternalAPI(domain, options);
 	window.addEventListener("unload", ()=>{ api.dispose();	});
 	window.addEventListener("load",   ()=>{ api.executeCommand('displayName',v[1] ? v[1] : ""); 	});
+
+
+	//api.setLargeVideoParticipant(participantId);
 
 </script>
 </body>
