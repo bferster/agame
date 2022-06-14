@@ -94,7 +94,7 @@ let test=0;
 			}
 	
 		$("#lz-login").on("change",()=> { 															// ON LOG IN
-			app.players[app.curPlayer].name=$("#lz-login").val().trim();							// Set player name
+			app.me=$("#lz-login").val().trim();														// Set player name
 			$("#splashDiv").fadeOut();																// Fade out splash
 			$("#mainDiv").fadeIn(2000);																// Fade in main
 			app.LoadConfig();																		// Load config to start round	
@@ -123,6 +123,7 @@ class App  {
 	constructor()   																				// CONSTRUCTOR
 	{
 		app=this;
+		this.me="Bill";
 		this.sessionId="1";																				// Session id
 		this.curPlayer=0;																				// Player id
 		this.curTime=0;																					// Current time in minutes												
@@ -154,7 +155,7 @@ class App  {
 					else if (d[i].type == "string")		this.strings[d[i].category]=d[i].title;			// Add string										
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					}
-				this.players.push({name:"Bill",cards:[],picks:[]});										// Add me
+				this.players.push({name:this.me,cards:[],picks:[]});										// Add me
 this.players.push({name:"Sara",cards:[],picks:[]});								
 this.players.push({name:"Kim",cards:[],picks:[]});								
 this.players.push({name:"Sasha",cards:[],picks:[]});								
@@ -197,7 +198,7 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 		else if (phase == this.players.length+4) {														// DISCUSS
 			this.VideoChat();																			// Open video chat	
 			this.ShowCards(this.players[phase-3]);														// Show picked cards
-			this.stuPos=[4,4,9,6,5];
+			for (let i=0;i<5;++i)	this.stuPos[i]+=Math.floor(Math.random()*4)+1;						// Advance	
 			if (this.curTime < this.maxTime-5)															// If still time
 				this.HourGlassTimer(3, ()=>{ 															// Set hourglass
 					this.curPhase=100;																	// Set end phase
@@ -212,7 +213,7 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 	DealCards()																						// DEAL CARDS
 	{
 		let x=0,y=0;
-		let h=($("#lz-infieldDiv").height()-48)/2;
+		let h=$("#lz-infieldDiv").height()/3;
 		let w=h*.75+12;
 		let i,str="";
 		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
@@ -225,6 +226,8 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add it
 		
 		$("[id^=lz-cardDiv-]").removeClass("lz-hover");
+		$("[id^=lz-cardDiv-]").on("mousedown", function(e) { if (!e.target.id.match(/cardCheck/)) $(this).css({"transform":"scale(2)","z-index":100})});
+		$("[id^=lz-cardDiv-]").on("mouseup",  function() { $(this).css({"transform":"scale(1)","z-index":1})});
 		$("[id^=lz-cardCheck-]").on("click", function() {														// ON CARD CHECKBOX CLICK 
 			$(this).prop("src", $(this).prop("src").match(/checked/) ? "img/check.png" : "img/checked.png");
 			Sound("click");

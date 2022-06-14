@@ -124,6 +124,6 @@ string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1
 <p><b><i>Tips</i></b></p>
 Anytime you see an hourglass, you have until the sand runs out before going to the next phase.<br>
 The clock on the right shows how many minutes left in the game"
-string,pickHand,"<i>You can choose up to three cards to play.<br><br>When the timer is up,<br>each player will be asked to explain their choices<br>in the video chat.</i>"
+string,pickHand,"<i>You can choose up to three cards to play.<br><br>When the timer is up,<br>each player will be asked to explain their choices<br>in the video chat.<br><br>Clicking on a card will enlarge it.</i>"
 string,explainHand,Explain why you chose these cards.
 string,vote,Vote for the card set you think is the best
