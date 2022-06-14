@@ -26,6 +26,13 @@
 		.lz-dialog {		position:absolute; top:16px; left:16px; background-color: #eee; border: 1px solid #aaa;
 							padding:16px; border-radius: 16px; width: 600px;
 							}
+		.lz-card {			position:absolute;	background-color:#fff; border:2px solid #999; border-radius:6px; overflow:hidden;
+							display:grid;align-items:start;  grid-template-rows: 1fr 2fr 2fr 8fr 1fr;
+							grid-template-areas:'category category category category' 'title title pic time' 
+							'subtitle subtitle subtitle subtitle' 'desc desc desc desc''students students students students';
+							}
+		.lz-hover:hover {	transform:scale(2);z-index:100; 
+							}
 		.lz-confirm {		position:absolute;  width:300px; padding: 16px; left:calc(50% - 150px); top:calc(50vh - 50px); user-select: none;	
 							border-radius: 8px; background-color: #fff; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
 							}
@@ -87,7 +94,7 @@ let test=0;
 			}
 	
 		$("#lz-login").on("change",()=> { 															// ON LOG IN
-			app.playerId=$("#lz-login").val().trim();												// Set player id
+			app.players[app.curPlayer].name=$("#lz-login").val().trim();							// Set player name
 			$("#splashDiv").fadeOut();																// Fade out splash
 			$("#mainDiv").fadeIn(2000);																// Fade in main
 			app.LoadConfig();																		// Load config to start round	
@@ -97,7 +104,7 @@ let test=0;
 			if ((e.which == 81) && e.ctrlKey)	{													// Test key (CTL-Q)
 				}
 			});
-	});
+		});
 
 	$(window).on("resize orientationchange", ()=>{                                       		 // ON WINDOW RESIZE
 		document.documentElement.style.setProperty("--maxvh", window.innerHeight+"px");				// Set CSS var for IOS 100vh isssue
@@ -117,7 +124,7 @@ class App  {
 	{
 		app=this;
 		this.sessionId="1";																				// Session id
-		this.playerId="Bill";																			// Player id
+		this.curPlayer=0;																				// Player id
 		this.curTime=0;																					// Current time in minutes												
 		this.maxTime=45;																				// Max time in minutes												
 		this.glassTimer=null;																			// Hourglass timer
@@ -127,7 +134,7 @@ class App  {
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
 		this.vidSize=70;																				// Width of video screen
-		this.stuPos=[];																					// Student track positions
+		this.stuPos=[0,0,5,2,1];																		// Student track positions
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.curIf="";																					// Current if
 		this.curPhase=0;																				// Current phase
@@ -147,8 +154,10 @@ class App  {
 					else if (d[i].type == "string")		this.strings[d[i].category]=d[i].title;			// Add string										
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					}
-				this.players[0]=this.playerId;															// Add me
-	this.players[1]="Sara";	this.players[2]="Kim";	this.players[3]="Sasha";
+				this.players.push({name:"Bill",cards:[],picks:[]});										// Add me
+this.players.push({name:"Sara",cards:[],picks:[]});								
+this.players.push({name:"Kim",cards:[],picks:[]});								
+this.players.push({name:"Sasha",cards:[],picks:[]});								
 				$("#lz-infieldDiv").html(this.strings["help"]);											// Start with help
 				this.Draw();																			// Draw screen
 			})
@@ -167,29 +176,32 @@ class App  {
 			this.ifs.splice(r,1);																		// Remove it
 			$("#lz-infieldDiv").html("");																// Clear infield	
 			Sound("ding");																				// Ding
-			this.HourGlassTimer(10, ()=>{$("#lz-botbut").css("background-color","#27ae60");	});			// Hilite button							
-			$("#lz-videoChat").remove(); 																// Remove old one
+			this.HourGlassTimer(10, ()=>{ Sound("clicks"); $("#lz-botbut").css("background-color","#27ae60");	});	// Hilite button							
 			this.VideoChat();																			// Open video chat	
-		}
+			}
 		else if (phase == 2) {																			// DEAL 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.DealCards();																			// Deal cards
-			this.HourGlassTimer(10, ()=>{ this.SetPhase(3);  this.VideoChat(); });						// Next phase
+//			for (let i=0;i<6;++i)	if ($("[id^=lz-cardCheck-"+i+"]").prop("checked")) 
+			this.HourGlassTimer(10, ()=>{ this.SetPhase(3); Sound("ding"); this.VideoChat(); });		// Next phase
 			}
 		else if ((phase > 2) && (phase < this.players.length+3)) {										// EXPLAIN
-			this.ShowCards(this.players[phase]);														// Show picked cards
-			this.HourGlassTimer(3, ()=>{ this.SetPhase(phase+1); });									// Next phase
+			this.ShowCards(this.players[phase-3]);														// Show picked cards
+			this.HourGlassTimer(3, ()=>{ Sound("ding");	this.SetPhase(phase+1); });						// Next phase
 			}
 		else if (phase == this.players.length+3) {														// VOTE 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.Vote();
-			this.HourGlassTimer(10, ()=>{ this.SetPhase(phase+1); });									// Next phase
+			this.HourGlassTimer(10, ()=>{ Sound("ding"); this.SetPhase(phase+1); });					// Next phase
 			}
 		else if (phase == this.players.length+4) {														// DISCUSS
 			this.VideoChat();																			// Open video chat	
+			this.ShowCards(this.players[phase-3]);														// Show picked cards
+			this.stuPos=[4,4,9,6,5];
 			if (this.curTime < this.maxTime-5)															// If still time
 				this.HourGlassTimer(3, ()=>{ 															// Set hourglass
 					this.curPhase=100;																	// Set end phase
+					Sound("clicks");																	// Click		
 					this.Draw();																		// Redraw
 					});									
 			}
@@ -200,20 +212,23 @@ class App  {
 	DealCards()																						// DEAL CARDS
 	{
 		let x=0,y=0;
-		let h=($(window).height()-300)/2-12;
+		let h=($("#lz-infieldDiv").height()-48)/2;
 		let w=h*.75+12;
 		let i,str="";
-		str+=this.DrawCard(test++,"lz-card-0",x,y,1,h);	x+=w;	
-		str+=this.DrawCard(test++,"lz-card-1",x,y,1,h);	x+=w;	
-		str+=this.DrawCard(test++,"lz-card-2",x,y,1,h);	x=0;	y+=h+12;
-		str+=this.DrawCard(test++,"lz-card-3",x,y,1,h);	x+=w;	
-		str+=this.DrawCard(test++,"lz-card-4",x,y,1,h);	x+=w;	
-		str+=this.DrawCard(test++,"lz-card-5",x,y,1,h);	x+=w;	
-		str+=`<div style="position:absolute;top:0;left:${x+12}px;width:${w*.66}px">${this.strings["pickHand"]}</div>`;
+		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
+		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
+		str+=this.DrawCard(test,test++,x,y,1,h);	x=0;	y+=h+12;
+		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
+		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
+		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
+		str+=`<div style="position:absolute;top:0;left:${x+12}px;max-width:200px">${this.strings["pickHand"]}</div>`;
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add it
-		$("[id^=lz-card-]").on("click", (e)=>{														// ON CARD CHECKBOX CLICK 
-			$("#"+e.target.id).prop("src", $("#"+e.target.id).prop("src").match(/checked/) ? "img/check.png" : "img/checked.png");
-		});	
+		
+		$("[id^=lz-cardDiv-]").removeClass("lz-hover");
+		$("[id^=lz-cardCheck-]").on("click", function() {														// ON CARD CHECKBOX CLICK 
+			$(this).prop("src", $(this).prop("src").match(/checked/) ? "img/check.png" : "img/checked.png");
+			Sound("click");
+			});	
 	}
 
 	ShowCards(player)																				// SHOW PICKED CARDS
@@ -221,18 +236,39 @@ class App  {
 		let y=0,x=$(window).height()/2/.5625+12;
 		let h=$(window).height()/2/3-8;
 		let num=Math.floor(Math.random()*this.thens.length);										// Random number
-		let str=this.DrawCard(num,"lz-card-0",x,y,0,h);	
+		let str=this.DrawCard(num,0,x,y,0,h);	
 		num=Math.floor(Math.random()*this.thens.length);											// Random number
-		str+=this.DrawCard(num,"lz-card-1",x,y+=h+8,0,h);
+		str+=this.DrawCard(num,1,x,y+=h+8,0,h);
 		num=Math.floor(Math.random()*this.thens.length);											// Random number
-		str+=this.DrawCard(num,"lz-card-2",x,y+=h+8,0,h);
+		str+=this.DrawCard(num,2,x,y+=h+8,0,h);
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add cards
 	}
 
-	Vote()																							// VOTE
+	Vote()																						// VOTE
 	{
-		let str="Vote";
+		let i,j,n,x=0,y=0,str="";
+		let h=$(window).height()/2/4;																// Card height
+		let w=h*.75+8;																				// Width
+		for (i=0;i<this.players.length;++i) {														// For each player
+			x=0;																					// Reset x
+			for (j=0;j<Math.max(1,Math.floor(Math.random()*4));++j)	{								// For each card chosen
+				n=Math.floor(Math.random()*this.thens.length);										// Random number
+				str+=this.DrawCard(n,(i*4)+j,x,y,0,h);												// Draw it
+				x+=w;																				// Shift over
+				}
+			str+=`<div style="position:absolute;left:${x+12}px;top:${y+h/2-8}px">
+			<b>Choose ${this.players[i].name.toUpperCase()}'s card set</b> &nbsp; 
+			<img id="${"lz-voteCheck-"+i}" src="img/check.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
+			y+=h+16;																				// Next row
+			}
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add cards
+		
+		$("[id^=lz-voteCheck-]").on("click", function() {											// ON CHECKBOX CLICK 
+//			app.players[app.curPlayer].picks=		
+			$("[id^=lz-voteCheck-]").prop("src","img/check.png" );									// Turn all off
+			$(this).prop("src", "img/checked.png");													// Highlight
+			Sound("click");
+			});
 	}
 
 	HourGlassTimer(time, callback)																	// RUN HOURGLASS TIMER
@@ -243,7 +279,6 @@ class App  {
 			this.DrawHourGlass(this.glassTime/time/16);													// Draw hourglass
 			if (this.glassTime++ > time*16) {															// Time's up
 				window.clearInterval(this.glassTimer);													// Stop timer
-				Sound("ding");																			// Ding		
 				if (callback) callback();																// Run callback
 				}
 			},62.5);																					// 12 fps
@@ -269,33 +304,33 @@ class App  {
 		
 		let hgt=$(window).height()*pct/100;																// Set height
 		let wid=hgt/.5625;																				// Width
-		let link="japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.playerId;						// Make link
+		let link="japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.players[this.curPlayer].name;	// Make link
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:174px;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
 			allow=camera;microphone;autoplay frameborder="0" allowfullscreen>
 			</iframe>`;
-		$("body").append(str.replace(/\t|\n|\r/g,""));											// Add it
+		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
 	}
 
 	DrawTrack(pos)																					// DRAW STUDENT TRACK	
 	{
 		let i,sw=8;
 		let left=$(window).width()/8+24;
+		let fs=Math.max($(window).width()/128,10);														// Font size
 		let bend=($(window).height()-48)*.3333;															// Corner size
 		let w=($(window).width()-left-24-bend)															// Straight-away
 		let bh=this.stuCols.length*(sw+2);																// Band height
-		let str=`<text x="${w/2+left}" y="${24+bh+12}" letter-spacing="8" text-anchor="middle" fill="#666" font-size="16">LEARNING</text>`;								
-		str+=`<text x="${w+bend+left-bh-12}" y="${$(window).height()/2}" text-anchor="middle" style="writing-mode: tb;text-orientation:upright" fill="#666" font-size="16">THRIVING</text>`;						
-		str+=`<text x="${w/2+left-8}" y="${$(window).height()-24-bh}" letter-spacing="8" text-anchor="middle" fill="#666" font-size="16">LIBERATING</text>`;						
+		let str=`<text x="${w/2+left}" y="${24+bh+12}" letter-spacing="8" text-anchor="middle" fill="#666" font-size="${fs}">LEARNING</text>`;								
+		str+=`<text x="${w+bend+left-bh-12}" y="${$(window).height()/2}" text-anchor="middle" style="writing-mode: tb;text-orientation:upright" fill="#666" font-size="${fs}">THRIVING</text>`;						
+		str+=`<text x="${w/2+left-8}" y="${$(window).height()-24-bh}" letter-spacing="8" text-anchor="middle" fill="#666" font-size="${fs}">LIBERATING</text>`;						
 
 		for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,"#cccccc", 10);								// Gray base
-		for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,this.stuCols[i],i);							// Colored rings
+		for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,this.stuCols[i],this.stuPos[i]);			// Colored rings
 		$("#lz-trackSVG").html(str);																	// Set SVG
 		
 		function drawBand(num, col, step) {																// DRAW STUDENT BAND
-step=step+4;
-			bh=(num*(sw+2));																		// Line offset
+			bh=(num*(sw+2));																			// Line offset
 			let y=24+bh;																				// Y pos
 			let x=w/5*Math.min(step,5);																	// Position in straight-away
 			let s=`<path style="fill:none;stroke:${col};stroke-width:${sw};
@@ -314,18 +349,18 @@ step=step+4;
 	DrawFlow()																						// DRAW PHASE FLOW CHART
 	{
 		let i=1,j;
-		let fh=Math.max($(window).width()/120,13);
+		let fh=Math.max($(window).width()/120,11);
 		let y=$(window).height()-59;
 		let str=`<div class="lz-bs" id="lz-botbut" style="font-size:${fh}px;position:absolute;top:${y}px;right:0;
 		background-color:${((this.curPhase == 1) || (this.curPhase == 100)) ? "#27ae60" : "#ccc"}">	
-		${(this.curPhase == 100) ? "NEXT ROUND" : "DEAL CARDS"}</div>
+		${(this.curPhase != 1) ? "NEXT ROUND" : "DEAL CARDS"}</div>
 		<div style="height:100%; width:100%">
 			<div class="lz-bs" id="lz-topbut" style="font-size:${fh}px;margin-top:30px;
 			background-color:${(this.curPhase == 0) ? "#27ae60" : "#ccc"}">START GAME!</div><br><br><br>`;		
 		str+=addItem(i++,"DISCUSS IF...")		 														// Add IF phase
 		str+=addItem(i++,"CHOOSE CARDS")																// DEAL
 		for (j=0;j<this.players.length;++j)																// For player	
-			str+=addItem(i++,this.players[j]+" TALKS");													// Add player's name
+			str+=addItem(i++,this.players[j].name+" TALKS");													// Add player's name
 		str+=addItem(i++,"VOTE")																		// VOTE
 		str+=addItem(i++,"DISCUSS")																		// DISCUSS
 		$("#lz-flowDiv").html(str);																		// Add flowchart
@@ -346,30 +381,26 @@ step=step+4;
 	{
 		let o=this.thens[num];
 		let cols=[];
+		let pad=hgt/30;																					// Responsive padding
 		cols["Structure"]="cyan"; 	cols["Help resource"]="magenta";	
 		cols["Options"]="#d4dd46"; 	cols["Chance"]="#ccc";
 		let title=o.title.split(" ").join("<br>")
 
-		let str=`<div style="position:absolute;left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px;
-			background-color:#fff;border:2px solid #999;border-radius:6px;overflow:hidden;
-			display:grid;align-items:start;  grid-template-rows: 1fr 2fr 2fr 8fr 1fr;
-			grid-template-areas:'category category category category' 'title title pic time' 
-			'subtitle subtitle subtitle subtitle' 'desc desc desc desc''students students students students'">
-
+		let str=`<div id="${"lz-cardDiv-"+id}" class="lz-card lz-hover" style="left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px">
 			<div style="grid-area:category;background-color:${cols[o.category]};font-size:${hgt/12.5}px;text-align:center;
 				padding:0 0 2px 0;border-bottom:1px solid #999"><b>${o.category}</b>`;
-			if (check)  str+=`<img id="${id}" src="img/check.png" style="float:left;height:2vh;margin:1vh 0 0 1vh;cursor:pointer">`;
-			str+=`</div><div style="grid-area:title;padding:8px;color:#999;font-size:${hgt/20}px"><b>${title.replace(/_/g," ")}</b></div>
-			<div style="grid-area:subtitle;padding:0 8px;text-align:center;color:#000;font-size:${hgt/24}px"><b>${o.subtitle}</b></div>
-			<div style="grid-area:desc;padding:0 8px;overflow:hidden;font-size:${hgt/26}px">${o.desc}</div>
-			<div style="grid-area:time;padding:8px;font-size:${hgt/30}px;text-align:center">
+			if (check)  str+=`<img id="${"lz-cardCheck-"+id}" src="img/check.png" style="float:left;height:2vh;margin:1vh 0 0 1vh;cursor:pointer">`;
+			str+=`</div><div style="grid-area:title;padding:${pad}px;color:#999;font-size:${hgt/20}px"><b>${title.replace(/_/g," ")}</b></div>
+			<div style="grid-area:subtitle;padding:0 ${pad}px;text-align:center;color:#000;font-size:${hgt/24}px"><b>${o.subtitle}</b></div>
+			<div style="grid-area:desc;padding:0 ${pad}px;overflow:hidden;font-size:${hgt/26}px">${o.desc}</div>
+			<div style="grid-area:time;padding:${pad}px;font-size:${hgt/30}px;text-align:center">
 				<div style="width:${hgt/6}px;float:right"><img src="img/clock.png" style="width:100%">
 					<div style="margin-top:-40%">${o.time} mins</div>
 				</div>
 			</div>
-			<div style="grid-area:pic;text-align:center;padding-top:8px">`;
+			<div style="grid-area:pic;text-align:center;padding-top:${pad}px">`;
 			if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/7}px">`;
-			str+=`</div><div style="grid-area:students;padding-left:8px;align-self:end">`;
+			str+=`</div><div style="grid-area:students;padding-left:${pad}px;align-self:end">`;
 			let i,v=o.students.split(",");
 			for (i=0;i<v.length;++i)str+=`<span style="display:inline-block;background-color:${this.stuCols[v[i]-1]};
 				margin-right:3px;border-radius:25px;width:${hgt/15}px;height:${hgt/15}px"></span>`
@@ -416,7 +447,7 @@ step=step+4;
 // SOCKET 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-InitSocketServer()																				// INIT SOCKET SERVER
+	InitSocketServer()																				// INIT SOCKET SERVER
 	{
 		if (noNode) {																					// If no nodeJs backend
 			this.ws={};																					// Fake socket
