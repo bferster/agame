@@ -62,7 +62,7 @@
 			<div id="lz-flowDiv" class="lz-flow"></div>
 			<div id="lz-ifDiv" class="lz-if"></div>
 			<div id="lz-infieldDiv" class="lz-infield"></div>
-			<img src="img/smlogo.png" style="position:absolute;left:1%; bottom:30px;width:3%">
+			<img src="img/smlogo.png" style="position:absolute;right:calc(88.5% - 12px);bottom:20px;width:60px">
 		</div>
 			<div id="splashDiv" class="lz-splash">
 			<img src="img/ACTlogo.png" style='width:200px' alt="logo"><br>
@@ -177,7 +177,7 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 			this.ifs.splice(r,1);																		// Remove it
 			$("#lz-infieldDiv").html("");																// Clear infield	
 			Sound("ding");																				// Ding
-			this.HourGlassTimer(10, ()=>{ Sound("clicks"); $("#lz-botbut").css("background-color","#27ae60");	});	// Hilite button							
+			this.HourGlassTimer(10, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60");	});	// Hilite button							
 			this.VideoChat();																			// Open video chat	
 			}
 		else if (phase == 2) {																			// DEAL 
@@ -201,10 +201,9 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 			for (let i=0;i<5;++i)	this.stuPos[i]+=Math.floor(Math.random()*4)+1;						// Advance	
 			if (this.curTime < this.maxTime-5)															// If still time
 				this.HourGlassTimer(3, ()=>{ 															// Set hourglass
-					this.curPhase=100;																	// Set end phase
 					Sound("clicks");																	// Click		
-					this.Draw();																		// Redraw
-					});									
+					$("#lz-topbut").css("background-color","#27ae60");									// Hilite top bot
+				});									
 			}
 		this.curPhase=phase;																			// Set phase
 		this.Draw();																					// Redraw
@@ -354,27 +353,23 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 		let i=1,j;
 		let fh=Math.max($(window).width()/120,11);
 		let y=$(window).height()-59;
-		let str=`<div class="lz-bs" id="lz-botbut" style="font-size:${fh}px;position:absolute;top:${y}px;right:0;
-		background-color:${((this.curPhase == 1) || (this.curPhase == 100)) ? "#27ae60" : "#ccc"}">	
-		${(this.curPhase != 1) ? "NEXT ROUND" : "DEAL CARDS"}</div>
-		<div style="height:100%; width:100%">
-			<div class="lz-bs" id="lz-topbut" style="font-size:${fh}px;margin-top:30px;
-			background-color:${(this.curPhase == 0) ? "#27ae60" : "#ccc"}">START GAME!</div><br><br><br>`;		
+		let str=`<div class="lz-bs" id="lz-topbut" style="font-size:${fh}px;margin-top:30px;
+			background-color:${(this.curPhase == 0) ? "#27ae60" : "#ccc"}">
+			${(this.curPhase == 1) ? "DEAL CARDS" : "&nbsp;PLAY&nbsp;"}</div><br><br><br>`;		
 		str+=addItem(i++,"DISCUSS IF...")		 														// Add IF phase
-		str+=addItem(i++,"CHOOSE CARDS")																// DEAL
+		str+=addItem(i++,"PICK CARDS")																	// DEAL
 		for (j=0;j<this.players.length;++j)																// For player	
-			str+=addItem(i++,this.players[j].name+" TALKS");													// Add player's name
+			str+=addItem(i++,this.players[j].name+" TALKS");											// Add player's name
 		str+=addItem(i++,"VOTE")																		// VOTE
 		str+=addItem(i++,"DISCUSS")																		// DISCUSS
 		$("#lz-flowDiv").html(str);																		// Add flowchart
-		$("#lz-topbut").on("click", ()=>{ this.SetPhase(1); });											// ON TOP CLICK
-		$("#lz-botbut").on("click", ()=>{ 																// ON BOT BUT CLICK
-			if (this.curPhase == 1) this.SetPhase(2);													// If in DISCUSS IF..., deal cards
-			if (this.curPhase > 4+this.players.length)  this.SetPhase(1);								// If in DISCUSS, restart
-			});
+		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
+			if ((this.curPhase == 0) || (this.curPhase == 4+this.players.length))	this.SetPhase(1);	// New game	
+			else if (this.curPhase == 1) 											this.SetPhase(2);	// Deal
+			});										
 	
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
-			let col=(num == app.curPhase) ? "#27ae60" : "#ccc";											// Hilite curPhase
+			let col=(num == app.curPhase) ? "#ea7f1d" : "#ccc";											// Hilite curPhase
 			let s=`<p><div class="lz-bs" id="lz-phase-${num}" style="cursor:auto;font-size:${fh}px;background-color:${col}">${name.toUpperCase()}</div></p>`;
 			return s;																					// Return item markup
 			}

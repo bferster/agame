@@ -112,15 +112,15 @@ then,Chance,What_do_your students need_most?,Choose any adjustment or design you
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,,3,"2,3"
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,,4,"2,5"
 
-string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1.8""><li>Press the <b>START GAME</b> button to begin the game</li>
+string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1.8""><li>Press the <b style="color:#009900">PLAY</b> button to begin the game</li>
 <li>You will enter a Zoom-like video chat with the other three players</li>
-<li>Discuss it, and when you all are ready, press the <b>DEAL CARDS</b> button at the bottom</li>
-<li>Six cards will be shown to you. Pick the best three that will move the students forward</li>
+<li>Discuss it, and when you all are ready, a <b style="color:#009900">DEAL CARDS</b> button at the top</li>
+<li>When pressed, six cards will be shown to you. Pick the best three that will move the students forward</li>
 <li>The video chat will reappear, and each player will explain their choices to the other players</li>
 <li>The screen show the cards you have selected</li>
 <li>You will be asked to vote on the best player's solution</li>
 <li>After everyone has voted, the winner is shown and you can discuss it</li>
-<li>Press the <b>NEXT ROUND</b> button to play again, until the the 45 minute period is up</li></ol>
+<li>Press the <b style="color:#009900">PLAY</b> button to play another round, until the the 45 minute period is up</li></ol>
 <p><b><i>Tips</i></b></p>
 Anytime you see an hourglass, you have until the sand runs out before going to the next phase.<br>
 The clock on the right shows how many minutes left in the game"
