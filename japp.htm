@@ -17,7 +17,7 @@
 		roomName: v[0],
 		width: "100%",height:window.innerHeight,
 		interfaceConfigOverwrite:{ "TOOLBAR_BUTTONS": [
-        							'microphone', 'camera', 'desktop', 'fullscreen', 				 ],
+        							'microphone', 'camera', 'desktop','filmstrip', 'tileview' ],
 									"VIDEO_QUALITY_LABEL_DISABLED": true,
 									"SHOW_CHROME_EXTENSION_BANNER": false,
 									"DISABLE_JOIN_LEAVE_NOTIFICATIONS": true
@@ -30,11 +30,18 @@
 
 	options.interfaceConfigOverwrite["TOOLBAR_BUTTONS"].push("mute-everyone");
 	const api = new JitsiMeetExternalAPI(domain, options);
-	window.addEventListener("unload", ()=>{ api.dispose();	});
-	window.addEventListener("load",   ()=>{ api.executeCommand('displayName',v[1] ? v[1] : ""); 	});
+	window.addEventListener("unload", ()=>{ api.dispose(); });
+	window.addEventListener("load",   ()=>{ api.executeCommand('displayName',v[1] ? v[1] : "");
+	api.addListener("participantJoined", (o)=>{
+		api.executeCommand("toggleTileView",true);
+		if (o && (o.displayName.toLowerCase() == v[2])) 	api.pinParticipant(o.id);
+		});
+
+});
+    
 
 
-	//api.setLargeVideoParticipant(participantId);
+
 
 </script>
 </body>

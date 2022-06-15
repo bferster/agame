@@ -9,7 +9,7 @@
 		<script src="lib/papaparse.min.js"></script>
 	</head>
 	<style>
-		 body { 			font-family:Segoe UI,Verdana,Geneva,sans-serif; font-size:16px; box-sizing:border-box; 
+		 body { 			font-family:Segoe UI,Verdana,Geneva,sans-serif; font-size:14px; box-sizing:border-box; 
 							padding:0; margin:0; position:fixed; width:100%; 
 							}
 		.lz-splash { 		color:#999; text-align:center; margin-top:10%; display:none;
@@ -184,11 +184,12 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.DealCards();																			// Deal cards
 //			for (let i=0;i<6;++i)	if ($("[id^=lz-cardCheck-"+i+"]").prop("checked")) 
-			this.HourGlassTimer(10, ()=>{ this.SetPhase(3); Sound("ding"); this.VideoChat(); });		// Next phase
+			this.HourGlassTimer(10, ()=>{ this.SetPhase(3); Sound("ding"); });		// Next phase
 			}
 		else if ((phase > 2) && (phase < this.players.length+3)) {										// EXPLAIN
+			this.VideoChat(this.players[phase-3].name); 												// Open video with highlight
 			this.ShowCards(this.players[phase-3]);														// Show picked cards
-			this.HourGlassTimer(3, ()=>{ Sound("ding");	this.SetPhase(phase+1); });						// Next phase
+			this.HourGlassTimer(10, ()=>{ Sound("ding"); this.SetPhase(phase+1); });					// Next phase
 			}
 		else if (phase == this.players.length+3) {														// VOTE 
 			$("#lz-videoChat").remove(); 																// Remove old one
@@ -299,14 +300,14 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 		this.DrawClock(22);																				// Draw clock
 	}
 
-	VideoChat(pct=50)																				// OPEN VIDEO CHAT
+	VideoChat(focus="")																				// OPEN VIDEO CHAT
 	{
+		let pct=50
 		app.vidSize=pct;																				// Save width in case of resize
 		$("#lz-videoChat").remove(); 																	// Remove old one
-		
 		let hgt=$(window).height()*pct/100;																// Set height
 		let wid=hgt/.5625;																				// Width
-		let link="japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.players[this.curPlayer].name;	// Make link
+		let link="japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.players[this.curPlayer].name+"&"+focus.toLowerCase();	// Make link
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:174px;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
