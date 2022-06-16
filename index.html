@@ -155,10 +155,10 @@ class App  {
 					else if (d[i].type == "string")		this.strings[d[i].category]=d[i].title;			// Add string										
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					}
-				this.players.push({name:this.me,cards:[],picks:[]});										// Add me
+				this.players.push({name:this.me,cards:[],picks:[]});									// Add me
 this.players.push({name:"Sara",cards:[],picks:[]});								
-this.players.push({name:"Kim",cards:[],picks:[]});								
-this.players.push({name:"Sasha",cards:[],picks:[]});								
+this.players.push({name:"Rhonda",cards:[],picks:[]});								
+this.players.push({name:"Lily",cards:[],picks:[]});								
 				$("#lz-infieldDiv").html(this.strings["help"]);											// Start with help
 				this.Draw();																			// Draw screen
 			})
@@ -177,7 +177,7 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 			this.ifs.splice(r,1);																		// Remove it
 			$("#lz-infieldDiv").html("");																// Clear infield	
 			Sound("ding");																				// Ding
-			this.HourGlassTimer(10, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60");	});	// Hilite button							
+			this.HourGlassTimer(10, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
 			this.VideoChat();																			// Open video chat	
 			}
 		else if (phase == 2) {																			// DEAL 
@@ -198,13 +198,11 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 			}
 		else if (phase == this.players.length+4) {														// DISCUSS
 			this.VideoChat();																			// Open video chat	
+			$("#lz-hourGlass").remove();																// Remove old hourglass
 			this.ShowCards(this.players[phase-3]);														// Show picked cards
 			for (let i=0;i<5;++i)	this.stuPos[i]+=Math.floor(Math.random()*4)+1;						// Advance	
 			if (this.curTime < this.maxTime-5)															// If still time
-				this.HourGlassTimer(3, ()=>{ 															// Set hourglass
-					Sound("clicks");																	// Click		
-					$("#lz-topbut").css("background-color","#27ae60");									// Hilite top bot
-				});									
+				$("#lz-topbut").css("background-color","#27ae60");										// Hilite top bot
 			}
 		this.curPhase=phase;																			// Set phase
 		this.Draw();																					// Redraw
@@ -222,7 +220,7 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
 		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
 		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
-		str+=`<div style="position:absolute;top:0;left:${x+12}px;max-width:200px">${this.strings["pickHand"]}</div>`;
+		str+=`<div style="position:absolute;top:0;left:${x+12}px;font-size:16px;max-width:200px">${this.strings["pickHand"]}</div>`;
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add it
 		
 		$("[id^=lz-cardDiv-]").removeClass("lz-hover");
@@ -490,6 +488,50 @@ this.players.push({name:"Sasha",cards:[],picks:[]});
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// SOCKET SERVER 
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Game  {																					
+
+	constructor(id, numIfs=18, numThens=90)   														// CONSTRUCTOR
+	{
+		this.id=id;																						// Set ID
+		this.ifs=new Array(numIfs).fill(1);																// Ifs active array
+		this.thens=new Array(numThens).fill(1);															// Thens
+		this.curPhase=0;																				// Current phase
+		this.curIf="";																					// Current if
+		this.maxTime=45*60;																				// Max time in seconds
+		this.startTime=new Date();																		// Get time
+		this.players=[]																					// Holds player info
+		this.curLead=0;																					// Lead player
+		this.stuPos=[0,0,5,2,1];																		// Student track positions
+		this.Send("START",1)	
+	}
+
+	Recieve(message)																					// ON INCOMING MESSAGE
+	{
+		let v=message.split("|");																		// Get params
+		if (v[0] == "START")  {																			// Starrt button hit
+			}
+		if (v[0] == "DEAL")  {																			// Deal button hit
+			}
+		if (v[0] == "PICK")  {																			// Gather picked card
+			}
+		if (v[0] == "VOTE")  {																			// Gather voted cards
+			}
+	}
+
+	Send(op, val)																					// SEND MESSAGE + DATA TO PLAYERS
+	{
+		// START, DEAL, PHASE, END
+		let data={ curPhase:this.curPhase, curTime:this.curTime, curIf:this.curIf, stuPos:this.stuPos, players:this.players };
+		let msg=`${op}|${this.id}|${val}|${JSON.stringify(data)}`;	
+	}
+
+} // CLASS CLOSURE
+
+let g=new Game(1);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // HELPERS 
