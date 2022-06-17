@@ -81,7 +81,6 @@
 	var app=null;																					// Holds app
 	var isMobile=false;																				// Mobile?
 
-let test=0;
 
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
@@ -108,9 +107,9 @@ let test=0;
 	$(window).on("resize orientationchange", ()=>{                                       		 // ON WINDOW RESIZE
 		document.documentElement.style.setProperty("--maxvh", window.innerHeight+"px");				// Set CSS var for IOS 100vh isssue
 		app.Draw();																					// Redraw to fit screen
-		let hgt=$(window).width()*.5625*app.vidSize/100;											// Height
+		let hgt=$(window).width()*.5625*50/100;														// Height
 		let top=($(window).height()-hgt)/2;															// Top
-//		$("#lz-videoChat").css({width:app.vidSize+"%",height:hgt+"px",top:top+"px"});				// Resize video if open
+		$("#lz-videoChat").css({height:hgt+"px",top:top+"px"});										// Resize video if open
 		});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +132,7 @@ class App  {
 		this.thens=[];																					// Holds thens
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
-		this.vidSize=70;																				// Width of video screen
+		this.picks=[];																					// Cards picked
 		this.stuPos=[0,0,5,2,1];																		// Student track positions
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.gs={curIf:-1,curPhase:0,players:[],stuPos:[0,0,0,0,0]};									// Holds game state
@@ -179,10 +178,18 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		else if (phase == 2) {																			// DEAL 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.DealCards();																			// Deal cards
-//			for (let i=0;i<6;++i)	if ($("[id^=lz-cardCheck-"+i+"]").prop("checked")) 
 			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
 			}
 		else if ((phase > 2) && (phase < this.players.length+3)) {										// EXPLAIN
+			if (phase == 3) {
+				this.picks=[];																			// Reset picked cards
+				$("[id^=lz-cardCheck-]").each( function() {												// Fro each checkbox image	
+					if ($(this).prop("src").match(/checked/)) 											// If checked
+						if (app.picks.length < 3)														// Less than 3
+							app.picks.push(this.id.substring(13)-0);									// Add card's index
+					});	
+				this.ws.send("PICKS|"+app.sessionId+"|"+app.me+"|"+JSON.stringify(this.picks));			// Send to server
+				}
 			this.VideoChat(this.players[phase-3].name); 												// Open video with highlight
 			this.ShowCards(this.players[phase-3]);														// Show picked cards
 			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
@@ -193,12 +200,10 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
 			}
 		else if (phase == this.players.length+4) {														// DISCUSS
-			this.VideoChat();																			// Open video chat	
 			$("#lz-hourGlass").remove();																// Remove old hourglass
+			this.VideoChat();																			// Open video chat	
 			this.ShowCards(this.players[phase-3]);														// Show picked cards
 			for (let i=0;i<5;++i)	this.stuPos[i]+=Math.floor(Math.random()*4)+1;						// Advance	
-			if (this.curTime < this.maxTime-5)															// If still time
-				$("#lz-topbut").css("background-color","#27ae60");										// Hilite top bot
 			}
 		this.curPhase=phase;																			// Set phase
 		this.Draw();																					// Redraw
@@ -206,16 +211,16 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 
 	DealCards()																						// DEAL CARDS
 	{
-		let x=0,y=0;
-		let h=$("#lz-infieldDiv").height()/3;
-		let w=h*.75+12;
-		let i,str="";
-		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
-		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
-		str+=this.DrawCard(test,test++,x,y,1,h);	x=0;	y+=h+12;
-		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
-		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
-		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
+		let i,num,str="";
+		let x=0,y=0;																					// TLC
+		let h=$("#lz-infieldDiv").height()/3;															// Card height
+		let w=h*.75+12;																					// Width
+		for (i=0;i<6;++i) {																				// For each card
+			num=Math.floor(Math.random()*this.thens.length);											// Random index of thens
+			str+=this.DrawCard(num,i,x,y,1,h);															// Add it
+			x+=w;																						// Shift
+			if (i == 2) x=0,y+=h+12;																	// New line
+			}
 		str+=`<div style="position:absolute;top:0;left:${x+12}px;font-size:16px;max-width:200px">${this.strings["pickHand"]}</div>`;
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add it
 		
@@ -297,11 +302,10 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 	VideoChat(focus="")																				// OPEN VIDEO CHAT
 	{
 		let pct=50
-		app.vidSize=pct;																				// Save width in case of resize
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let hgt=$(window).height()*pct/100;																// Set height
 		let wid=hgt/.5625;																				// Width
-		let link="japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.players[this.curPlayer].name+"&"+focus.toLowerCase();	// Make link
+		let link="!japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.players[this.curPlayer].name+"&"+focus.toLowerCase();	// Make link
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:174px;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
@@ -382,7 +386,7 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		let str=`<div id="${"lz-cardDiv-"+id}" class="lz-card lz-hover" style="left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px">
 			<div style="grid-area:category;background-color:${cols[o.category]};font-size:${hgt/12.5}px;text-align:center;
 				padding:0 0 2px 0;border-bottom:1px solid #999"><b>${o.category}</b>`;
-			if (check)  str+=`<img id="${"lz-cardCheck-"+id}" src="img/check.png" style="float:left;height:2vh;margin:1vh 0 0 1vh;cursor:pointer">`;
+			if (check)  str+=`<img id="${"lz-cardCheck-"+num}" src="img/check.png" style="float:left;height:2vh;margin:1vh 0 0 1vh;cursor:pointer">`;
 			str+=`</div><div style="grid-area:title;padding:${pad}px;color:#999;font-size:${hgt/20}px"><b>${title.replace(/_/g," ")}</b></div>
 			<div style="grid-area:subtitle;padding:0 ${pad}px;text-align:center;color:#000;font-size:${hgt/24}px"><b>${o.subtitle}</b></div>
 			<div style="grid-area:desc;padding:0 ${pad}px;overflow:hidden;font-size:${hgt/26}px">${o.desc}</div>

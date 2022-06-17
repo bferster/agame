@@ -7,7 +7,7 @@
 	let webSocketServer;																		// Holds socket server	
 	let local=os.hostname().match(/^bill|desktop/i);											// Running on localhost?
 	let games=[];																				// Holds gmes
-
+	let timer=null;
 
 /* SOCKET SERVER  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -28,8 +28,8 @@ class Game  {
 	constructor(id, numIfs=18, numThens=90)   														// CONSTRUCTOR
 	{
 		this.id=id;																						// Set ID
-		this.ifs=new Array(numIfs).fill(1);																// Ifs active array
-		this.thens=new Array(numThens).fill(1);															// Thens
+		this.ifs=new Array(numIfs);																		// Ifs active array
+		this.thens=new Array(numThens);																	// Thens
 		this.curPhase=0;																				// Current phase
 		this.curIf=-1;																					// Current if
 		this.maxTime=45*60;																				// Max time in seconds
@@ -69,20 +69,27 @@ try{
 				}
 			let gs=games["g"+webSocket.meetingId];												// Point at game data
 			if (v[0] == "START") {																// START
+				if (timer) clearInterval(timer);												// Clear timer
 				gs.curPhase=1;																	// Set phase
 				gs.curIf=Math.floor(Math.random()*gs.ifs.length);								// Random number
 				gs.ifs.splice(gs.curIf,1);														// Remove it
 				}
 			else if (v[0] == "NEXT") {															// NEXT
 				gs.curPhase+=1;																	// Inc phase
-				let timer=setInterval(()=>{														// Set interval
+				timer=setInterval(()=>{															// Set interval
 					gs.curPhase+=1;																// Inc phase
 					if (gs.curPhase > gs.players.length+4) {									// Done
 						clearInterval(timer);													// Complete
-						return;																	// Quit
+						gs.curPhase=0;															// Reset
 						}
 					Broadcast(webSocket.meetingId, msg); 										// Trigger players
 					},10000);								
+				}
+			else if (v[0] == "PICKS") {															// PICKS
+				trace(JSON.parse(v[3]));	
+				// Add to gs
+				
+				message=v[0]+"|"+v[1]+"|"+v[2];													// Remove new data
 				}
 			Broadcast(webSocket.meetingId,message);												// Sent to all players
 			});
