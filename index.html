@@ -80,7 +80,6 @@
 
 	var app=null;																					// Holds app
 	var isMobile=false;																				// Mobile?
-	var noNode=true;																				// No node js?
 
 let test=0;
 
@@ -137,9 +136,8 @@ class App  {
 		this.vidSize=70;																				// Width of video screen
 		this.stuPos=[0,0,5,2,1];																		// Student track positions
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
-		this.curIf="";																					// Current if
+		this.gs={curIf:-1,curPhase:0,players:[],stuPos:[0,0,0,0,0]};									// Holds game state
 		this.curPhase=0;																				// Current phase
-		this.InitSocketServer();																		// Start socket server
 	}
 
 	LoadConfig()																					// LOAD CONFIG FILE
@@ -160,6 +158,7 @@ this.players.push({name:"Sara",cards:[],picks:[]});
 this.players.push({name:"Rhonda",cards:[],picks:[]});								
 this.players.push({name:"Lily",cards:[],picks:[]});								
 				$("#lz-infieldDiv").html(this.strings["help"]);											// Start with help
+				this.InitSocketServer();																// Start socket server
 				this.Draw();																			// Draw screen
 			})
 	}
@@ -169,12 +168,9 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 // ACT 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-	SetPhase(phase)																					// SET PHASE OF GAME
+	SetPhase(phase, data)																			// SET PHASE OF GAME
 	{
 		if (phase == 1) {																				// START 
-			let r=Math.floor(Math.random()*this.ifs.length);											// Random number
-			this.curIf=this.ifs[r];																		// Get an if
-			this.ifs.splice(r,1);																		// Remove it
 			$("#lz-infieldDiv").html("");																// Clear infield	
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(10, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
@@ -184,17 +180,17 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.DealCards();																			// Deal cards
 //			for (let i=0;i<6;++i)	if ($("[id^=lz-cardCheck-"+i+"]").prop("checked")) 
-			this.HourGlassTimer(10, ()=>{ this.SetPhase(3); Sound("ding"); });		// Next phase
+			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
 			}
 		else if ((phase > 2) && (phase < this.players.length+3)) {										// EXPLAIN
 			this.VideoChat(this.players[phase-3].name); 												// Open video with highlight
 			this.ShowCards(this.players[phase-3]);														// Show picked cards
-			this.HourGlassTimer(10, ()=>{ Sound("ding"); this.SetPhase(phase+1); });					// Next phase
+			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
 			}
 		else if (phase == this.players.length+3) {														// VOTE 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.Vote();
-			this.HourGlassTimer(10, ()=>{ Sound("ding"); this.SetPhase(phase+1); });					// Next phase
+			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
 			}
 		else if (phase == this.players.length+4) {														// DISCUSS
 			this.VideoChat();																			// Open video chat	
@@ -221,7 +217,7 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
 		str+=this.DrawCard(test,test++,x,y,1,h);	x+=w;	
 		str+=`<div style="position:absolute;top:0;left:${x+12}px;font-size:16px;max-width:200px">${this.strings["pickHand"]}</div>`;
-		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add it
+		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add it
 		
 		$("[id^=lz-cardDiv-]").removeClass("lz-hover");
 		$("[id^=lz-cardDiv-]").on("mousedown", function(e) { if (!e.target.id.match(/cardCheck/)) $(this).css({"transform":"scale(2)","z-index":100})});
@@ -292,7 +288,7 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 	{
 		let str=`<div style="display:inline-block;height:2.4vw;width:2.4vw;border-radius:100px;
 			background-color:#27ae60;color:#fff;text-align:center">IF</div> &nbsp;`;
-		$("#lz-ifDiv").html(this.curIf ? str+this.curIf : "");											// Show if
+		$("#lz-ifDiv").html(this.gs.curIf != -1 ? str+this.ifs[this.gs.curIf] : "");					// Show if
 		this.DrawTrack(this.stuPos);																	// Draw track
 		this.DrawFlow();																				// Draw phase flow chart
 		this.DrawClock(22);																				// Draw clock
@@ -363,8 +359,8 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		str+=addItem(i++,"DISCUSS")																		// DISCUSS
 		$("#lz-flowDiv").html(str);																		// Add flowchart
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if ((this.curPhase == 0) || (this.curPhase == 4+this.players.length))	this.SetPhase(1);	// New game	
-			else if (this.curPhase == 1) 											this.SetPhase(2);	// Deal
+			if ((this.curPhase == 0) || (this.curPhase == 4+this.players.length))	this.ws.send("START|"+app.sessionId+"|"+app.me);	// New game	
+			else if (this.curPhase == 1) 											this.ws.send("NEXT|"+app.sessionId+"|"+app.me);		// Deal
 			});										
 	
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
@@ -446,11 +442,6 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 
 	InitSocketServer()																				// INIT SOCKET SERVER
 	{
-		if (noNode) {																					// If no nodeJs backend
-			this.ws={};																					// Fake socket
-			this.ws.send=(msg)=> { this.SocketIn({data:msg});	}										// Send calls socketIn
-			return;																						// Quit
-			}
 		this.secs=0;																					// Time
 		this.retryWS=false;																				// Reconnecting to web socket
 		if (window.location.host == "localhost") this.ws=new WebSocket('ws://'+window.location.host+':8080');	// Open insecure websocket											
@@ -460,7 +451,7 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		this.ws.onerror=(e)=>  { console.log('error',e);	};											// ON ERROR
 		this.ws.onopen=()=> { 																			// ON OPEN
 			console.log('connected'); 																	// Show connected
-			this.ws.send(this.sessionId+"|"+this.activityId+"|"+this.userId+"|INIT");					// Init																	
+			this.ws.send("INIT|"+this.sessionId+"|"+this.me);											// Init																	
 			this.pollTimer= window.setInterval( ()=>{													// INIT POLLING SERVER
 			++this.secs;																				// Another second 
 			if (this.retryWS) {																			// If reconnecting to websocket
@@ -480,58 +471,14 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		let o;
 		if (!event.data)			 return;															// Quit if no data
 		let v=event.data.split("|");																	// Get params
-		if (v[0] != this.sessionId)	return;																// Quit if wrong session
-		if (v[3] == "VIDEO")  	{ if (!$("#lz-videoChat").length) this.VideoChat();	}					// VIDEO
+		trace(v)
+		if (v[1] != this.sessionId)	return;																// Quit if wrong session
+		this.gs=JSON.parse(v[3]);																		// Get game state
+		if (v[0] == "START") 		this.SetPhase(1);													// START
+		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 	}
 
 } // CLASS CLOSURE
-
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// SOCKET SERVER 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-
-class Game  {																					
-
-	constructor(id, numIfs=18, numThens=90)   														// CONSTRUCTOR
-	{
-		this.id=id;																						// Set ID
-		this.ifs=new Array(numIfs).fill(1);																// Ifs active array
-		this.thens=new Array(numThens).fill(1);															// Thens
-		this.curPhase=0;																				// Current phase
-		this.curIf="";																					// Current if
-		this.maxTime=45*60;																				// Max time in seconds
-		this.startTime=new Date();																		// Get time
-		this.players=[]																					// Holds player info
-		this.curLead=0;																					// Lead player
-		this.stuPos=[0,0,5,2,1];																		// Student track positions
-		this.Send("START",1)	
-	}
-
-	Recieve(message)																					// ON INCOMING MESSAGE
-	{
-		let v=message.split("|");																		// Get params
-		if (v[0] == "START")  {																			// Starrt button hit
-			}
-		if (v[0] == "DEAL")  {																			// Deal button hit
-			}
-		if (v[0] == "PICK")  {																			// Gather picked card
-			}
-		if (v[0] == "VOTE")  {																			// Gather voted cards
-			}
-	}
-
-	Send(op, val)																					// SEND MESSAGE + DATA TO PLAYERS
-	{
-		// START, DEAL, PHASE, END
-		let data={ curPhase:this.curPhase, curTime:this.curTime, curIf:this.curIf, stuPos:this.stuPos, players:this.players };
-		let msg=`${op}|${this.id}|${val}|${JSON.stringify(data)}`;	
-	}
-
-} // CLASS CLOSURE
-
-let g=new Game(1);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // HELPERS 
