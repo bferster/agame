@@ -30,15 +30,22 @@ class Game  {
 		this.id=id;																						// Set ID
 		this.ifs=new Array(numIfs);																		// Ifs active array
 		this.thens=new Array(numThens);																	// Thens
-		this.curPhase=0;																				// Current phase
-		this.curIf=-1;																					// Current if
 		this.maxTime=45*60;																				// Max time in seconds
-		this.startTime=new Date();																		// Get time
-		this.players=[{name:"Bill",cards:[],picks:[]},{name:"Sara",cards:[],picks:[]},{name:"Rhonda",cards:[],picks:[]},{name:"Lily",cards:[],picks:[]}]																					// Holds player info
-		this.curLead=0;																					// Lead player
+		this.startTime=new Date().getTime()/1000;														// Get start time in seconds
+		this.players=[{name:"Bill",picks:[]},{name:"Sara",picks:[22,66,12]},{name:"Rhonda",picks:[33,25,8]},{name:"Lily",picks:[45]},]																					// Holds player info
 		this.stuPos=[0,0,5,2,1];																		// Student track positions
+		this.curPhase=0;																				// Phase
+		this.curIf=-1;																					// No if condition yet
+		this.winner=-1;																					// No winner yet
 	}
 
+	PlayerIndex(name)																				// GET PLAYER''S INDEX FROM NAME
+	{
+		let i;
+		for (i=0;i<this.players.length;++i)																// For each player
+			if (name == this.players[i].name)	return i;												// Return match
+		return -1;																						// No match
+	}
 
 } // CLASS CLOSURE
 
@@ -61,11 +68,13 @@ try{
 		webSocket.on('message', (msg) => {														// ON MESSAGE
 			if (!msg)	return;																	// Quit if no message
 			message=msg.toString();																// Get as string
-			trace('In:', message.substr(0,128));												// Log
+			trace('In:', message);																// Log
 			let v=message.split("|");															// Get params
 			if (v[0] == "INIT") {																// INIT
 				webSocket.meetingId=v[1];														// Set meeting id
 				if (!games["g"+1]) games["g"+1]=new Game(1),trace("New game");					// Alloc new game
+				games["g"+webSocket.meetingId].curPhase=0
+				Broadcast(webSocket.meetingId,message);											// Send to all players
 				}
 			let gs=games["g"+webSocket.meetingId];												// Point at game data
 			if (v[0] == "START") {																// START
@@ -73,26 +82,38 @@ try{
 				gs.curPhase=1;																	// Set phase
 				gs.curIf=Math.floor(Math.random()*gs.ifs.length);								// Random number
 				gs.ifs.splice(gs.curIf,1);														// Remove it
+				Broadcast(webSocket.meetingId,message);											// Send to all players
 				}
 			else if (v[0] == "NEXT") {															// NEXT
-				gs.curPhase+=1;																	// Inc phase
+				gs.curPhase+=1;																	// Inc phase to deal
+				Broadcast(webSocket.meetingId,message);											// Send to all players to deal
+				clearInterval(timer);															// Clear
 				timer=setInterval(()=>{															// Set interval
 					gs.curPhase+=1;																// Inc phase
-					if (gs.curPhase > gs.players.length+4) {									// Done
+					if (gs.curPhase > gs.players.length+3) {									// Done
 						clearInterval(timer);													// Complete
-						gs.curPhase=0;															// Reset
 						}
-					Broadcast(webSocket.meetingId, msg); 										// Trigger players
-					},10000);								
+				if ((gs.curPhase != 2) && (gs.curPhase != gs.players.length+4))					// Not dealing or voting
+					Broadcast(webSocket.meetingId,message);										// Send to all players
+					},10000);	
 				}
 			else if (v[0] == "PICKS") {															// PICKS
-				trace(JSON.parse(v[3]));	
-				// Add to gs
-				
-				message=v[0]+"|"+v[1]+"|"+v[2];													// Remove new data
+				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
+				if (pdex != -1)	gs.players[pdex].picks=JSON.parse(v[3]);						// Record their picks
+				message="NEXT|"+v[1]+"|"+v[2];													// Remove new data
+				Broadcast(webSocket.meetingId, message); 										// Trigger players
 				}
-			Broadcast(webSocket.meetingId,message);												// Sent to all players
-			});
+			else if (v[0] == "WINNER") {														// WINNER
+				gs.winner=v[3];																	// Record the winner
+				message="NEXT|"+v[1]+"|"+v[2];													// Remove new data
+				Broadcast(webSocket.meetingId, message); 										// Trigger players
+				}
+			else if (v[0] == "STUDENTS") {														// STUDENTS
+				gs.stuPos=JSON.parse(v[3])														// Record student progress
+				message="STUDENTS|"+v[1]+"|"+v[2];												// Remove new data
+				Broadcast(webSocket.meetingId, message); 										// Trigger players
+				}
+				});
 		});
 } catch(e) { console.log(e) }
 	
@@ -100,13 +121,13 @@ function Broadcast(meetingId, msg)															// BROADCAST DATA TO ALL CLIENT
 {
 	try{
 		let o=games["g"+meetingId];																// Point at game data
-		let data={ curPhase:o.curPhase, curTime:d=o.startTime, curIf:o.curIf, stuPos:o.stuPos, players:o.players };
+		let data={ curPhase:o.curPhase, curIf:o.curIf, stuPos:o.stuPos, players:o.players, winner:o.winner };
 		msg+=`|${JSON.stringify(data)}`;														// Add data
 		webSocketServer.clients.forEach((client)=>{												// For each client
 			if (client.meetingId == meetingId) 													// In this meeting
 				if (client.readyState === WebSocket.OPEN) client.send(msg);						// Send to client
 			});
-		trace("Broadcast",msg.substr(0,128));													// Log truncated message												
+		trace("Broadcast",msg);																	// Show sent											
 	} catch(e) { console.log(e) }
 }
 
@@ -115,17 +136,17 @@ function Broadcast(meetingId, msg)															// BROADCAST DATA TO ALL CLIENT
 // HELPERS 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-function trace(msg, p1, p2, p3, p4)																// CONSOLE 
-{
-	if (p4 != undefined)
-		console.log(msg,p1,p2,p3,p4);
-	else if (p3 != undefined)
-		console.log(msg,p1,p2,p3);
-	else if (p2 != undefined)
-		console.log(msg,p1,p2);
-	else if (p1 != undefined)
-		console.log(msg,p1);
-	else
-		console.log(msg);
-}
+	function trace(msg, p1, p2, p3, p4)																// CONSOLE 
+	{
+		if (p4 != undefined)
+			console.log(msg,p1,p2,p3,p4);
+		else if (p3 != undefined)
+			console.log(msg,p1,p2,p3);
+		else if (p2 != undefined)
+			console.log(msg,p1,p2);
+		else if (p1 != undefined)
+			console.log(msg,p1);
+		else
+			console.log(msg);
+	}
 

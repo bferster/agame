@@ -124,19 +124,13 @@ class App  {
 		this.me="Bill";
 		this.sessionId="1";																				// Session id
 		this.curPlayer=0;																				// Player id
-		this.curTime=0;																					// Current time in minutes												
-		this.maxTime=45;																				// Max time in minutes												
 		this.glassTimer=null;																			// Hourglass timer
+		this.gs={};																						// Holds game state
 		this.ifs=[];																					// Holds ifs
-		this.players=[];																				// Game players
 		this.thens=[];																					// Holds thens
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
-		this.picks=[];																					// Cards picked
-		this.stuPos=[0,0,5,2,1];																		// Student track positions
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
-		this.gs={curIf:-1,curPhase:0,players:[],stuPos:[0,0,0,0,0]};									// Holds game state
-		this.curPhase=0;																				// Current phase
 	}
 
 	LoadConfig()																					// LOAD CONFIG FILE
@@ -152,10 +146,6 @@ class App  {
 					else if (d[i].type == "string")		this.strings[d[i].category]=d[i].title;			// Add string										
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					}
-				this.players.push({name:this.me,cards:[],picks:[]});									// Add me
-this.players.push({name:"Sara",cards:[],picks:[]});								
-this.players.push({name:"Rhonda",cards:[],picks:[]});								
-this.players.push({name:"Lily",cards:[],picks:[]});								
 				$("#lz-infieldDiv").html(this.strings["help"]);											// Start with help
 				this.InitSocketServer();																// Start socket server
 				this.Draw();																			// Draw screen
@@ -178,34 +168,43 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		else if (phase == 2) {																			// DEAL 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.DealCards();																			// Deal cards
-			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
-			}
-		else if ((phase > 2) && (phase < this.players.length+3)) {										// EXPLAIN
-			if (phase == 3) {
-				this.picks=[];																			// Reset picked cards
+			this.HourGlassTimer(10, ()=>{ 																// Time's up
+				Sound("ding"); 																			// Ding
+				let picks=[];																			// Reset picked cards
 				$("[id^=lz-cardCheck-]").each( function() {												// Fro each checkbox image	
 					if ($(this).prop("src").match(/checked/)) 											// If checked
-						if (app.picks.length < 3)														// Less than 3
-							app.picks.push(this.id.substring(13)-0);									// Add card's index
-					});	
-				this.ws.send("PICKS|"+app.sessionId+"|"+app.me+"|"+JSON.stringify(this.picks));			// Send to server
-				}
-			this.VideoChat(this.players[phase-3].name); 												// Open video with highlight
-			this.ShowCards(this.players[phase-3]);														// Show picked cards
+						if (picks.length < 3)															// Less than 3
+							picks.push(this.id.substring(13)-0);										// Add card's index
+					});		
+				this.ws.send("PICKS|"+app.sessionId+"|"+app.me+"|"+JSON.stringify(picks));				// Send picked cards to server
+				});										
+			}
+		else if ((phase > 2) && (phase < this.gs.players.length+3)) {									// EXPLAIN
+			this.VideoChat(this.gs.players[phase-3].name); 												// Open video with highlight
+			this.ShowCards(this.gs.players[phase-3].picks);												// Show picked cards
 			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
 			}
-		else if (phase == this.players.length+3) {														// VOTE 
+		else if (phase == this.gs.players.length+3) {													// VOTE 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.Vote();
-			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
+			this.HourGlassTimer(10, ()=>{ 
+				Sound("ding"); 																			// Ding
+				$("[id^=lz-voteCheck-]").each( function() {												// For each checkbox image	
+					if ($(this).prop("src").match(/checked/)) 											// If checked
+						app.gs.winner=this.id.substring(13)-0;											// Get winner
+					});		
+				this.ws.send("WINNER|"+app.sessionId+"|"+app.me+"|"+app.gs.winner);					// Send winner to server
+				});
 			}
-		else if (phase == this.players.length+4) {														// DISCUSS
+		else if (phase == this.gs.players.length+4) {													// DISCUSS
 			$("#lz-hourGlass").remove();																// Remove old hourglass
 			this.VideoChat();																			// Open video chat	
-			this.ShowCards(this.players[phase-3]);														// Show picked cards
-			for (let i=0;i<5;++i)	this.stuPos[i]+=Math.floor(Math.random()*4)+1;						// Advance	
+			if (this.gs.winner != -1)
+				this.ShowCards(this.gs.players[this.gs.winner].picks);									// Show picked cards
+			for (let i=0;i<5;++i)	this.gs.stuPos[i]+=Math.floor(Math.random()*4)+1;					// Advance	
+			this.ws.send("STUDENTS|"+app.sessionId+"|"+app.me+"|"+JSON.stringify(this.gs.stuPos));		// Send students to server
+			this.HourGlassTimer(10, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
 			}
-		this.curPhase=phase;																			// Set phase
 		this.Draw();																					// Redraw
 	}
 
@@ -233,40 +232,38 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 			});	
 	}
 
-	ShowCards(player)																				// SHOW PICKED CARDS
+	ShowCards(cards)																			// SHOW PICKED CARDS
 	{
-		let y=0,x=$(window).height()/2/.5625+12;
-		let h=$(window).height()/2/3-8;
-		let num=Math.floor(Math.random()*this.thens.length);										// Random number
-		let str=this.DrawCard(num,0,x,y,0,h);	
-		num=Math.floor(Math.random()*this.thens.length);											// Random number
-		str+=this.DrawCard(num,1,x,y+=h+8,0,h);
-		num=Math.floor(Math.random()*this.thens.length);											// Random number
-		str+=this.DrawCard(num,2,x,y+=h+8,0,h);
+		let i,y=0,str="";
+		let x=$(window).height()/2/.5625+12;														// Left
+		let h=$(window).height()/2/3-10;															// Card height
+		for (i=0;i<cards.length;++i) {																// For each pick																
+			str+=this.DrawCard(cards[i],0,x,y,0,h);													// Add card
+			y+=h+12;
+			}
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add cards
 	}
 
 	Vote()																						// VOTE
 	{
-		let i,j,n,x=0,y=0,str="";
+		let i,j,o,x=0,y=0,str="";
 		let h=$(window).height()/2/4;																// Card height
 		let w=h*.75+8;																				// Width
-		for (i=0;i<this.players.length;++i) {														// For each player
+		for (i=0;i<this.gs.players.length;++i) {													// For each player
 			x=0;																					// Reset x
-			for (j=0;j<Math.max(1,Math.floor(Math.random()*4));++j)	{								// For each card chosen
-				n=Math.floor(Math.random()*this.thens.length);										// Random number
-				str+=this.DrawCard(n,(i*4)+j,x,y,0,h);												// Draw it
+			o=this.gs.players[i].picks;																// Point at picks
+			for (j=0;j<o.length;++j) {																// For each card picked
+				str+=this.DrawCard(o[j],(i*4)+j,x,y,0,h);											// Draw it
 				x+=w;																				// Shift over
 				}
 			str+=`<div style="position:absolute;left:${x+12}px;top:${y+h/2-8}px">
-			<b>Choose ${this.players[i].name.toUpperCase()}'s card set</b> &nbsp; 
+			<b>Choose ${this.gs.players[i].name.toUpperCase()}'s card set</b> &nbsp; 
 			<img id="${"lz-voteCheck-"+i}" src="img/check.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
 			y+=h+16;																				// Next row
 			}
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));										// Add cards
 		
 		$("[id^=lz-voteCheck-]").on("click", function() {											// ON CHECKBOX CLICK 
-//			app.players[app.curPlayer].picks=		
 			$("[id^=lz-voteCheck-]").prop("src","img/check.png" );									// Turn all off
 			$(this).prop("src", "img/checked.png");													// Highlight
 			Sound("click");
@@ -276,10 +273,10 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 	HourGlassTimer(time, callback)																	// RUN HOURGLASS TIMER
 	{
 		this.glassTime=0;																				// Init seconds counter
-		if (this.glassTimer) window.clearInterval(this.glassTimer);										// Stop timer
+		window.clearInterval(this.glassTimer);															// Stop timer
 		this.glassTimer=window.setInterval( ()=>{														// Start seconds timer
 			this.DrawHourGlass(this.glassTime/time/16);													// Draw hourglass
-			if (this.glassTime++ > time*16) {															// Time's up
+			if (this.glassTime++ >= time*16) {															// Time's up
 				window.clearInterval(this.glassTimer);													// Stop timer
 				if (callback) callback();																// Run callback
 				}
@@ -294,7 +291,7 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		let str=`<div style="display:inline-block;height:2.4vw;width:2.4vw;border-radius:100px;
 			background-color:#27ae60;color:#fff;text-align:center">IF</div> &nbsp;`;
 		$("#lz-ifDiv").html(this.gs.curIf != -1 ? str+this.ifs[this.gs.curIf] : "");					// Show if
-		this.DrawTrack(this.stuPos);																	// Draw track
+		this.DrawTrack(this.gs.stuPos);																	// Draw track
 		this.DrawFlow();																				// Draw phase flow chart
 		this.DrawClock(22);																				// Draw clock
 	}
@@ -305,7 +302,7 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let hgt=$(window).height()*pct/100;																// Set height
 		let wid=hgt/.5625;																				// Width
-		let link="!japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.players[this.curPlayer].name+"&"+focus.toLowerCase();	// Make link
+		let link="!japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.me+"&"+focus.toLowerCase();	// Make link
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:174px;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
@@ -327,7 +324,8 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		str+=`<text x="${w/2+left-8}" y="${$(window).height()-24-bh}" letter-spacing="8" text-anchor="middle" fill="#666" font-size="${fs}">LIBERATING</text>`;						
 
 		for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,"#cccccc", 10);								// Gray base
-		for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,this.stuCols[i],this.stuPos[i]);			// Colored rings
+		if (this.gs.stuPos)																				// If loaded
+			for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,this.stuCols[i],this.gs.stuPos[i] );	// Colored rings
 		$("#lz-trackSVG").html(str);																	// Set SVG
 		
 		function drawBand(num, col, step) {																// DRAW STUDENT BAND
@@ -353,22 +351,23 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		let fh=Math.max($(window).width()/120,11);
 		let y=$(window).height()-59;
 		let str=`<div class="lz-bs" id="lz-topbut" style="font-size:${fh}px;margin-top:30px;
-			background-color:${(this.curPhase == 0) ? "#27ae60" : "#ccc"}">
-			${(this.curPhase == 1) ? "DEAL CARDS" : "&nbsp;PLAY&nbsp;"}</div><br><br><br>`;		
+			background-color:${(this.gs.curPhase == 0) ? "#27ae60" : "#ccc"}">
+			${(this.gs.curPhase == 1) ? "DEAL CARDS" : "&nbsp;PLAY&nbsp;"}</div><br><br><br>`;		
 		str+=addItem(i++,"DISCUSS IF...")		 														// Add IF phase
 		str+=addItem(i++,"PICK CARDS")																	// DEAL
-		for (j=0;j<this.players.length;++j)																// For player	
-			str+=addItem(i++,this.players[j].name+" TALKS");											// Add player's name
+		if (this.gs.players)
+		for (j=0;j<this.gs.players.length;++j)															// For each player	
+			str+=addItem(i++,this.gs.players[j].name+" TALKS");											// Add player's name
 		str+=addItem(i++,"VOTE")																		// VOTE
 		str+=addItem(i++,"DISCUSS")																		// DISCUSS
 		$("#lz-flowDiv").html(str);																		// Add flowchart
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if ((this.curPhase == 0) || (this.curPhase == 4+this.players.length))	this.ws.send("START|"+app.sessionId+"|"+app.me);	// New game	
-			else if (this.curPhase == 1) 											this.ws.send("NEXT|"+app.sessionId+"|"+app.me);		// Deal
+			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.sessionId+"|"+app.me);	// New game	
+			else if (this.gs.curPhase == 1) 												this.ws.send("NEXT|"+app.sessionId+"|"+app.me);		// Deal
 			});										
 	
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
-			let col=(num == app.curPhase) ? "#ea7f1d" : "#ccc";											// Hilite curPhase
+			let col=(num == app.gs.curPhase) ? "#ea7f1d" : "#ccc";										// Hilite curPhase
 			let s=`<p><div class="lz-bs" id="lz-phase-${num}" style="cursor:auto;font-size:${fh}px;background-color:${col}">${name.toUpperCase()}</div></p>`;
 			return s;																					// Return item markup
 			}
@@ -475,10 +474,11 @@ this.players.push({name:"Lily",cards:[],picks:[]});
 		let o;
 		if (!event.data)			 return;															// Quit if no data
 		let v=event.data.split("|");																	// Get params
-		trace(v)
+		trace(event.data);
 		if (v[1] != this.sessionId)	return;																// Quit if wrong session
 		this.gs=JSON.parse(v[3]);																		// Get game state
-		if (v[0] == "START") 		this.SetPhase(1);													// START
+		if (v[0] == "INIT") 		this.Draw();														// INIT
+		else if (v[0] == "START") 	this.SetPhase(1);													// START
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 	}
 
