@@ -57,7 +57,7 @@ class Game  {
 		webSocketServer= new WebSocket.Server({ server });										// Open it
 		server.listen(8080);																	// Listen on port 8080
 		}
-	else webSocketServer = new WebSocket.Server({ port:8080 });									// Open in debug
+	else webSocketServer = new WebSocket.Server({ port:8085 });									// Open in debug
 
 try{
 	webSocketServer.on('connection', (webSocket, req) => {										// ON CONNECTION
