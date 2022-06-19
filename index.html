@@ -62,7 +62,7 @@
 			<div id="lz-flowDiv" class="lz-flow"></div>
 			<div id="lz-ifDiv" class="lz-if"></div>
 			<div id="lz-infieldDiv" class="lz-infield"></div>
-			<img src="img/smlogo.png" style="position:absolute;right:calc(88.5% - 12px);bottom:20px;width:60px">
+			<img src="img/smlogo.png" style="position:absolute;right:24px;top:18px;width:68px">
 		</div>
 			<div id="splashDiv" class="lz-splash">
 			<img src="img/ACTlogo.png" style='width:200px' alt="logo"><br>
@@ -302,7 +302,7 @@ class App  {
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let hgt=$(window).height()*pct/100;																// Set height
 		let wid=hgt/.5625;																				// Width
-		let link="!japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.me+"&"+focus.toLowerCase();	// Make link
+		let link="japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.me+"&"+focus.toLowerCase();	// Make link
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:174px;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
@@ -360,7 +360,14 @@ class App  {
 			str+=addItem(i++,this.gs.players[j].name+" TALKS");											// Add player's name
 		str+=addItem(i++,"VOTE")																		// VOTE
 		str+=addItem(i++,"DISCUSS")																		// DISCUSS
+		str+=`<div style="position:absolute;left:24px;bottom:24px; width:calc(12.5vw - 28px);text-align:right">
+			<img id="lz-Speed-0" src="img/slow.png" title="Slow">
+			<img id="lz-Speed-1"  src="img/medium.png" title="Medium">
+			<img id="lz-Speed-2"  src="img/fast.png" title="Fast">
+			</div>`;
 		$("#lz-flowDiv").html(str);																		// Add flowchart
+		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
+		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.sessionId+"|"+app.me);	// New game	
 			else if (this.gs.curPhase == 1) 												this.ws.send("NEXT|"+app.sessionId+"|"+app.me);		// Deal

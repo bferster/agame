@@ -37,6 +37,7 @@ class Game  {
 		this.curPhase=0;																				// Phase
 		this.curIf=-1;																					// No if condition yet
 		this.winner=-1;																					// No winner yet
+		this.curSpeed=0;
 	}
 
 	PlayerIndex(name)																				// GET PLAYER''S INDEX FROM NAME
@@ -121,7 +122,7 @@ function Broadcast(meetingId, msg)															// BROADCAST DATA TO ALL CLIENT
 {
 	try{
 		let o=games["g"+meetingId];																// Point at game data
-		let data={ curPhase:o.curPhase, curIf:o.curIf, stuPos:o.stuPos, players:o.players, winner:o.winner };
+		let data={ curPhase:o.curPhase, curIf:o.curIf, stuPos:o.stuPos, players:o.players, winner:o.winner, curSpeed:o.curSpeed };
 		msg+=`|${JSON.stringify(data)}`;														// Add data
 		webSocketServer.clients.forEach((client)=>{												// For each client
 			if (client.meetingId == meetingId) 													// In this meeting
