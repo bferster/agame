@@ -122,7 +122,6 @@ class App  {
 	{
 		app=this;
 		this.me="Bill";
-		this.sessionId="1";																				// Session id
 		this.curPlayer=0;																				// Player id
 		this.glassTimer=null;																			// Hourglass timer
 		this.gs={};																						// Holds game state
@@ -131,6 +130,9 @@ class App  {
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
+		this.uniqueId=""+Math.floor(Math.random()*10000);												// Random number
+		this.time=2;																					// Time
+		this.speed=1;																					// Speed = 3 2 1
 	}
 
 	LoadConfig()																					// LOAD CONFIG FILE
@@ -157,18 +159,18 @@ class App  {
 // ACT 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-	SetPhase(phase, data)																			// SET PHASE OF GAME
+	SetPhase(phase)																					// SET PHASE OF GAME
 	{
 		if (phase == 1) {																				// START 
 			$("#lz-infieldDiv").html("");																// Clear infield	
 			Sound("ding");																				// Ding
-			this.HourGlassTimer(10, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
+			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
 			this.VideoChat();																			// Open video chat	
 			}
 		else if (phase == 2) {																			// DEAL 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.DealCards();																			// Deal cards
-			this.HourGlassTimer(10, ()=>{ 																// Time's up
+			this.HourGlassTimer(this.time*this.speed, ()=>{ 											// Time's up
 				Sound("ding"); 																			// Ding
 				let picks=[];																			// Reset picked cards
 				$("[id^=lz-cardCheck-]").each( function() {												// Fro each checkbox image	
@@ -176,24 +178,24 @@ class App  {
 						if (picks.length < 3)															// Less than 3
 							picks.push(this.id.substring(13)-0);										// Add card's index
 					});		
-				this.ws.send("PICKS|"+app.sessionId+"|"+app.me+"|"+JSON.stringify(picks));				// Send picked cards to server
+				this.ws.send("PICKS|"+app.gs.gameId+"|"+app.me+"|"+JSON.stringify(picks));				// Send picked cards to server
 				});										
 			}
 		else if ((phase > 2) && (phase < this.gs.players.length+3)) {									// EXPLAIN
 			this.VideoChat(this.gs.players[phase-3].name); 												// Open video with highlight
 			this.ShowCards(this.gs.players[phase-3].picks);												// Show picked cards
-			this.HourGlassTimer(10, ()=>{ Sound("ding"); });											// Done
+			this.HourGlassTimer(this.time, ()=>{ Sound("ding"); });										// Done
 			}
 		else if (phase == this.gs.players.length+3) {													// VOTE 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.Vote();
-			this.HourGlassTimer(10, ()=>{ 
+			this.HourGlassTimer(this.time*this.speed, ()=>{ 											// Hourglass
 				Sound("ding"); 																			// Ding
 				$("[id^=lz-voteCheck-]").each( function() {												// For each checkbox image	
 					if ($(this).prop("src").match(/checked/)) 											// If checked
 						app.gs.winner=this.id.substring(13)-0;											// Get winner
 					});		
-				this.ws.send("WINNER|"+app.sessionId+"|"+app.me+"|"+app.gs.winner);					// Send winner to server
+				this.ws.send("WINNER|"+app.gs.gameId+"|"+app.me+"|"+app.gs.winner);						// Send winner to server
 				});
 			}
 		else if (phase == this.gs.players.length+4) {													// DISCUSS
@@ -202,10 +204,18 @@ class App  {
 			if (this.gs.winner != -1)
 				this.ShowCards(this.gs.players[this.gs.winner].picks);									// Show picked cards
 			for (let i=0;i<5;++i)	this.gs.stuPos[i]+=Math.floor(Math.random()*4)+1;					// Advance	
-			this.ws.send("STUDENTS|"+app.sessionId+"|"+app.me+"|"+JSON.stringify(this.gs.stuPos));		// Send students to server
-			this.HourGlassTimer(10, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
+			this.ws.send("STUDENTS|"+app.gs.gameId+"|"+app.me+"|"+JSON.stringify(this.gs.stuPos));		// Send students to server
+			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
 			}
 		this.Draw();																					// Redraw
+		if (phase == 100) {																				// OVER 
+			window.clearInterval(this.glassTimer);														// Stop timer
+			$("#lz-videoChat").remove(); 																// Remove video
+			$("#lz-hourGlass").remove();																// Remove hourglass
+			$("#lz-infieldDiv").html(`<div style="position:absolute;width:100%;top:25%;text-align:center;font-size:10vw;color:#27ae60"><b>GAME OVER!</b></div>`);
+			$("#lz-ifDiv").html("");																	// Clear If
+			Sound("ding");																				// Ding sound
+			}
 	}
 
 	DealCards()																						// DEAL CARDS
@@ -222,7 +232,6 @@ class App  {
 			}
 		str+=`<div style="position:absolute;top:0;left:${x+12}px;font-size:16px;max-width:200px">${this.strings["pickHand"]}</div>`;
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add it
-		
 		$("[id^=lz-cardDiv-]").removeClass("lz-hover");
 		$("[id^=lz-cardDiv-]").on("mousedown", function(e) { if (!e.target.id.match(/cardCheck/)) $(this).css({"transform":"scale(2)","z-index":100})});
 		$("[id^=lz-cardDiv-]").on("mouseup",  function() { $(this).css({"transform":"scale(1)","z-index":1})});
@@ -293,7 +302,7 @@ class App  {
 		$("#lz-ifDiv").html(this.gs.curIf != -1 ? str+this.ifs[this.gs.curIf] : "");					// Show if
 		this.DrawTrack(this.gs.stuPos);																	// Draw track
 		this.DrawFlow();																				// Draw phase flow chart
-		this.DrawClock(22);																				// Draw clock
+		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
 	}
 
 	VideoChat(focus="")																				// OPEN VIDEO CHAT
@@ -302,7 +311,7 @@ class App  {
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let hgt=$(window).height()*pct/100;																// Set height
 		let wid=hgt/.5625;																				// Width
-		let link="japp.htm?AgileGameChat~Session~"+app.sessionId+"&"+this.me+"&"+focus.toLowerCase();	// Make link
+		let link="!japp.htm?AgileGameChat~Session~"+app.gs.gameId+"&"+this.me+"&"+focus.toLowerCase();	// Make link
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:174px;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
@@ -369,8 +378,8 @@ class App  {
 		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
 		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.sessionId+"|"+app.me);	// New game	
-			else if (this.gs.curPhase == 1) 												this.ws.send("NEXT|"+app.sessionId+"|"+app.me);		// Deal
+			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.me);	// New game	
+			else if (this.gs.curPhase == 1) 												this.ws.send("NEXT|"+app.gs.gameId+"|"+app.me);		// Deal
 			});										
 	
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
@@ -438,10 +447,10 @@ class App  {
 			x1= rad+4+rad*Math.cos(ang);																// Calc x
 			y1= rad+4+rad*Math.sin(ang);																// Y
 			ang+=step;																					// Next angle
-			col=(i < mins) ? "#25aa54" : "#cccccc";														// Set color
+			col=(i <= mins) ? "#25aa54" : "#cccccc";													// Set color
 			str+=`<circle cx="${x1}" cy="${y1}" r="3" fill="${col}" />`;								// Draw dot
 			}
-		str+=`<text x="${rad+3}" y="${rad*1.3}" text-anchor="middle" fill="#666" font-size="${rad}">${i}</text>`;	// Number						
+		str+=`<text x="${rad+3}" y="${rad*1.3}" text-anchor="middle" fill="#666" font-size="${rad}">${tot-mins}</text>`;	// Number						
 		str+=`<text x="${rad+3}" y="${rad*1.6}" text-anchor="middle" fill="#666" font-size="${rad/4}">minutes</text></svg>`; // Label						
 		$("#mainDiv").append(str); 
 	}
@@ -456,11 +465,11 @@ class App  {
 		this.retryWS=false;																				// Reconnecting to web socket
 		this.ws=new WebSocket(((window.location.host == "localhost") ?'ws' : 'wss')+'://'+window.location.host+':8085');	// Open  websocket											
 		this.ws.onmessage=(e)=>{ this.SocketIn(e); };													// ON INCOMING MESSAGE
-		this.ws.onclose=()=>   { console.log('disconnected'); this.ws=null; this.retryWS=true; Sound("delete") };		// ON CLOSE
+		this.ws.onclose=()=>   { console.log('disconnected'); this.ws=null; this.retryWS=true; Sound("delete") };			// ON CLOSE
 		this.ws.onerror=(e)=>  { console.log('error',e);	};											// ON ERROR
-		this.ws.onopen=()=> { 																			// ON OPEN
+		this.ws.onopen=()=> { 																			// ON OPEN	
 			console.log('connected'); 																	// Show connected
-			this.ws.send("INIT|"+this.sessionId+"|"+this.me);											// Init																	
+			this.ws.send("INIT|"+this.me+this.uniqueId+"|"+this.me);									// Init																	
 			this.pollTimer= window.setInterval( ()=>{													// INIT POLLING SERVER
 			++this.secs;																				// Another second 
 			if (this.retryWS) {																			// If reconnecting to websocket
@@ -480,11 +489,12 @@ class App  {
 		if (!event.data)			 return;															// Quit if no data
 		let v=event.data.split("|");																	// Get params
 		trace(event.data);
-		if (v[1] != this.sessionId)	return;																// Quit if wrong session
 		this.gs=JSON.parse(v[3]);																		// Get game state
 		if (v[0] == "INIT") 		this.Draw();														// INIT
 		else if (v[0] == "START") 	this.SetPhase(1);													// START
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
+		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
+	
 	}
 
 } // CLASS CLOSURE

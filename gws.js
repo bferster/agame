@@ -4,10 +4,13 @@
 	const fs = require('fs');
 	const os = require('os');
 	const WebSocket = require('ws');
-	let webSocketServer;																		// Holds socket server	
-	let local=os.hostname().match(/^bill|desktop/i);											// Running on localhost?
-	let games=[];																				// Holds gmes
-	let timer=null;
+	const local=os.hostname().match(/^bill|desktop/i);											// Running on localhost?
+	var webSocketServer;																		// Holds socket server	
+	var games=[];																				// Holds games
+	var phaseTimer=null;																		// Phase timer
+	var gameTimer=null;																			// Overall game 20 minute timer 
+	var lastClean=new Date().getTime();															// Last time a clean was initiated
+	
 
 /* SOCKET SERVER  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,27 +21,72 @@
 	node gws.js
 
 	npm install forever
-	cd ~/htdocs/go | forever stopall | forever start gws.js | forever logs | sudo cat /home/bitnami/.forever/<id>.log
-	open port:8080
+	cd ~/htdocs/game | forever stop gws.js | forever start gws.js | forever logs | sudo cat /home/bitnami/.forever/<id>.log
+	open port:8085
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 	
-class Game  {																					
+class Game {																					
 
-	constructor(id, numIfs=18, numThens=90)   														// CONSTRUCTOR
+	constructor(numIfs=18, numThens=90)   															// CONSTRUCTOR
 	{
-		this.id=id;																						// Set ID
+		this.id=games.length;																			// Set ID
 		this.ifs=new Array(numIfs);																		// Ifs active array
 		this.thens=new Array(numThens);																	// Thens
 		this.maxTime=45*60;																				// Max time in seconds
 		this.startTime=new Date().getTime()/1000;														// Get start time in seconds
-		this.players=[{name:"Bill",picks:[]},{name:"Sara",picks:[22,66,12]},{name:"Rhonda",picks:[33,25,8]},{name:"Lily",picks:[45]},]																					// Holds player info
+		this.players=[{name:"Sara",id:123,picks:[22,66,12]},{name:"Rhonda",id:456,picks:[33,25,8]},{name:"Lily",id:789,picks:[45]}]																					// Holds player info
 		this.stuPos=[0,0,5,2,1];																		// Student track positions
 		this.curPhase=0;																				// Phase
 		this.curIf=-1;																					// No if condition yet
 		this.winner=-1;																					// No winner yet
-		this.curSpeed=0;
+		this.curSpeed=1;																				// Current speed
+		this.time=2*1000;																				// Base time in ms
+		this.timer=null;																				// Phaswe timer
 	}
+
+	StartNextPhase(v)																				// START NEXT PHASE
+	{
+		let pdex;
+		this.curPhase++;																				// Inc phase
+		trace("PRE",this.curPhase,v[1])
+		if (this.curPhase == 1) {																		// START
+			this.curIf=Math.floor(Math.random()*this.ifs.length);										// Random number
+			this.ifs.splice(this.curIf,1);																// Remove it
+			Broadcast(this.id,"START|"+v[1]+"|"+v[2]); 													// Send message
+			}
+		else if (this.curPhase == 2) {																	// DEAL
+			clearInterval(this.timer);																	// Stop timer
+			Broadcast(this.id,"NEXT|"+v[1]+"|"+v[2]); 													// Send message
+			this.timer=setInterval( ()=>{																// Start timer no payload since PICKS triggers next phase
+				clearInterval(this.timer);																// Stop timer
+				}, this.time*this.speed);																// Might be longer
+			}	
+		else if ((this.curPhase > 2) && (this.curPhase < this.players.length+3)) {						// EXPLAIN
+				// Get picks
+			clearInterval(this.timer);																	// Stop timer
+			if (this.curPhase == 3) Broadcast(this.id,"NEXT|"+v[1]+"|"+v[2]); 							// Send message
+			this.timer=setInterval( ()=>{																// Start seconds timer
+				clearInterval(this.timer);																// Stop timer
+				this.StartNextPhase(v);																	// Recurse			
+				Broadcast(this.id,"NEXT|"+v[1]+"|"+v[2]); 												// Send message
+				},this.time);																			// Short
+			}
+		else if (this.curPhase == this.players.length+3) {												// VOTE
+			clearInterval(this.timer);																	// Stop timer
+			this.timer=setInterval( ()=>{																// Start timer no payload since WINNER triggers next phase
+				clearInterval(this.timer);																// Stop timer
+				},this.time*this.speed);																// Long
+			}
+			else if (this.curPhase == this.players.length+4) {											// DISCUSS
+				// Get votes
+				Broadcast(this.id,"NEXT|"+v[1]+"|"+v[2]); 												// Send message
+			}
+			else if (this.curPhase == this.players.length+5) {											// ON STUDENTS IN
+				this.curPhase=this.players.length+4;													// Hold back phase
+				Broadcast(this.id,"INIT|"+v[1]+"|"+v[2]); 												// Send message to draw track
+				}
+			}
 
 	PlayerIndex(name)																				// GET PLAYER''S INDEX FROM NAME
 	{
@@ -56,9 +104,11 @@ class Game  {
 			key: fs.readFileSync("/opt/bitnami/apache/conf/www.lizasim.com.key")				// And key
 			});
 		webSocketServer= new WebSocket.Server({ server });										// Open it
-		server.listen(8080);																	// Listen on port 8080
+		server.listen(8085);																	// Listen on port 8085
 		}
 	else webSocketServer = new WebSocket.Server({ port:8085 });									// Open in debug
+//	gameTimer=setInterval(()=>{ CleanUp(); },10*60*1000)										// Set cleanup timer
+	games[0]=new Game();																		// Add first game																			
 
 try{
 	webSocketServer.on('connection', (webSocket, req) => {										// ON CONNECTION
@@ -72,66 +122,60 @@ try{
 			trace('In:', message);																// Log
 			let v=message.split("|");															// Get params
 			if (v[0] == "INIT") {																// INIT
-				webSocket.meetingId=v[1];														// Set meeting id
-				if (!games["g"+1]) games["g"+1]=new Game(1),trace("New game");					// Alloc new game
-				games["g"+webSocket.meetingId].curPhase=0
-				Broadcast(webSocket.meetingId,message);											// Send to all players
+				if (!games.length || (games[games.length-1].players.length >= 4)) {				// No game open or full
+					games.push(new Game());														// Alloc new game
+					trace("NEW GAME",games.length-1);											// Log
+					}
+				games[games.length-1].players.push({ name:v[2], picks:[] });					// Add player to game
+				webSocket.gameId=games.length-1;												// Set game id
+				Broadcast(webSocket.gameId,"INIT|"+v[1]+"|"+v[2]); 								// Send INIT message
 				}
-			let gs=games["g"+webSocket.meetingId];												// Point at game data
-			if (v[0] == "START") {																// START
-				if (timer) clearInterval(timer);												// Clear timer
-				gs.curPhase=1;																	// Set phase
-				gs.curIf=Math.floor(Math.random()*gs.ifs.length);								// Random number
-				gs.ifs.splice(gs.curIf,1);														// Remove it
-				Broadcast(webSocket.meetingId,message);											// Send to all players
-				}
-			else if (v[0] == "NEXT") {															// NEXT
-				gs.curPhase+=1;																	// Inc phase to deal
-				Broadcast(webSocket.meetingId,message);											// Send to all players to deal
-				clearInterval(timer);															// Clear
-				timer=setInterval(()=>{															// Set interval
-					gs.curPhase+=1;																// Inc phase
-					if (gs.curPhase > gs.players.length+3) {									// Done
-						clearInterval(timer);													// Complete
-						}
-				if ((gs.curPhase != 2) && (gs.curPhase != gs.players.length+4))					// Not dealing or voting
-					Broadcast(webSocket.meetingId,message);										// Send to all players
-					},10000);	
-				}
-			else if (v[0] == "PICKS") {															// PICKS
-				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
-				if (pdex != -1)	gs.players[pdex].picks=JSON.parse(v[3]);						// Record their picks
+			let gs=games[webSocket.gameId];														// Point at game data
+			if (v[0] == "START") 	  		gs.StartNextPhase(v);								// START
+			else if (v[0] == "NEXT")  		gs.StartNextPhase(v);								// NEXT
+			else if (v[0] == "PICKS") 		gs.StartNextPhase(v);								// PICKS
+			else if (v[0] == "WINNER") 		gs.StartNextPhase(v);								// WINNER
+			else if (v[0] == "STUDENTS") 	gs.StartNextPhase(v);								// STUDENTS
+
+/*			gs.winner=v[3];																	// Record the winner
 				message="NEXT|"+v[1]+"|"+v[2];													// Remove new data
-				Broadcast(webSocket.meetingId, message); 										// Trigger players
-				}
-			else if (v[0] == "WINNER") {														// WINNER
-				gs.winner=v[3];																	// Record the winner
-				message="NEXT|"+v[1]+"|"+v[2];													// Remove new data
-				Broadcast(webSocket.meetingId, message); 										// Trigger players
+				Broadcast(webSocket.gameId, message); 											// Trigger players
 				}
 			else if (v[0] == "STUDENTS") {														// STUDENTS
 				gs.stuPos=JSON.parse(v[3])														// Record student progress
 				message="STUDENTS|"+v[1]+"|"+v[2];												// Remove new data
-				Broadcast(webSocket.meetingId, message); 										// Trigger players
+				Broadcast(webSocket.gameId, message); 											// Trigger players
+				let trt=Math.floor(new Date().getTime()/1000-gs.startTime);						// TRT in seconds
+				if (trt >= gs.maxTime)															// If over time
+					Broadcast(webSocket.gameId, "OVER|"+v[1]+"|"+v[2]); 						// Send OVER message
 				}
-				});
+			*/			});
 		});
 } catch(e) { console.log(e) }
 	
-function Broadcast(meetingId, msg)															// BROADCAST DATA TO ALL CLIENTS 
+	function Broadcast(gameId, msg)															// BROADCAST DATA TO ALL CLIENTS 
+	{
+		try{
+			let o=games[gameId];																	// Point at game data
+			let now=Math.floor(new Date().getTime()/1000-o.startTime);								// TRT in seconds
+			let data={ curPhase:o.curPhase, curIf:o.curIf, stuPos:o.stuPos, players:o.players, winner:o.winner, curSpeed:o.curSpeed, gameId:gameId, curTime:now };
+			msg+=`|${JSON.stringify(data)}`;														// Add data
+			webSocketServer.clients.forEach((client)=>{												// For each client
+				if (client.gameId == gameId) 														// In this game
+					if (client.readyState === WebSocket.OPEN) client.send(msg);						// Send to client
+				});
+			trace("Broadcast",msg);																	// Show sent											
+		} catch(e) { console.log(e) }
+	}
+	
+function CleanUp()																			// CLEANUP GAME
 {
-	try{
-		let o=games["g"+meetingId];																// Point at game data
-		let data={ curPhase:o.curPhase, curIf:o.curIf, stuPos:o.stuPos, players:o.players, winner:o.winner, curSpeed:o.curSpeed };
-		msg+=`|${JSON.stringify(data)}`;														// Add data
-		webSocketServer.clients.forEach((client)=>{												// For each client
-			if (client.meetingId == meetingId) 													// In this meeting
-				if (client.readyState === WebSocket.OPEN) client.send(msg);						// Send to client
-			});
-		trace("Broadcast",msg);																	// Show sent											
-	} catch(e) { console.log(e) }
-}
+	let i;
+	trace("CLEAN",lastClean);
+	let now=new Date().getTime();																// Get now
+	lastClean=now;																				// Then is now
 
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // HELPERS 
