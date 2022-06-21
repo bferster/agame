@@ -7,7 +7,6 @@
 	const local=os.hostname().match(/^bill|desktop/i);											// Running on localhost?
 	var webSocketServer;																		// Holds socket server	
 	var games=[];																				// Holds games
-	var phaseTimer=null;																		// Phase timer
 	var gameTimer=null;																			// Overall game 20 minute timer 
 	var lastClean=new Date().getTime();															// Last time a clean was initiated
 	
@@ -30,63 +29,46 @@ class Game {
 
 	constructor(numIfs=18, numThens=90)   															// CONSTRUCTOR
 	{
+		this.started=false;																				// Game started flag
 		this.id=games.length;																			// Set ID
 		this.ifs=new Array(numIfs);																		// Ifs active array
 		this.thens=new Array(numThens);																	// Thens
 		this.maxTime=45*60;																				// Max time in seconds
 		this.startTime=new Date().getTime()/1000;														// Get start time in seconds
-		this.players=[{name:"Sara",id:123,picks:[22,66,12]},{name:"Rhonda",id:456,picks:[33,25,8]},{name:"Lily",id:789,picks:[45]}]																					// Holds player info
+		this.players=[{name:"Sara",id:123,picks:[22,66,12], winner:0} ];								// Holds player info
 		this.stuPos=[0,0,5,2,1];																		// Student track positions
 		this.curPhase=0;																				// Phase
 		this.curIf=-1;																					// No if condition yet
 		this.winner=-1;																					// No winner yet
-		this.curSpeed=1;																				// Current speed
+		this.curSpeed=2;																				// Current speed
 		this.time=2*1000;																				// Base time in ms
-		this.timer=null;																				// Phaswe timer
+		this.timer=null;																				// Phase timer
+		this.numVotes=0;																				// Numer of votes
 	}
 
 	StartNextPhase(v)																				// START NEXT PHASE
 	{
-		let pdex;
+		let time,op="NEXT|";
 		this.curPhase++;																				// Inc phase
-		trace("PRE",this.curPhase,v[1])
 		if (this.curPhase == 1) {																		// START
-			this.curIf=Math.floor(Math.random()*this.ifs.length);										// Random number
+			this.curIf=Math.floor(Math.random()*this.ifs.length);										// Set if with random number
 			this.ifs.splice(this.curIf,1);																// Remove it
-			Broadcast(this.id,"START|"+v[1]+"|"+v[2]); 													// Send message
+			this.numVotes=0;																			// No votes
+			time=0; 																					// No interval needed
+			op="START|";																				// Set op
 			}
-		else if (this.curPhase == 2) {																	// DEAL
+		else if (this.curPhase == 2)					 	time=this.time*this.curSpeed;				// DEAL
+		else if ((this.curPhase > 2) && (this.curPhase < this.players.length+3)) time=this.time;		// EXPLAIN
+		else if (this.curPhase == this.players.length+3) 	time=this.time*this.curSpeed;				// VOTE
+		if (time) {																						// If waiting
 			clearInterval(this.timer);																	// Stop timer
-			Broadcast(this.id,"NEXT|"+v[1]+"|"+v[2]); 													// Send message
-			this.timer=setInterval( ()=>{																// Start timer no payload since PICKS triggers next phase
-				clearInterval(this.timer);																// Stop timer
-				}, this.time*this.speed);																// Might be longer
-			}	
-		else if ((this.curPhase > 2) && (this.curPhase < this.players.length+3)) {						// EXPLAIN
-				// Get picks
-			clearInterval(this.timer);																	// Stop timer
-			if (this.curPhase == 3) Broadcast(this.id,"NEXT|"+v[1]+"|"+v[2]); 							// Send message
-			this.timer=setInterval( ()=>{																// Start seconds timer
+			this.timer=setInterval( ()=>{																// Start timer 
 				clearInterval(this.timer);																// Stop timer
 				this.StartNextPhase(v);																	// Recurse			
-				Broadcast(this.id,"NEXT|"+v[1]+"|"+v[2]); 												// Send message
-				},this.time);																			// Short
+				},time+1000);
 			}
-		else if (this.curPhase == this.players.length+3) {												// VOTE
-			clearInterval(this.timer);																	// Stop timer
-			this.timer=setInterval( ()=>{																// Start timer no payload since WINNER triggers next phase
-				clearInterval(this.timer);																// Stop timer
-				},this.time*this.speed);																// Long
-			}
-			else if (this.curPhase == this.players.length+4) {											// DISCUSS
-				// Get votes
-				Broadcast(this.id,"NEXT|"+v[1]+"|"+v[2]); 												// Send message
-			}
-			else if (this.curPhase == this.players.length+5) {											// ON STUDENTS IN
-				this.curPhase=this.players.length+4;													// Hold back phase
-				Broadcast(this.id,"INIT|"+v[1]+"|"+v[2]); 												// Send message to draw track
-				}
-			}
+		Broadcast(this.id,op+v[1]+"|"+v[2]); 															// Send message
+	}
 
 	PlayerIndex(name)																				// GET PLAYER''S INDEX FROM NAME
 	{
@@ -97,6 +79,10 @@ class Game {
 	}
 
 } // CLASS CLOSURE
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// SOCKET SERVER 
+/////////////////////////////////////////////////////////////////////////////////////////////////
 
 	if (!local) {																				// If on web
 		const server = https.createServer({														// Create an https server
@@ -122,7 +108,9 @@ try{
 			trace('In:', message);																// Log
 			let v=message.split("|");															// Get params
 			if (v[0] == "INIT") {																// INIT
-				if (!games.length || (games[games.length-1].players.length >= 4)) {				// No game open or full
+				if (!games.length || 															// If no game yet
+					(games[games.length-1].players.length >= 4) ||								// Or full
+					(games[games.length-1].started)) {											// Or already started
 					games.push(new Game());														// Alloc new game
 					trace("NEW GAME",games.length-1);											// Log
 					}
@@ -131,51 +119,76 @@ try{
 				Broadcast(webSocket.gameId,"INIT|"+v[1]+"|"+v[2]); 								// Send INIT message
 				}
 			let gs=games[webSocket.gameId];														// Point at game data
-			if (v[0] == "START") 	  		gs.StartNextPhase(v);								// START
-			else if (v[0] == "NEXT")  		gs.StartNextPhase(v);								// NEXT
-			else if (v[0] == "PICKS") 		gs.StartNextPhase(v);								// PICKS
-			else if (v[0] == "WINNER") 		gs.StartNextPhase(v);								// WINNER
-			else if (v[0] == "STUDENTS") 	gs.StartNextPhase(v);								// STUDENTS
-
-/*			gs.winner=v[3];																	// Record the winner
-				message="NEXT|"+v[1]+"|"+v[2];													// Remove new data
-				Broadcast(webSocket.gameId, message); 											// Trigger players
+			if (v[0] == "START") {	  															// START
+				gs.curPhase=0;																	// Reset phase
+				gs.started=true;																// Close game for new entrants
+				gs.StartNextPhase(v);															// Start next phase	
+				}					
+			else if (v[0] == "NEXT") {															// NEXT
+				gs.StartNextPhase(v);															// Start next phase	
 				}
-			else if (v[0] == "STUDENTS") {														// STUDENTS
-				gs.stuPos=JSON.parse(v[3])														// Record student progress
-				message="STUDENTS|"+v[1]+"|"+v[2];												// Remove new data
-				Broadcast(webSocket.gameId, message); 											// Trigger players
-				let trt=Math.floor(new Date().getTime()/1000-gs.startTime);						// TRT in seconds
-				if (trt >= gs.maxTime)															// If over time
-					Broadcast(webSocket.gameId, "OVER|"+v[1]+"|"+v[2]); 						// Send OVER message
+			else if (v[0] == "PICKS") {															// PICKS
+				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
+				if (pdex != -1)	gs.players[pdex].picks=JSON.parse(v[3]);						// Record their picks
+				Broadcast(webSocket.gameId, "DRAW|"+v[1]+"|"+v[2]); 							// Trigger players
+				}	
+			else if (v[0] == "WINNER") {														// WINNER
+				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
+				if (pdex != -1)	gs.players[pdex].winner=JSON.parse(v[3]);						// Record their picks
+				++gs.numVotes;																	// Add to count
+				if (gs.numVotes == gs.players.length-1) {										// All voters in !!!!!!!!!!!!!! REMOVE -1  !!!!!!!!!
+					Advance(gs);																// Advance students	
+					gs.winner=Vote(gs);															// Vote
+					Broadcast(webSocket.gameId, "VOTED|"+v[1]+"|"+v[2]); 						// Trigger redraw
+					let trt=Math.floor(new Date().getTime()/1000-gs.startTime);					// TRT in seconds
+					if (trt >= gs.maxTime)														// If over time
+						Broadcast(webSocket.gameId, "OVER|"+v[1]+"|"+v[2]); 					// Send OVER message
+					}
 				}
-			*/			});
+			});
 		});
 } catch(e) { console.log(e) }
 	
 	function Broadcast(gameId, msg)															// BROADCAST DATA TO ALL CLIENTS 
 	{
 		try{
-			let o=games[gameId];																	// Point at game data
-			let now=Math.floor(new Date().getTime()/1000-o.startTime);								// TRT in seconds
+			let o=games[gameId];																// Point at game data
+			let now=Math.floor(new Date().getTime()/1000-o.startTime);							// TRT in seconds
 			let data={ curPhase:o.curPhase, curIf:o.curIf, stuPos:o.stuPos, players:o.players, winner:o.winner, curSpeed:o.curSpeed, gameId:gameId, curTime:now };
-			msg+=`|${JSON.stringify(data)}`;														// Add data
-			webSocketServer.clients.forEach((client)=>{												// For each client
-				if (client.gameId == gameId) 														// In this game
-					if (client.readyState === WebSocket.OPEN) client.send(msg);						// Send to client
+			msg+=`|${JSON.stringify(data)}`;													// Add data
+			webSocketServer.clients.forEach((client)=>{											// For each client
+				if (client.gameId == gameId) 													// In this game
+					if (client.readyState === WebSocket.OPEN) client.send(msg);					// Send to client
 				});
-			trace("Broadcast",msg);																	// Show sent											
+			trace("Broadcast",msg);																// Show sent											
 		} catch(e) { console.log(e) }
 	}
-	
-function CleanUp()																			// CLEANUP GAME
-{
-	let i;
-	trace("CLEAN",lastClean);
-	let now=new Date().getTime();																// Get now
-	lastClean=now;																				// Then is now
 
-}
+	function Vote(gs)																		// VOTE
+	{
+		let i,votes=[0,0,0,0,0];
+		for (i=0;i<gs.players.length;++i) 														// For each player
+			if (gs.players[i].winner != -1)	votes[i]++;											// Add to vote count
+		votes.sort((a, b)=>{return a-b});														// Descending sort
+		return votes[0];																		// Return highest
+	}
+	
+	function Advance(gs)																	// ADVANCE STUDENT POSITIONS
+	{
+		let i;
+		for (let i=0;i<5;++i) gs.stuPos[i]+=Math.floor(Math.random()*4)+1;						// Advance
+	}	
+
+	function CleanUp()																			// CLEANUP GAME
+	{
+		let i;
+		trace("CLEAN",lastClean);
+		let now=new Date().getTime();																// Get now
+		lastClean=now;																				// Then is now
+
+	}
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // HELPERS 
