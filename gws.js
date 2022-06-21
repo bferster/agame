@@ -22,6 +22,10 @@
 	npm install forever
 	cd ~/htdocs/game | forever stop gws.js | forever start gws.js | forever logs | sudo cat /home/bitnami/.forever/<id>.log
 	open port:8085
+
+	cd ~/htdocs/game
+	forever stop gws.js
+	forever start gws.js
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 	
@@ -41,7 +45,7 @@ class Game {
 		this.curIf=-1;																					// No if condition yet
 		this.winner=-1;																					// No winner yet
 		this.curSpeed=2;																				// Current speed
-		this.time=2*1000;																				// Base time in ms
+		this.time=10*1000;																				// Base time in ms
 		this.timer=null;																				// Phase timer
 		this.numVotes=0;																				// Numer of votes
 	}
@@ -65,7 +69,7 @@ class Game {
 			this.timer=setInterval( ()=>{																// Start timer 
 				clearInterval(this.timer);																// Stop timer
 				this.StartNextPhase(v);																	// Recurse			
-				},time+1000);
+				},time+2000);
 			}
 		Broadcast(this.id,op+v[1]+"|"+v[2]); 															// Send message
 	}
@@ -187,8 +191,6 @@ try{
 		lastClean=now;																				// Then is now
 
 	}
-
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // HELPERS 

@@ -130,7 +130,7 @@ class App  {
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.uniqueId=""+Math.floor(Math.random()*10000);												// Random number
-		this.time=2;																					// Time
+		this.time=10;																					// Time in seconds
 		this.speed=2;																					// Speed = 3 2 1
 		app.winner=0;
 	}
@@ -172,7 +172,6 @@ class App  {
 			this.DealCards();																			// Deal cards
 			this.HourGlassTimer(this.time*this.speed, ()=>{ 											// Time's up
 				Sound("ding"); 																			// Ding
-				trace(22222222)
 				let picks=[];																			// Reset picked cards
 				$("[id^=lz-cardCheck-]").each( function() {												// Fro each checkbox image	
 					if ($(this).prop("src").match(/checked/)) 											// If checked
@@ -314,7 +313,7 @@ class App  {
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let hgt=$(window).height()*pct/100;																// Set height
 		let wid=hgt/.5625;																				// Width
-		let link="!japp.htm?AgileGameChat~Session~"+app.gs.gameId+"&"+this.me+"&"+focus.toLowerCase();	// Make link
+		let link="japp.htm?AgileGameChat~Session~"+app.gs.gameId+"&"+this.me+"&"+focus.toLowerCase();	// Make link
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:174px;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
