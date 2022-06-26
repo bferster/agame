@@ -9,23 +9,26 @@
 	var games=[];																				// Holds games
 	var gameTimer=null;																			// Overall game 20 minute timer 
 	var lastClean=new Date().getTime();															// Last time a clean was initiated
-	
 
 /* SOCKET SERVER  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+node gws.js
+
+	cd /opt/bitnami/wordpress/game
+	nohup start gws.js
+
+	Ports: 8080,8085
+	A Records: @.agileteacher.org -> AgileTeacherIP     www.agileteacher.org -> AgileTeacherIP
+	sudo apt update
+	sudo apt upgrade
+	sudo apt install nodejs
+	sudo apt install npm
 	npm install https
 	npm install fs
 	npm install ws
 	npm install os
-	node gws.js
-
-	npm install forever
-	cd ~/htdocs/game | forever stop gws.js | forever start gws.js | forever logs | sudo cat /home/bitnami/.forever/<id>.log
-	open port:8085
-
-	cd ~/htdocs/game
-	forever stop gws.js
-	forever start gws.js
+	sudo /opt/bitnami/bncert-tool
+	PASS=prename
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 	
@@ -90,8 +93,8 @@ class Game {
 
 	if (!local) {																				// If on web
 		const server = https.createServer({														// Create an https server
-			cert: fs.readFileSync("/opt/bitnami/apache/conf/www.lizasim.com.crt"),				// Point at cert
-			key: fs.readFileSync("/opt/bitnami/apache/conf/www.lizasim.com.key")				// And key
+			cert: fs.readFileSync("/opt/bitnami/apache/conf/agileteacher.org.crt"),				// Point at cert
+			key: fs.readFileSync("/opt/bitnami/apache/conf/agileteacher.org.key")				// And key
 			});
 		webSocketServer= new WebSocket.Server({ server });										// Open it
 		server.listen(8085);																	// Listen on port 8085
