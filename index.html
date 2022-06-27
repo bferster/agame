@@ -16,9 +16,9 @@
 							}
 		.lz-main { 			width:100%; height:var(--maxvh);  user-select: none; display:none;
 							}
-		.lz-if { 			position:absolute; top:108px; left:calc(12.5% + 24px); font-size:1.8vw; color:#27ae60; font-weight:bold;
+		.lz-if { 			position:absolute; top:24px; left:calc(12.5% + 24px); font-size:1.8vw; color:#27ae60; font-weight:bold;
 							}
-		.lz-infield { 		position:absolute; top:174px; left:calc(12.5% + 24px); width:calc(87.5% - 100px); height:calc(100vh - 250px); text-align:left; 
+		.lz-infield { 		position:absolute; top:11vw; left:calc(12.5% + 24px); width:calc(75vw - 60px); height:calc(100vh - 11vw - 12px); text-align:left; 
 							}
 		.lz-flow { 			position:absolute; display:table; top:0; left:0; height:100%; width:calc(12.5% ); 
 							text-align:right;
@@ -58,11 +58,11 @@
 </style>
 	<body>
 		<div class="lz-main" id="mainDiv">
-			<svg id="lz-trackSVG" width="100%" height="100%" style="position:absolute;left:0;top:0"></svg>
+			<div id="lz-students"></div>
 			<div id="lz-flowDiv" class="lz-flow"></div>
 			<div id="lz-ifDiv" class="lz-if"></div>
 			<div id="lz-infieldDiv" class="lz-infield"></div>
-			<img src="img/smlogo.png" style="position:absolute;right:24px;top:18px;width:68px">
+			<img src="img/smlogo.png" style="position:absolute;left:56px;bottom:12px;width:68px">
 		</div>
 			<div id="splashDiv" class="lz-splash">
 			<img src="img/ACTlogo.png" style='width:200px' alt="logo"><br>
@@ -106,9 +106,8 @@
 	$(window).on("resize orientationchange", ()=>{                                       		 // ON WINDOW RESIZE
 		document.documentElement.style.setProperty("--maxvh", window.innerHeight+"px");				// Set CSS var for IOS 100vh isssue
 		app.Draw();																					// Redraw to fit screen
-		let hgt=$(window).width()*.5625*50/100;														// Height
-		let top=($(window).height()-hgt)/2;															// Top
-		$("#lz-videoChat").css({height:hgt+"px",top:top+"px"});										// Resize video if open
+		let wid=$(window).width()*50/100;															// Set width
+			$("#lz-videoChat").css({ height:wid*.5625+"px",width:wid+"px" });						// Resize video if open
 		});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -162,10 +161,10 @@ class App  {
 	SetPhase(phase, redraw)																			// SET PHASE OF GAME
 	{
 		if (phase == 1) {																				// START 
-			$("#lz-infieldDiv").html("");																// Clear infield	
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
 			if (!redraw) this.VideoChat();																// Open video chat	
+			$("#lz-infieldDiv").html(`<div style="position:absolute;top:-5vw">${this.strings["discussIf"]}</div>`);	// Show tip
 			}
 		else if (phase == 2) {																			// DEAL 
 			$("#lz-videoChat").remove(); 																// Remove old one
@@ -200,7 +199,8 @@ class App  {
 			this.ShowCards([],"Voting...") ; 															// Voting
 			window.clearInterval(this.glassTimer);														// Stop timer
 			this.glassTimer=window.setInterval( ()=>{													// Start seconds timer
-			$("#lz-topbut").css("background-color","#27ae60"); 											// Hilite button							
+				$("#lz-topbut").css("background-color","#27ae60"); 										// Hilite button							
+				$("#lz-infieldDiv").html(`<div style="position:absolute;top:-5vw">${this.strings["discuss"]}</div>`);	// Show tip
 				window.clearInterval(this.glassTimer);													// Stop timer
 				},this.time);
 			}
@@ -219,7 +219,7 @@ class App  {
 	{
 		let i,num,str="";
 		let x=0,y=0;																					// TLC
-		let h=$("#lz-infieldDiv").height()/3;															// Card height
+		let h=$("#lz-infieldDiv").height()/2.5;															// Card height
 		let w=h*.75+12;																					// Width
 		for (i=0;i<6;++i) {																				// For each card
 			num=Math.floor(Math.random()*this.thens.length);											// Random index of thens
@@ -227,7 +227,7 @@ class App  {
 			x+=w;																						// Shift
 			if (i == 2) x=0,y+=h+12;																	// New line
 			}
-		str+=`<div style="position:absolute;top:0;left:${x+12}px;font-size:16px;max-width:200px">${this.strings["pickHand"]}</div>`;
+		str+=`<div style="position:absolute;top:-5vw">${this.strings["pickHand"]}</div>`;				// Add tip				
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add it
 		$("[id^=lz-cardDiv-]").removeClass("lz-hover");
 		$("[id^=lz-cardDiv-]").on("mousedown", function(e) { if (!e.target.id.match(/cardCheck/)) $(this).css({"transform":"scale(2)","z-index":100})});
@@ -241,21 +241,21 @@ class App  {
 	ShowCards(cards, title="")																		// SHOW PICKED CARDS
 	{
 		let i,y=0,str="";
-		let x=$(window).height()/2/.5625+12;															// Left
-		let h=$(window).height()/2/3-10;																// Card height
-		if (title)  str+=`<div style="position:absolute;left:${x}px;top:${y-30}px;color:#999;
-			width:${h*.75}px;text-align:center;font-size:16px"><b>${title}</b></div>`;
+		let x=$(window).width()/2+24;																	// Left
+		let h=$(window).width()/2*.5625/3-10;															// Card height
 		for (i=0;i<cards.length;++i) {																	// For each pick																
 			str+=this.DrawCard(cards[i],0,x,y,0,h);														// Add card
 			y+=h+12;
 			}
+		if (title == this.me) str+=`<div style="position:absolute;top:-5vw">${this.strings["explainMyHand"]}</div>`;		// Add tip if it's me
+		else				  str+=`<div style="position:absolute;top:-5vw">${title+this.strings["explainHand"]}</div>`;	// Someone else				
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 	}
 
 	Vote()																							// VOTE
 	{
 		let i,j,o,x=0,y=0,str="";
-		let h=$(window).height()/2/4;																	// Card height
+		let h=$("#lz-infieldDiv").height()/(this.gs.players.length+1)-16;								// Card height
 		let w=h*.75+8;																					// Width
 		app.winner=-1;																					// No vote yet
 		for (i=0;i<this.gs.players.length;++i) {														// For each player
@@ -270,6 +270,7 @@ class App  {
 			<img id="${"lz-voteCheck-"+i}" src="img/check.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
 			y+=h+16;																					// Next row
 			}
+		str+=`<div style="position:absolute;top:-5vw">${this.strings["vote"]}</div>`;					// Show tip			
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 		
 		$("[id^=lz-voteCheck-]").on("click", function() {												// ON CHECKBOX CLICK 
@@ -283,6 +284,7 @@ class App  {
 	HourGlassTimer(time, callback)																	// RUN HOURGLASS TIMER
 	{
 		let count=0;																					// Init seconds counter
+		$("#lz-clockSVG").remove();																		// Remove clock
 		if (this.glassTimer) window.clearInterval(this.glassTimer);										// Stop timer
 		this.glassTimer=window.setInterval( ()=>{														// Start seconds timer
 			this.DrawHourGlass(count/16);																// Draw hourglass
@@ -302,7 +304,7 @@ class App  {
 		let str=`<div style="display:inline-block;height:2.4vw;width:2.4vw;border-radius:100px;
 			background-color:#27ae60;color:#fff;text-align:center">IF</div> &nbsp;`;
 		$("#lz-ifDiv").html(this.gs.curIf != -1 ? str+this.ifs[this.gs.curIf] : "");					// Show if
-		this.DrawTrack(this.gs.stuPos);																	// Draw track
+		this.DrawStudents(this.gs.stuPos);																// Draw students
 		this.DrawFlow();																				// Draw phase flow chart
 		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
 	}
@@ -311,15 +313,33 @@ class App  {
 	{
 		let pct=50
 		$("#lz-videoChat").remove(); 																	// Remove old one
-		let hgt=$(window).height()*pct/100;																// Set height
-		let wid=hgt/.5625;																				// Width
+		let wid=$(window).width()*pct/100;																// Set height
+		let hgt=wid*.5625;																				// Width
 		let link="japp.htm?AgileGameChat~Session~"+app.gs.gameId+"&"+this.me+"&"+focus.toLowerCase();	// Make link
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
-			width:${wid}px;height:${hgt}px;top:174px;left:calc(12.5% + 24px);display:block">
+			width:${wid}px;height:${hgt}px;top:11vw;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
 			allow=camera;microphone;autoplay frameborder="0" allowfullscreen>
 			</iframe>`;
 		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
+	}
+
+	DrawStudents(pos=[0,0,0,0,0])																	// DRAW STUDENTS	
+	{
+		let i,str=`
+			<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(100vh - 11vw - 18px);
+			border-radius:24px;background-color:#eee;text-align:center;color:#666;border:1px solid #999">
+				<div style="position:absolute;top:25%;width:80%;font-size:1vw;margin:0 12px;border-top:1px solid #ccc"><i>Liberating</i></div>
+				<div style="position:absolute;top:50%;width:80%;font-size:1vw;margin:0 12px;border-top:1px solid #ccc"><i>Thriving</i></div>
+				<div style="position:absolute;bottom:4px;;width:80%;font-size:1vw;margin:0 12px;border-top:1px solid #ccc"><i>Learning</i></div>
+				<div style="position:absolute;top:1%;width:100%;font-size:1vw">STUDENT&nbsp;PROGRESS</div>
+			</div>`;	
+			for (i=0;i<this.stuCols.length;++i) {														// For each student
+				str+=`<div style="position:absolute;width:1.5vw;height:1.5vw;border-radius:20px;
+				left:calc(86.5vw + ${i*1.5*1.5}vw);bottom:calc(${pos[i]*7.2}% + 40px + 1vw);
+				background-color:${this.stuCols[i]}"></div>`;
+			}
+		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add dot
 	}
 
 	DrawTrack(pos)																					// DRAW STUDENT TRACK	
@@ -371,12 +391,12 @@ class App  {
 			str+=addItem(i++,this.gs.players[j].name+" TALKS");											// Add player's name
 		str+=addItem(i++,"VOTE")																		// VOTE
 		str+=addItem(i++,"DISCUSS")																		// DISCUSS
-		str+=`<div style="position:absolute;left:24px;bottom:24px; width:calc(12.5vw - 28px);text-align:right">
+/*		str+=`<div style="position:absolute;left:24px;bottom:24px; width:calc(12.5vw - 28px);text-align:right">
 			<img id="lz-Speed-0" src="img/slow.png" title="Slow">
 			<img id="lz-Speed-1"  src="img/medium.png" title="Medium">
 			<img id="lz-Speed-2"  src="img/fast.png" title="Fast">
 			</div>`;
-		$("#lz-flowDiv").html(str);																		// Add flowchart
+*/		$("#lz-flowDiv").html(str);																		// Add flowchart
 		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
 		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
@@ -426,8 +446,9 @@ class App  {
 	DrawHourGlass(pct)																				// DRAW HOURGLASS
 	{
 		$("#lz-hourGlass").remove();																	// Remove old one
+		$("#lz-clockSVG").remove();																		// Remove clock
 		let str=`<div id="lz-hourGlass" style="position:absolute;overflow:hidden;
-			width:4vh;height:12vh;right:110px;top:44vh">
+			width:2.5vw;height:8vw;right:calc(5vw + 24px);top:24px">
 			<img src="img/sandtop.png" style="position:absolute;width:100%;height:100%;top:${pct*40}%">
 			<img src="img/hourtop.png" style="position:absolute;width:100%;height:100%">
 			<img src="img/sandbot.png" style="position:absolute;width:100%;height:100%;top:${(1-pct)*40}%">
@@ -438,13 +459,14 @@ class App  {
 	DrawClock(mins, tot=45)																			// DRAW CLOCK
 	{
 		let i,x1,y1,col;
-		let rad=$(window).height()/20;																	// Radius based on height
-		let x=$(window).width()-rad-rad-20;																// X pos
-		let y=$(window).height()-rad-rad-20;															// Y
+		let rad=$(window).width()/24;																	// Radius based on wifth
 		let step=(2*Math.PI)/tot;																		// Dot step
 		let ang=-Math.PI/2;																				// Start straight up
+		let x=$(window).width()-rad-rad-30-rad/2.5
+
+		$("#lz-hourGlass").remove();																	// Remove old one
 		$("#lz-clockSVG").remove();																		// Remove old one
-		let str=`<svg id="lz-clockSVG" width="100%" height="100%" style="position:absolute;left:${x}px;top:${y}px">`;
+		let str=`<svg id="lz-clockSVG" width="${rad*2+6}" height="${rad*2+6}" style="position:absolute;left:${x}px;top:12px">`;
 		for	(i=0;i<tot;++i) {																			// For each mark
 			x1= rad+4+rad*Math.cos(ang);																// Calc x
 			y1= rad+4+rad*Math.sin(ang);																// Y

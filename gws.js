@@ -15,7 +15,10 @@
 node gws.js
 
 	cd /opt/bitnami/wordpress/game
-	nohup start gws.js
+ 	forever logs | sudo cat /home/bitnami/.forever/<id>.log
+
+	forever stop gws.js 
+	forever start gws.js
 
 	Ports: 8080,8085
 	A Records: @.agileteacher.org -> AgileTeacherIP     www.agileteacher.org -> AgileTeacherIP
