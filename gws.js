@@ -39,11 +39,11 @@ class Game {
 	constructor(numIfs=18, numThens=90)   															// CONSTRUCTOR
 	{
 		this.started=false;																				// Game started flag
-		this.id=games.length;																			// Set ID
+		this.startTime=new Date().getTime()/1000;														// Get start time in seconds
+		this.id=Math.floor(Math.random()*10000)+Math.floor(this.startTime);								// Set ID
 		this.ifs=new Array(numIfs);																		// Ifs active array
 		this.thens=new Array(numThens);																	// Thens
 		this.maxTime=45*60;																				// Max time in seconds
-		this.startTime=new Date().getTime()/1000;														// Get start time in seconds
 		this.players=[{name:"Sara",id:123,picks:[22,66,12], winner:0} ];								// Holds player info
 		this.stuPos=[0,0,5,2,1];																		// Student track positions
 		this.curPhase=0;																				// Phase
@@ -134,7 +134,8 @@ try{
 
 		webSocket.on("pong", () => { 															// ON PONG
 			webSocket.isAlive=true; 															// It's alive
-			games[webSocket.gameId].numPlayers++;												// Add to count
+			let index=games.findIndex(x => x.id == webSocket.gameId);							// Find array index by id
+			if (index != -1)	games[index].numPlayers++;										// Add to count
 			});
 
 		webSocket.on('message', (msg) => {														// ON MESSAGE
@@ -151,7 +152,9 @@ try{
 				webSocket.player=v[1];															// Set player name													
 				Broadcast(webSocket.gameId,"INIT|"+v[1]+"|"+v[2]); 								// Send INIT message
 				}
-			gs=games[webSocket.gameId];															// Point at game data
+			let index=games.findIndex(x => x.id == webSocket.gameId)							// Find array index by id
+			if (index == -1) return;															// Quit if not found
+				gs=games[index];																// Point at game data
 			if (v[0] == "START") {	  															// START
 				gs.curPhase=0;																	// Reset phase
 				gs.started=true;																// Close game for new entrants
@@ -185,7 +188,9 @@ try{
 	function Broadcast(gameId, msg)															// BROADCAST DATA TO ALL CLIENTS 
 	{
 		try{
-			let o=games[gameId];																// Point at game data
+			let index=games.findIndex(x => x.id == gameId)										// Find array index by id
+			if (index == -1) return;															// Quit if not found
+			let o=games[index];																	// Point at game data
 			let now=Math.floor(new Date().getTime()/1000-o.startTime);							// TRT in seconds
 			let data={ curPhase:o.curPhase, curIf:o.curIf, stuPos:o.stuPos, players:o.players, winner:o.winner, curSpeed:o.curSpeed, gameId:gameId, curTime:now };
 			msg+=`|${JSON.stringify(data)}`;													// Add data
@@ -201,13 +206,12 @@ try{
 	{	
 		let i,gs=null;
 		if (games.length)
-		trace(games[0].players.length)
 		for (i=0;i<games.length;++i)															// For each game
-			if ((games[i].players.length < 4)/* && !games[i].started*/) { gs=games[i]; break; }		// If an unstarted < 4 player game, point at it										
+			if ((games[i].players.length < 4)/* && !games[i].started*/) { gs=games[i]; break; }	// If an unstarted < 4 player game, point at it										
 		if (!gs) {																				// Nothing found		
 			gs=new Game();																		// Alloc new game
 			games.push(gs);																		// Add to games array
-			trace("NEW GAME",games.length-1);													// Log
+			trace("NEW GAME",games.length,gs.id);												// Log
 			}
 		return gs;																				// Return game pointer
 	}
