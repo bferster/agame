@@ -7,7 +7,6 @@
 	const local=os.hostname().match(/^bill|desktop/i);											// Running on localhost?
 	var webSocketServer;																		// Holds socket server	
 	var games=[];																				// Holds games
-	var gameTimer=null;																			// Overall game 20 minute timer 
 	var lastClean=new Date().getTime();															// Last time a clean was initiated
 
 /* SOCKET SERVER  ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +52,8 @@ class Game {
 		this.curSpeed=2;																				// Current speed
 		this.time=10*1000;																				// Base time in ms
 		this.timer=null;																				// Phase timer
-		this.numVotes=0;																				// Numer of votes
+		this.numVotes=0;																				// Number of votes
+		this.numPlayers=1;																				// Number of active players
 	}
 
 	StartNextPhase(v)																				// START NEXT PHASE
@@ -103,8 +103,27 @@ class Game {
 		server.listen(8085);																	// Listen on port 8085
 		}
 	else webSocketServer = new WebSocket.Server({ port:8085 });									// Open in debug
-//	gameTimer=setInterval(()=>{ CleanUp(); },10*60*1000)										// Set cleanup timer
-	games[0]=new Game();																		// Add first game																			
+
+	try{
+		setInterval(()=>{																		// PING PONG TIMER
+			let i;
+			for (i=0;i<games.length;++i) {														// For each game
+				if (!games[i].numPlayers) 														// No players found
+					games.splice(i,1);															// Kill game
+				}	
+			trace("PINGPONG", webSocketServer.clients.size,games.length);
+			for (i=0;i<games.length;++i) games[i].numPlayers=0;									// No players found yet	
+			webSocketServer.clients.forEach((client)=>{											// For each client
+				if (!client.isAlive) { client.terminate(); return; };							// Kill dead one
+				client.isAlive=false;															// Set flag to not alive
+				client.ping();																	// Ping client																		
+				});
+
+
+
+			}, 10000);																			// Every 10 seconds
+	} catch(e) { console.log(e) }
+
 
 try{
 	webSocketServer.on('connection', (webSocket, req) => {										// ON CONNECTION
@@ -112,23 +131,27 @@ try{
 		d=new Date(d.getTime()+(-3600000*5));													// Get UTC-5 time	
 		let str=d.toLocaleDateString()+" -- "+d.toLocaleTimeString()+" -> "+ req.socket.remoteAddress.substring(7);
 		console.log(`Connect: (${webSocketServer.clients.size}) ${str}`);						// Log connect
+
+		webSocket.on("pong", () => { 															// ON PONG
+			webSocket.isAlive=true; 															// It's alive
+			games[webSocket.gameId].numPlayers++;												// Add to count
+			});
+
 		webSocket.on('message', (msg) => {														// ON MESSAGE
+			let gs;
+			webSocket.isAlive=true;																// It's live
 			if (!msg)	return;																	// Quit if no message
 			message=msg.toString();																// Get as string
 			trace('In:', message);																// Log
 			let v=message.split("|");															// Get params
 			if (v[0] == "INIT") {																// INIT
-				if (!games.length || 															// If no game yet
-					(games[games.length-1].players.length >= 4) ||								// Or full
-					(games[games.length-1].started)) {											// Or already started
-					games.push(new Game());														// Alloc new game
-					trace("NEW GAME",games.length-1);											// Log
-					}
-				games[games.length-1].players.push({ name:v[2], picks:[] });					// Add player to game
-				webSocket.gameId=games.length-1;												// Set game id
+				gs=FindGame();																	// Find open game or new one
+				gs.players.push( {name:v[1],id:v[1],picks:[]});
+				webSocket.gameId=gs.id;															// Set game id
+				webSocket.player=v[1];															// Set player name													
 				Broadcast(webSocket.gameId,"INIT|"+v[1]+"|"+v[2]); 								// Send INIT message
 				}
-			let gs=games[webSocket.gameId];														// Point at game data
+			gs=games[webSocket.gameId];															// Point at game data
 			if (v[0] == "START") {	  															// START
 				gs.curPhase=0;																	// Reset phase
 				gs.started=true;																// Close game for new entrants
@@ -174,6 +197,21 @@ try{
 		} catch(e) { console.log(e) }
 	}
 
+	function FindGame()																		// FIND OPEN GAME OR CREATE ONE
+	{	
+		let i,gs=null;
+		if (games.length)
+		trace(games[0].players.length)
+		for (i=0;i<games.length;++i)															// For each game
+			if ((games[i].players.length < 4)/* && !games[i].started*/) { gs=games[i]; break; }		// If an unstarted < 4 player game, point at it										
+		if (!gs) {																				// Nothing found		
+			gs=new Game();																		// Alloc new game
+			games.push(gs);																		// Add to games array
+			trace("NEW GAME",games.length-1);													// Log
+			}
+		return gs;																				// Return game pointer
+	}
+	
 	function Vote(gs)																		// VOTE
 	{
 		let i,votes=[0,0,0,0,0];
@@ -189,14 +227,6 @@ try{
 		for (let i=0;i<5;++i) gs.stuPos[i]+=Math.floor(Math.random()*4)+1;						// Advance
 	}	
 
-	function CleanUp()																			// CLEANUP GAME
-	{
-		let i;
-		trace("CLEAN",lastClean);
-		let now=new Date().getTime();																// Get now
-		lastClean=now;																				// Then is now
-
-	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // HELPERS 

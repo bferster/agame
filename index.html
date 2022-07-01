@@ -9,7 +9,7 @@
 		<script src="lib/papaparse.min.js"></script>
 	</head>
 	<style>
-		 body { 			font-family:Segoe UI,Verdana,Geneva,sans-serif; font-size:14px; box-sizing:border-box; 
+		 body { 			font-family:SegoeUI,Verdana,Geneva,sans-serif; font-size:18px; box-sizing:border-box; 
 							padding:0; margin:0; position:fixed; width:100%; 
 							}
 		.lz-splash { 		color:#999; text-align:center; margin-top:10%; display:none;
@@ -49,6 +49,7 @@
 
 		:root  {			--maxvh: 100vh  }
 		table  {			border-spacing: 0px;  }
+		@font-face {  		font-family: SegoeUI; src: url(img/segoeui.ttf);   }
 
 		body ::-webkit-scrollbar { width: 9px; height:8px } 
 		body ::-webkit-scrollbar-track { background: transparent; }
@@ -164,7 +165,7 @@ class App  {
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
 			if (!redraw) this.VideoChat();																// Open video chat	
-			$("#lz-infieldDiv").html(`<div style="position:absolute;top:-5vw">${this.strings["discussIf"]}</div>`);	// Show tip
+			$("#lz-infieldDiv").html(`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["discussIf"]}</div>`);	// Show tip
 			}
 		else if (phase == 2) {																			// DEAL 
 			$("#lz-videoChat").remove(); 																// Remove old one
@@ -200,7 +201,7 @@ class App  {
 			window.clearInterval(this.glassTimer);														// Stop timer
 			this.glassTimer=window.setInterval( ()=>{													// Start seconds timer
 				$("#lz-topbut").css("background-color","#27ae60"); 										// Hilite button							
-				$("#lz-infieldDiv").html(`<div style="position:absolute;top:-5vw">${this.strings["discuss"]}</div>`);	// Show tip
+				$("#lz-infieldDiv").html(`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["discuss"]}</div>`);	// Show tip
 				window.clearInterval(this.glassTimer);													// Stop timer
 				},this.time);
 			}
@@ -227,7 +228,7 @@ class App  {
 			x+=w;																						// Shift
 			if (i == 2) x=0,y+=h+12;																	// New line
 			}
-		str+=`<div style="position:absolute;top:-5vw">${this.strings["pickHand"]}</div>`;				// Add tip				
+		str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["pickHand"]}</div>`;		// Add tip				
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add it
 		$("[id^=lz-cardDiv-]").removeClass("lz-hover");
 		$("[id^=lz-cardDiv-]").on("mousedown", function(e) { if (!e.target.id.match(/cardCheck/)) $(this).css({"transform":"scale(2)","z-index":100})});
@@ -247,8 +248,8 @@ class App  {
 			str+=this.DrawCard(cards[i],0,x,y,0,h);														// Add card
 			y+=h+12;
 			}
-		if (title == this.me) str+=`<div style="position:absolute;top:-5vw">${this.strings["explainMyHand"]}</div>`;		// Add tip if it's me
-		else				  str+=`<div style="position:absolute;top:-5vw">${title+this.strings["explainHand"]}</div>`;	// Someone else				
+		if (title == this.me) str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["explainMyHand"]}</div>`;		// Add tip if it's me
+		else				  str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${title+this.strings["explainHand"]}</div>`;	// Someone else				
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 	}
 
@@ -270,7 +271,7 @@ class App  {
 			<img id="${"lz-voteCheck-"+i}" src="img/check.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
 			y+=h+16;																					// Next row
 			}
-		str+=`<div style="position:absolute;top:-5vw">${this.strings["vote"]}</div>`;					// Show tip			
+		str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["vote"]}</div>`;			// Show tip			
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 		
 		$("[id^=lz-voteCheck-]").on("click", function() {												// ON CHECKBOX CLICK 
@@ -284,7 +285,6 @@ class App  {
 	HourGlassTimer(time, callback)																	// RUN HOURGLASS TIMER
 	{
 		let count=0;																					// Init seconds counter
-		$("#lz-clockSVG").remove();																		// Remove clock
 		if (this.glassTimer) window.clearInterval(this.glassTimer);										// Stop timer
 		this.glassTimer=window.setInterval( ()=>{														// Start seconds timer
 			this.DrawHourGlass(count/16);																// Draw hourglass
@@ -326,19 +326,21 @@ class App  {
 
 	DrawStudents(pos=[0,0,0,0,0])																	// DRAW STUDENTS	
 	{
-		let i,str=`
-			<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(100vh - 11vw - 18px);
-			border-radius:24px;background-color:#eee;text-align:center;color:#666;border:1px solid #999">
-				<div style="position:absolute;top:25%;width:80%;font-size:1vw;margin:0 12px;border-top:1px solid #ccc"><i>Liberating</i></div>
-				<div style="position:absolute;top:50%;width:80%;font-size:1vw;margin:0 12px;border-top:1px solid #ccc"><i>Thriving</i></div>
-				<div style="position:absolute;bottom:4px;;width:80%;font-size:1vw;margin:0 12px;border-top:1px solid #ccc"><i>Learning</i></div>
-				<div style="position:absolute;top:1%;width:100%;font-size:1vw">STUDENT&nbsp;PROGRESS</div>
-			</div>`;	
-			for (i=0;i<this.stuCols.length;++i) {														// For each student
-				str+=`<div style="position:absolute;width:1.5vw;height:1.5vw;border-radius:20px;
-				left:calc(86.5vw + ${i*1.5*1.5}vw);bottom:calc(${pos[i]*7.2}% + 40px + 1vw);
-				background-color:${this.stuCols[i]}"></div>`;
-			}
+		let i,str="";
+			str+=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(100vh - 11vw - 18px);
+			border-radius:8px;background-color:#eee;text-align:center;color:#333;border:1px solid #999;font-size:1vw;
+			text-shadow:0 0 3px #fff, 0 0 3px #fff">
+				<div style="position:absolute;top:20%;width:70%;right:15%;border-top:1px solid #999">LIBERATING</div>
+				<div style="position:absolute;top:50%;width:70%;right:15%;border-top:1px solid #999">THRIVING</div>
+				<div style="position:absolute;bottom:1vw;width:82%;right:10%;border-top:1px solid #999">LEARNING</div>
+			<div style="position:absolute;top:1vw;width:100%;color:#666">STUDENT&nbsp;PROGRESS</div>
+			
+			<div style="display:grid;width:90%;height:100%;grid-template-columns:1fr 1fr 1fr 1fr 1fr;padding:5px">`;
+				for (i=0;i<this.stuCols.length;++i) {													// For each student
+					str+=`<div style="width:66%;background-color:${this.stuCols[i]};margin-left:16.5%;;margin-bottom:3.1vw;
+					border-radius:20px 20px 0 0;align-self:end;height:${Math.max(2,Math.min(pos[i],9)*9.5)}%"></div>`;
+					}
+			str+="</div></div>";	
 		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add dot
 	}
 
@@ -439,16 +441,14 @@ class App  {
 			for (i=0;i<v.length;++i)str+=`<span style="display:inline-block;background-color:${this.stuCols[v[i]-1]};
 				margin-right:3px;border-radius:25px;width:${hgt/15}px;height:${hgt/15}px"></span>`
 			str+="</div></div>";
-
 			return str;
 	}
 
 	DrawHourGlass(pct)																				// DRAW HOURGLASS
 	{
 		$("#lz-hourGlass").remove();																	// Remove old one
-		$("#lz-clockSVG").remove();																		// Remove clock
 		let str=`<div id="lz-hourGlass" style="position:absolute;overflow:hidden;
-			width:2.5vw;height:8vw;right:calc(5vw + 24px);top:24px">
+			width:2vw;height:4vw;left:calc(12.5vw + 26px);top:calc(3.4vw + 24px)">
 			<img src="img/sandtop.png" style="position:absolute;width:100%;height:100%;top:${pct*40}%">
 			<img src="img/hourtop.png" style="position:absolute;width:100%;height:100%">
 			<img src="img/sandbot.png" style="position:absolute;width:100%;height:100%;top:${(1-pct)*40}%">
