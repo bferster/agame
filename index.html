@@ -18,7 +18,7 @@
 							}
 		.lz-if { 			position:absolute; top:24px; left:calc(12.5% + 24px); font-size:1.8vw; color:#27ae60; font-weight:bold;
 							}
-		.lz-infield { 		position:absolute; top:11vw; left:calc(12.5% + 24px); width:calc(75vw - 60px); height:calc(100vh - 11vw - 12px); text-align:left; 
+		.lz-infield { 		position:absolute; top:11vw; left:calc(12.5% + 24px); width:calc(75vw - 60px); height:calc(var(--maxvh) - 11vw - 12px); text-align:left; 
 							}
 		.lz-flow { 			position:absolute; display:table; top:0; left:0; height:100%; width:calc(12.5% ); 
 							text-align:right;
@@ -108,7 +108,7 @@
 		document.documentElement.style.setProperty("--maxvh", window.innerHeight+"px");				// Set CSS var for IOS 100vh isssue
 		app.Draw();																					// Redraw to fit screen
 		let wid=$(window).width()*50/100;															// Set width
-			$("#lz-videoChat").css({ height:wid*.5625+"px",width:wid+"px" });						// Resize video if open
+		$("#lz-videoChat").css({ height:wid*.5625+"px",width:wid+"px" });							// Resize video if open
 		});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,8 +182,8 @@ class App  {
 				});										
 			}
 		else if ((phase > 2) && (phase < this.gs.players.length+3)) {									// EXPLAIN
-			if (!redraw) this.VideoChat(this.gs.players[phase-3].name); 								// Open video with highlight
-			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name);				// Show picked cards
+			if (!redraw) this.VideoChat(this.gs.players[phase-3].name.split("@")[0]); 					// Open video with highlight
+			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name.split("@")[0]);	// Show picked cards
 			this.HourGlassTimer(this.time, ()=>{ Sound("ding"); });										// Done
 			}
 		else if (phase == this.gs.players.length+3) {													// VOTE 
@@ -267,7 +267,7 @@ class App  {
 				x+=w;																					// Shift over
 				}
 			str+=`<div style="position:absolute;left:${x+12}px;top:${y+h/2-8}px">
-			<b>Choose ${this.gs.players[i].name.toUpperCase()}'s card set</b> &nbsp; 
+			<b>Choose ${this.gs.players[i].name.toUpperCase().split("@")[0]}'s card set</b> &nbsp; 
 			<img id="${"lz-voteCheck-"+i}" src="img/check.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
 			y+=h+16;																					// Next row
 			}
@@ -327,7 +327,7 @@ class App  {
 	DrawStudents(pos=[0,0,0,0,0])																	// DRAW STUDENTS	
 	{
 		let i,str="";
-			str+=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(100vh - 11vw - 18px);
+			str+=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
 			border-radius:8px;background-color:#eee;text-align:center;color:#333;border:1px solid #999;font-size:1vw;
 			text-shadow:0 0 3px #fff, 0 0 3px #fff">
 				<div style="position:absolute;top:20%;width:70%;right:15%;border-top:1px solid #999">LIBERATING</div>
@@ -390,7 +390,7 @@ class App  {
 		str+=addItem(i++,"PICK CARDS")																	// DEAL
 		if (this.gs.players)
 		for (j=0;j<this.gs.players.length;++j)															// For each player	
-			str+=addItem(i++,this.gs.players[j].name+" TALKS");											// Add player's name
+			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" TALKS");							// Add player's name
 		str+=addItem(i++,"VOTE")																		// VOTE
 		str+=addItem(i++,"DISCUSS")																		// DISCUSS
 /*		str+=`<div style="position:absolute;left:24px;bottom:24px; width:calc(12.5vw - 28px);text-align:right">
@@ -493,7 +493,7 @@ class App  {
 		this.ws.onerror=(e)=>  { console.log('error',e);	};											// ON ERROR
 		this.ws.onopen=()=> { 																			// ON OPEN	
 			console.log('connected'); 																	// Show connected
-			this.ws.send("INIT|"+this.me+this.uniqueId+"|"+this.me);									// Init																	
+			this.ws.send("INIT|"+this.me+"@"+this.uniqueId+"|"+this.me);								// Init																	
 			this.pollTimer= window.setInterval( ()=>{													// INIT POLLING SERVER
 			++this.secs;																				// Another second 
 			if (this.retryWS) {																			// If reconnecting to websocket

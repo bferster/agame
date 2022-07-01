@@ -44,7 +44,7 @@ class Game {
 		this.ifs=new Array(numIfs);																		// Ifs active array
 		this.thens=new Array(numThens);																	// Thens
 		this.maxTime=45*60;																				// Max time in seconds
-		this.players=[{name:"Sara",id:123,picks:[22,66,12], winner:0} ];								// Holds player info
+		this.players=[{name:"Sara",picks:[22,66,12], winner:0} ];										// Holds player info
 		this.stuPos=[0,0,5,2,1];																		// Student track positions
 		this.curPhase=0;																				// Phase
 		this.curIf=-1;																					// No if condition yet
@@ -147,10 +147,10 @@ try{
 			let v=message.split("|");															// Get params
 			if (v[0] == "INIT") {																// INIT
 				gs=FindGame();																	// Find open game or new one
-				gs.players.push( {name:v[1],id:v[1],picks:[]});
+				gs.players.push( {name:v[1],picks:[]});											// Add player data
 				webSocket.gameId=gs.id;															// Set game id
 				webSocket.player=v[1];															// Set player name													
-				Broadcast(webSocket.gameId,"INIT|"+v[1]+"|"+v[2]); 								// Send INIT message
+				Broadcast(webSocket.gameId,"INIT|"+v[1].split("@")[0]+"|"+v[2]); 				// Send INIT message
 				}
 			let index=games.findIndex(x => x.id == webSocket.gameId)							// Find array index by id
 			if (index == -1) return;															// Quit if not found
