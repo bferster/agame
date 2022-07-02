@@ -129,7 +129,7 @@ class App  {
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
-		this.uniqueId=""+Math.floor(Math.random()*10000);												// Random number
+		this.id="";																				// Set in InitSocket()
 		this.time=10;																					// Time in seconds
 		this.speed=2;																					// Speed = 3 2 1
 		app.winner=0;
@@ -154,7 +154,6 @@ class App  {
 			})
 	}
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // ACT 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -178,32 +177,30 @@ class App  {
 						if (picks.length < 3)															// Less than 3
 							picks.push(this.id.substring(13)-0);										// Add card's index
 					});		
-				this.ws.send("PICKS|"+app.gs.gameId+"|"+app.me+"|"+JSON.stringify(picks));				// Send picked cards to server
+				this.ws.send("PICKS|"+app.gs.gameId+"|"+app.id+"|"+JSON.stringify(picks));				// Send picked cards to server
 				});										
 			}
 		else if ((phase > 2) && (phase < this.gs.players.length+3)) {									// EXPLAIN
 			if (!redraw) this.VideoChat(this.gs.players[phase-3].name.split("@")[0]); 					// Open video with highlight
-			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name.split("@")[0]);	// Show picked cards
+			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name);				// Show picked cards
 			this.HourGlassTimer(this.time, ()=>{ Sound("ding"); });										// Done
 			}
 		else if (phase == this.gs.players.length+3) {													// VOTE 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.Vote();
 			this.HourGlassTimer(this.time*this.speed, ()=>{ 											// Hourglass
+				this.ws.send("WINNER|"+app.gs.gameId+"|"+app.id+"|"+app.winner);						// Send winner to server
 				Sound("ding"); 																			// Ding
 				});
 			}
 		else if (phase == this.gs.players.length+4) {													// DISCUSS
-			this.ws.send("WINNER|"+app.gs.gameId+"|"+app.me+"|"+app.winner);							// Send winner to server
 			if (!redraw) this.VideoChat();																// Open video chat	
-			$("#lz-hourGlass").remove();																// Remove hourglass
-			this.ShowCards([],"Voting...") ; 															// Voting
-			window.clearInterval(this.glassTimer);														// Stop timer
-			this.glassTimer=window.setInterval( ()=>{													// Start seconds timer
+			if (this.gs.winner != -1)																	// A winner picked
+				this.ShowCards(this.gs.players[this.gs.winner].picks,"",`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["discuss"]}</div>`);	// Show tip
+			this.HourGlassTimer(this.time*this.speed, ()=>{ 											// Hourglass
 				$("#lz-topbut").css("background-color","#27ae60"); 										// Hilite button							
-				$("#lz-infieldDiv").html(`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["discuss"]}</div>`);	// Show tip
-				window.clearInterval(this.glassTimer);													// Stop timer
-				},this.time);
+				Sound("clicks"); 																		// Clicks
+				});
 			}
 		this.Draw();																					// Redraw
 		if (phase == 100) {																				// OVER 
@@ -239,7 +236,7 @@ class App  {
 			});	
 	}
 
-	ShowCards(cards, title="")																		// SHOW PICKED CARDS
+	ShowCards(cards, who="", tip)																	// SHOW PICKED CARDS
 	{
 		let i,y=0,str="";
 		let x=$(window).width()/2+24;																	// Left
@@ -248,8 +245,9 @@ class App  {
 			str+=this.DrawCard(cards[i],0,x,y,0,h);														// Add card
 			y+=h+12;
 			}
-		if (title == this.me) str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["explainMyHand"]}</div>`;		// Add tip if it's me
-		else				  str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${title+this.strings["explainHand"]}</div>`;	// Someone else				
+		if (who == this.id) str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["explainMyHand"]}</div>`;					// Add tip if it's me
+		else if (who)		str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${who.split("@")[0]+this.strings["explainHand"]}</div>`;	// Someone else				
+		else				str+=tip;																	// Just add tip															
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 	}
 
@@ -402,8 +400,8 @@ class App  {
 		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
 		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.me);	// New game	
-			else if (this.gs.curPhase == 1) 												this.ws.send("NEXT|"+app.gs.gameId+"|"+app.me);		// Deal
+			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
+			else if (this.gs.curPhase == 1) 												this.ws.send("NEXT|"+app.gs.gameId+"|"+app.id);		// Deal
 			});										
 	
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
@@ -493,7 +491,8 @@ class App  {
 		this.ws.onerror=(e)=>  { console.log('error',e);	};											// ON ERROR
 		this.ws.onopen=()=> { 																			// ON OPEN	
 			console.log('connected'); 																	// Show connected
-			this.ws.send("INIT|"+this.me+"@"+this.uniqueId+"|"+this.me);								// Init																	
+			this.id=this.me+"@"+Math.floor(Math.random()*10000);										// Make unique id
+			this.ws.send("INIT|"+this.id+"|"+this.me);													// Init																	
 			this.pollTimer= window.setInterval( ()=>{													// INIT POLLING SERVER
 			++this.secs;																				// Another second 
 			if (this.retryWS) {																			// If reconnecting to websocket
@@ -509,22 +508,16 @@ class App  {
 
 	SocketIn(event)																					// A WEBSOCKET MESSAGE FROM NODE WS SERVER
 	{
-		let o;
+		trace(event.data);
 		if (!event.data)			 return;															// Quit if no data
 		let v=event.data.split("|");																	// Get params
-		trace(event.data);
 		this.gs=JSON.parse(v[3]);																		// Get game state
 		if (v[0] == "INIT")			this.Draw();														// INIT
 		else if (v[0] == "START") 	this.SetPhase(1);													// START
 		else if (v[0] == "DRAW")  	this.SetPhase(this.gs.curPhase);									// DRAW 
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
-		else if (v[0] == "VOTED") {																		// VOTED
-			this.Draw();																				// Redraw track
-			this.ShowCards((this.gs.winner != -1) ? this.gs.players[this.gs.winner].picks : [], 
-			(this.gs.winner != -1) ? this.gs.players[this.gs.winner].name : "") ;						// Show winning cards, if any
-			$("#lz-topbut").css("background-color","#27ae60"); 											// Hilite button							
-			}
+		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// VOTED
 	}
 
 } // CLASS CLOSURE

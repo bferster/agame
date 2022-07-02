@@ -44,7 +44,7 @@ class Game {
 		this.ifs=new Array(numIfs);																		// Ifs active array
 		this.thens=new Array(numThens);																	// Thens
 		this.maxTime=45*60;																				// Max time in seconds
-		this.players=[{name:"Sara",picks:[22,66,12], winner:0} ];										// Holds player info
+		this.players=[];																				// Holds player info
 		this.stuPos=[0,0,5,2,1];																		// Student track positions
 		this.curPhase=0;																				// Phase
 		this.curIf=-1;																					// No if condition yet
@@ -172,9 +172,10 @@ try{
 				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
 				if (pdex != -1)	gs.players[pdex].winner=JSON.parse(v[3]);						// Record their picks
 				++gs.numVotes;																	// Add to count
-				if (gs.numVotes == gs.players.length-1) {										// All voters in !!!!!!!!!!!!!! REMOVE -1  !!!!!!!!!
+				if (gs.numVotes == gs.players.length) {											// All voters in 
 					Advance(gs);																// Advance students	
 					gs.winner=Vote(gs);															// Vote
+					trace(gs)
 					Broadcast(webSocket.gameId, "VOTED|"+v[1]+"|"+v[2]); 						// Trigger redraw
 					let trt=Math.floor(new Date().getTime()/1000-gs.startTime);					// TRT in seconds
 					if (trt >= gs.maxTime)														// If over time
@@ -207,7 +208,10 @@ try{
 		let i,gs=null;
 		if (games.length)
 		for (i=0;i<games.length;++i)															// For each game
-			if ((games[i].players.length < 4)/* && !games[i].started*/) { gs=games[i]; break; }	// If an unstarted < 4 player game, point at it										
+			if ((games[i].players.length < 4) && !games[i].started) {							// If an unstarted < 4 player game
+				gs=games[i];  																	// Point at it	
+				break; 																			// Quit looking
+				}											
 		if (!gs) {																				// Nothing found		
 			gs=new Game();																		// Alloc new game
 			games.push(gs);																		// Add to games array
