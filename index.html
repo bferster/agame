@@ -23,6 +23,8 @@
 		.lz-flow { 			position:absolute; display:table; top:0; left:0; height:100%; width:calc(12.5% ); 
 							text-align:right;
 							}
+		.lz-tip { 			position:absolute; top:-5.5vw; left:3.4vw; font-size:2vh;
+							}
 		.lz-dialog {		position:absolute; top:16px; left:16px; background-color: #eee; border: 1px solid #aaa;
 							padding:16px; border-radius: 16px; width: 600px;
 							}
@@ -164,7 +166,7 @@ class App  {
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
 			if (!redraw) this.VideoChat();																// Open video chat	
-			$("#lz-infieldDiv").html(`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["discussIf"]}</div>`);	// Show tip
+			$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["discussIf"]}</div>`);			// Show tip
 			}
 		else if (phase == 2) {																			// DEAL 
 			$("#lz-videoChat").remove(); 																// Remove old one
@@ -196,7 +198,7 @@ class App  {
 		else if (phase == this.gs.players.length+4) {													// DISCUSS
 			if (!redraw) this.VideoChat();																// Open video chat	
 			if (this.gs.winner != -1)																	// A winner picked
-				this.ShowCards(this.gs.players[this.gs.winner].picks,"",`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["discuss"]}</div>`);	// Show tip
+				this.ShowCards(this.gs.players[this.gs.winner].picks,"",`<div class="lz-tip">${this.strings["discuss"]}</div>`);	// Show tip
 			this.HourGlassTimer(this.time*this.speed, ()=>{ 											// Hourglass
 				$("#lz-topbut").css("background-color","#27ae60"); 										// Hilite button							
 				Sound("clicks"); 																		// Clicks
@@ -225,7 +227,7 @@ class App  {
 			x+=w;																						// Shift
 			if (i == 2) x=0,y+=h+12;																	// New line
 			}
-		str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["pickHand"]}</div>`;		// Add tip				
+		str+=`<div class="lz-tip">${this.strings["pickHand"]}</div>`;									// Add tip				
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add it
 		$("[id^=lz-cardDiv-]").removeClass("lz-hover");
 		$("[id^=lz-cardDiv-]").on("mousedown", function(e) { if (!e.target.id.match(/cardCheck/)) $(this).css({"transform":"scale(2)","z-index":100})});
@@ -245,8 +247,8 @@ class App  {
 			str+=this.DrawCard(cards[i],0,x,y,0,h);														// Add card
 			y+=h+12;
 			}
-		if (who == this.id) str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["explainMyHand"]}</div>`;					// Add tip if it's me
-		else if (who)		str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${who.split("@")[0]+this.strings["explainHand"]}</div>`;	// Someone else				
+		if (who == this.id) str+=`<div class="lz-tip">${this.strings["explainMyHand"]}</div>`;			// Add tip if it's me
+		else if (who)		str+=`<div class="lz-tip">${who.split("@")[0]+this.strings["explainHand"]}</div>`;	// Someone else				
 		else				str+=tip;																	// Just add tip															
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 	}
@@ -269,7 +271,7 @@ class App  {
 			<img id="${"lz-voteCheck-"+i}" src="img/check.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
 			y+=h+16;																					// Next row
 			}
-		str+=`<div style="position:absolute;top:-5vw;left:3.4vw">${this.strings["vote"]}</div>`;			// Show tip			
+		str+=`<div class="lz-tip">${this.strings["vote"]}</div>`;										// Show tip			
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 		
 		$("[id^=lz-voteCheck-]").on("click", function() {												// ON CHECKBOX CLICK 
@@ -313,7 +315,7 @@ class App  {
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let wid=$(window).width()*pct/100;																// Set height
 		let hgt=wid*.5625;																				// Width
-		let link="japp.htm?AgileGameChat~Session~"+app.gs.gameId+"&"+this.me+"&"+focus.toLowerCase();	// Make link
+		let link="japp.htm?AgileGameChat"+("~"+app.gs.gameId).substring(8)+"&"+this.me+"&"+focus.toLowerCase();	// Make link
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:11vw;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 

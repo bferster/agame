@@ -175,7 +175,6 @@ try{
 				if (gs.numVotes == gs.players.length) {											// All voters in 
 					Advance(gs);																// Advance students	
 					gs.winner=Vote(gs);															// Vote
-					trace(gs)
 					Broadcast(webSocket.gameId, "VOTED|"+v[1]+"|"+v[2]); 						// Trigger redraw
 					let trt=Math.floor(new Date().getTime()/1000-gs.startTime);					// TRT in seconds
 					if (trt >= gs.maxTime)														// If over time
