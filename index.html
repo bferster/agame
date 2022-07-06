@@ -185,7 +185,7 @@ class App  {
 		else if ((phase > 2) && (phase < this.gs.players.length+3)) {									// EXPLAIN
 			if (!redraw) this.VideoChat(this.gs.players[phase-3].name.split("@")[0]); 					// Open video with highlight
 			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name);				// Show picked cards
-			this.HourGlassTimer(this.time, ()=>{ Sound("ding"); });										// Done
+			this.HourGlassTimer2(this.time, ()=>{ Sound("ding"); });									// Done
 			}
 		else if (phase == this.gs.players.length+3) {													// VOTE 
 			$("#lz-videoChat").remove(); 																// Remove old one
@@ -290,6 +290,19 @@ class App  {
 			this.DrawHourGlass(count/16);																// Draw hourglass
 			if (count++ >= 16) {																		// Time's up
 				window.clearInterval(this.glassTimer);													// Stop timer
+				if (callback) callback();																// Run callback
+				}
+		},time*1000/16);																				// time
+	}
+
+	HourGlassTimer2(time, callback)																	// RUN HOURGLASS TIMER
+	{
+		let count=0;																					// Init seconds counter
+		if (this.glassTimer2) window.clearInterval(this.glassTimer);									// Stop timer
+		this.glassTimer2=window.setInterval( ()=>{														// Start seconds timer
+			this.DrawHourGlass(count/16);																// Draw hourglass
+			if (count++ >= 16) {																		// Time's up
+				window.clearInterval(this.glassTimer2);													// Stop timer
 				if (callback) callback();																// Run callback
 				}
 		},time*1000/16);																				// time
@@ -516,7 +529,7 @@ class App  {
 		this.gs=JSON.parse(v[3]);																		// Get game state
 		if (v[0] == "INIT")			this.Draw();														// INIT
 		else if (v[0] == "START") 	this.SetPhase(1);													// START
-		else if (v[0] == "DRAW")  	this.SetPhase(this.gs.curPhase);									// DRAW 
+		else if (v[0] == "DRAW")  	this.Draw();														// DRAW 
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
 		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// VOTED
