@@ -45,7 +45,7 @@ class Game {
 		this.thens=new Array(numThens);																	// Thens
 		this.maxTime=45*60;																				// Max time in seconds
 		this.players=[];																				// Holds player info
-		this.stuPos=[0,0,5,2,1];																		// Student track positions
+		this.stuPos=[0,0,5,2,1,0,0,5,2,1];																// Student track positions [ ...last, ...current]
 		this.curPhase=0;																				// Phase
 		this.curIf=-1;																					// No if condition yet
 		this.winner=-1;																					// No winner yet
@@ -231,7 +231,9 @@ try{
 	function Advance(gs)																	// ADVANCE STUDENT POSITIONS
 	{
 		let i;
-		for (let i=0;i<5;++i) gs.stuPos[i]+=Math.floor(Math.random()*4)+1;						// Advance
+		for (i=0;i<5;++i) gs.stuPos[i]= gs.stuPos[i+5];											// Copy current to last position
+		for (i=5;i<10;++i) gs.stuPos[i]+=Math.floor(Math.random()*4)+1;							// Advance new positions
+
 	}	
 
 

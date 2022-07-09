@@ -187,9 +187,9 @@ class App  {
 			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name);				// Show picked cards
 			this.HourGlassTimer2(this.time, ()=>{ Sound("ding"); });									// Done
 			}
-		else if (phase == this.gs.players.length+3) {													// VOTE 
+		else if (phase == this.gs.players.length+3) {													// DECIDE 
 			$("#lz-videoChat").remove(); 																// Remove old one
-			this.Vote();
+			this.Decide();
 			this.HourGlassTimer(this.time*this.speed, ()=>{ 											// Hourglass
 				this.ws.send("WINNER|"+app.gs.gameId+"|"+app.id+"|"+app.winner);						// Send winner to server
 				Sound("ding"); 																			// Ding
@@ -253,12 +253,12 @@ class App  {
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 	}
 
-	Vote()																							// VOTE
+	Decide()																							// DECIDE
 	{
 		let i,j,o,x=0,y=0,str="";
 		let h=$("#lz-infieldDiv").height()/(this.gs.players.length+1)-16;								// Card height
 		let w=h*.75+8;																					// Width
-		app.winner=-1;																					// No vote yet
+		app.winner=-1;																					// No decision yet
 		for (i=0;i<this.gs.players.length;++i) {														// For each player
 			x=0;																						// Reset x
 			o=this.gs.players[i].picks;																	// Point at picks
@@ -329,6 +329,7 @@ class App  {
 		let wid=$(window).width()*pct/100;																// Set height
 		let hgt=wid*.5625;																				// Width
 		let link="japp.htm?AgileGameChat"+("~"+app.gs.gameId).substring(8)+"&"+this.me+"&"+focus.toLowerCase();	// Make link
+		if (window.location.host == "localhost")	link="";											// Debugging has no video
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:11vw;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
@@ -337,23 +338,31 @@ class App  {
 		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
 	}
 
-	DrawStudents(pos=[0,0,0,0,0])																	// DRAW STUDENTS	
+	DrawStudents(pos=[0,0,0,0,0,0,0,0,0,0])															// DRAW STUDENTS	
 	{
+//pos=[0,0,5,2,1,0,1,8,7,1]
 		let i,str="";
 			str+=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
 			border-radius:8px;background-color:#eee;text-align:center;color:#333;border:1px solid #999;font-size:1vw;
 			text-shadow:0 0 3px #fff, 0 0 3px #fff">
-				<div style="position:absolute;top:20%;width:70%;right:15%;border-top:1px solid #999">LIBERATING</div>
-				<div style="position:absolute;top:50%;width:70%;right:15%;border-top:1px solid #999">THRIVING</div>
-				<div style="position:absolute;bottom:1vw;width:82%;right:10%;border-top:1px solid #999">LEARNING</div>
-			<div style="position:absolute;top:1vw;width:100%;color:#666">STUDENT&nbsp;PROGRESS</div>
+				<div style="position:absolute;top:1vw;width:70%;right:15%;border-bottom:1px solid #999">LIBERATING</div>
+				<div style="position:absolute;top:20%;width:70%;right:15%;border-bottom:1px solid #999">THRIVING</div>
+				<div style="position:absolute;top:50%;width:82%;right:10%;border-bottom:1px solid #999">LEARNING</div>
+				<div style="position:absolute;bottom:.5vw;width:100%;color:#666">STUDENT&nbsp;PROGRESS</div>
 			
-			<div style="display:grid;width:90%;height:100%;grid-template-columns:1fr 1fr 1fr 1fr 1fr;padding:5px">`;
-				for (i=0;i<this.stuCols.length;++i) {													// For each student
-					str+=`<div style="width:66%;background-color:${this.stuCols[i]};margin-left:16.5%;;margin-bottom:3.1vw;
-					border-radius:20px 20px 0 0;align-self:end;height:${Math.max(2,Math.min(pos[i],9)*9.5)}%"></div>`;
-					}
-			str+="</div></div>";	
+		<div style="display:grid;width:calc(100% - 32px);height:100%;padding:0 16px;grid-template-columns:1fr 1fr 1fr 1fr 1fr">`;
+		for (i=0;i<this.stuCols.length;++i) {															// For each student
+			pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);									// Cap 0-9
+			str+=`<div style="margin-bottom:2.5vw;align-self:end">
+				<div>	
+					<div style="background-color:${this.stuCols[i]};border-radius:20px 20px 0 0;height:${(pos[i+5]-pos[i])*8}vh"></div>
+					<div style="background-color:${this.stuCols[i]};opacity:.75;`;	
+					if (!(pos[i]-pos[i+5]))	str+=`border-radius:20px 20px 0 0;`;					// Add curved top if same
+						str+=`height:${Math.max(2,pos[i]*8)}vh"></div>
+					</div>
+			</div>`;
+			}
+		str+="</div></div>";	
 		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add dot
 	}
 
@@ -404,7 +413,7 @@ class App  {
 		if (this.gs.players)
 		for (j=0;j<this.gs.players.length;++j)															// For each player	
 			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" TALKS");							// Add player's name
-		str+=addItem(i++,"VOTE")																		// VOTE
+		str+=addItem(i++,"DECIDE")																		// DECIDE
 		str+=addItem(i++,"DISCUSS")																		// DISCUSS
 /*		str+=`<div style="position:absolute;left:24px;bottom:24px; width:calc(12.5vw - 28px);text-align:right">
 			<img id="lz-Speed-0" src="img/slow.png" title="Slow">
@@ -532,7 +541,7 @@ class App  {
 		else if (v[0] == "DRAW")  	this.Draw();														// DRAW 
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
-		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// VOTED
+		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// DECIDED
 	}
 
 } // CLASS CLOSURE
