@@ -7,7 +7,6 @@
 	const local=os.hostname().match(/^bill|desktop/i);											// Running on localhost?
 	var webSocketServer;																		// Holds socket server	
 	var games=[];																				// Holds games
-	var lastClean=new Date().getTime();															// Last time a clean was initiated
 
 /* SOCKET SERVER  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -69,18 +68,17 @@ class Game {
 			}
 		else if (this.curPhase == 2)					 	time=this.time*this.curSpeed;				// DEAL
 		else if ((this.curPhase > 2) && (this.curPhase < this.players.length+3)) time=this.time;		// EXPLAIN
-		else if (this.curPhase == this.players.length+3) 	time=this.time*this.curSpeed;				// VOTE
 		if (time) {																						// If waiting
 			clearInterval(this.timer);																	// Stop timer
 			this.timer=setInterval( ()=>{																// Start timer 
 				clearInterval(this.timer);																// Stop timer
 				this.StartNextPhase(v);																	// Recurse			
-				},time+2000);
+				},time);
 			}
 		Broadcast(this.id,op+v[1]+"|"+v[2]); 															// Send message
 	}
 
-	PlayerIndex(name)																				// GET PLAYER''S INDEX FROM NAME
+	PlayerIndex(name)																				// GET PLAYER'S INDEX FROM NAME
 	{
 		let i;
 		for (i=0;i<this.players.length;++i)																// For each player
@@ -118,10 +116,7 @@ class Game {
 				client.isAlive=false;															// Set flag to not alive
 				client.ping();																	// Ping client																		
 				});
-
-
-
-			}, 10000);																			// Every 10 seconds
+			}, 5000);																			// Every 5 seconds
 	} catch(e) { console.log(e) }
 
 
@@ -160,25 +155,23 @@ try{
 				gs.started=true;																// Close game for new entrants
 				gs.StartNextPhase(v);															// Start next phase	
 				}					
-			else if (v[0] == "NEXT") {															// NEXT
+			else if (v[0] == "DEAL") {															// DEAL
 				gs.StartNextPhase(v);															// Start next phase	
 				}
 			else if (v[0] == "PICKS") {															// PICKS
 				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
 				if (pdex != -1)	gs.players[pdex].picks=JSON.parse(v[3]);						// Record their picks
-				Broadcast(webSocket.gameId, "DRAW|"+v[1]+"|"+v[2]); 							// Trigger players
+				Broadcast(webSocket.gameId, "PICKS|"+v[1]+"|"+v[2]); 							// Trigger players
 				}	
 			else if (v[0] == "WINNER") {														// WINNER
 				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
 				if (pdex != -1)	gs.players[pdex].winner=JSON.parse(v[3]);						// Record their picks
+				gs.winner=Vote(gs);																// Vote
 				++gs.numVotes;																	// Add to count
 				if (gs.numVotes == gs.players.length) {											// All voters in 
+					gs.curPhase++;																// Final phase
 					Advance(gs);																// Advance students	
-					gs.winner=Vote(gs);															// Vote
 					Broadcast(webSocket.gameId, "VOTED|"+v[1]+"|"+v[2]); 						// Trigger redraw
-					let trt=Math.floor(new Date().getTime()/1000-gs.startTime);					// TRT in seconds
-					if (trt >= gs.maxTime)														// If over time
-						Broadcast(webSocket.gameId, "OVER|"+v[1]+"|"+v[2]); 					// Send OVER message
 					}
 				}
 			});

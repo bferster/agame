@@ -123,11 +123,11 @@ string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1
 <li>Press the <b style="color:#009900">PLAY</b> button to play another round, until the the 45 minute period is up</li></ol>
 <p><b><i>Tips</i></b></p>
 Anytime you see an hourglass, you have until the sand runs out before going to the next phase.<br>
-The clock on the right shows how many minutes left in the game"
+The clock on the right shows how many minutes left in the class"
 
-string,discussIf,"<i>Discuss the IF presented with your team.<br>When you are ready to see the cards, someone press the </i><b>DEAL CARDS</b><i> button.<i>"
-string,pickHand,"<i>You can choose up to three cards to play.<br>When the timer is up, each player will explain their choices.</i>"
-string,explainMyHand,"<i>It's your turn to share with the team<br>why you chose your cards.</i>"
-string,explainHand,"<i> is explaining to the team<br>why they chose those cards.<i>"
-string,vote,<i>Discuss which set you think is the best to address the IF issue<br>,as well as progress the students, by checking the box to the right.<i>
-string,discuss,"<i>Discuss the card choices with the team.<br>When you are ready play again, someone press the </i><b>PLAY</b><i> button.<i>"
+string,discussIf,"Discuss the IF presented with your team.<br>When you are ready to see the cards, someone press the </i><b>DEAL CARDS</b><i> button."
+string,pickHand,"You can choose up to three cards to play.<br>When the timer is up, each player will explain their choices."
+string,explainMyHand,"It's your turn to share with the team<br>why you chose your cards."
+string,explainHand," is explaining to the team<br>why they chose those cards."
+string,vote,"Discuss which set you think is the best to address the IF issue,<br>as well as progress the students, by checking the box to the right."
+string,discuss,"Discuss the card choices with the team.<br>When you are ready play again, someone press the </i><b>PLAY</b><i> button."
