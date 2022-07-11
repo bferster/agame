@@ -131,8 +131,8 @@ class App  {
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
-		this.id="";																				// Set in InitSocket()
-		this.time=10;																					// Time in seconds
+		this.id="";																						// Set in InitSocket()
+		this.time=20;																					// Time in seconds
 		this.speed=2;																					// Speed = 3 2 1
 		app.winner=0;
 	}
@@ -188,8 +188,8 @@ class App  {
 			this.HourGlassTimer2(this.time, ()=>{ Sound("ding"); });									// Done
 			}
 		else if (phase == this.gs.players.length+3) {													// DECIDE 
-			$("#lz-videoChat").remove(); 																// Remove old one
-			this.Decide();
+			if (!redraw) this.VideoChat("",30);															// Open smaller video chat	
+			this.Decide();																				// Show all picked
 			this.HourGlassTimer(this.time*this.speed, ()=>{ 											// Hourglass
 				this.ws.send("WINNER|"+app.gs.gameId+"|"+app.id+"|"+app.winner);						// Send winner to server
 				Sound("ding"); 																			// Ding
@@ -255,19 +255,19 @@ class App  {
 
 	Decide()																							// DECIDE
 	{
-		let i,j,o,x=0,y=0,str="";
+		let i,j,o,x,y=0,str="";
 		let h=$("#lz-infieldDiv").height()/(this.gs.players.length+1)-16;								// Card height
 		let w=h*.75+8;																					// Width
 		app.winner=-1;																					// No decision yet
 		for (i=0;i<this.gs.players.length;++i) {														// For each player
-			x=0;																						// Reset x
+			x=$(window).width()*.3+12;																	// Reset x
 			o=this.gs.players[i].picks;																	// Point at picks
 			for (j=0;j<o.length;++j) {																	// For each card picked
 				str+=this.DrawCard(o[j],(i*4)+j,x,y,0,h);												// Draw it
 				x+=w;																					// Shift over
 				}
+			
 			str+=`<div style="position:absolute;left:${x+12}px;top:${y+h/2-8}px">
-			<b>Choose ${this.gs.players[i].name.toUpperCase().split("@")[0]}'s card set</b> &nbsp; 
 			<img id="${"lz-voteCheck-"+i}" src="img/check.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
 			y+=h+16;																					// Next row
 			}
@@ -322,9 +322,8 @@ class App  {
 		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
 	}
 
-	VideoChat(focus="")																				// OPEN VIDEO CHAT
+	VideoChat(focus="",pct=50)																				// OPEN VIDEO CHAT
 	{
-		let pct=50
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let wid=$(window).width()*pct/100;																// Set height
 		let hgt=wid*.5625;																				// Width
