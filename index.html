@@ -132,8 +132,8 @@ class App  {
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.id="";																						// Set in InitSocket()
-		this.time=20;																					// Time in seconds
-		this.speed=2;																					// Speed = 3 2 1
+		this.time=5;																					// Time in seconds
+		this.speed=2;																					// Speed multiplier = 2 1
 		app.winner=0;
 	}
 
@@ -389,15 +389,16 @@ class App  {
 		if (this.gs.players)
 		for (j=0;j<this.gs.players.length;++j)															// For each player	
 			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" TALKS");							// Add player's name
-		str+=addItem(i++,"DECIDE")																		// DECIDE
-		str+=addItem(i++,"DISCUSS")																		// DISCUSS
-*		$("#lz-flowDiv").html(str);																		// Add flowchart
+		str+=addItem(i++,"DECIDE");																	// DECIDE
+		str+=addItem(i++,"DISCUSS")	;																	// DISCUS
+		$("#lz-flowDiv").html(str);																		// Add flowchart
 		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
 		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
 			else if (this.gs.curPhase == 1) 												this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);		// Deal
 			});										
+		trace(str)
 	
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
 			let col=(num == app.gs.curPhase) ? "#ea7f1d" : "#ccc";										// Hilite curPhase
