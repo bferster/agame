@@ -7,6 +7,7 @@
 	const local=os.hostname().match(/^bill|desktop/i);											// Running on localhost?
 	var webSocketServer;																		// Holds socket server	
 	var games=[];																				// Holds games
+	var numIfs=0,numThens=0
 
 /* SOCKET SERVER  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +36,7 @@ node gws.js
 	
 class Game {																					
 
-	constructor(numIfs=18, numThens=90)   															// CONSTRUCTOR
+	constructor()   																				// CONSTRUCTOR
 	{
 		this.started=false;																				// Game started flag
 		this.startTime=new Date().getTime()/1000;														// Get start time in seconds
@@ -103,6 +104,8 @@ class Game {
 	else webSocketServer = new WebSocket.Server({ port:8085 });									// Open in debug
 
 	try{
+		LoadConfig();																			// Load config file
+	
 		setInterval(()=>{																		// PING PONG TIMER
 			let i;
 			for (i=0;i<games.length;++i) {														// For each game
@@ -211,6 +214,23 @@ try{
 			}
 		return gs;																				// Return game pointer
 	}
+	
+	function LoadConfig()																	// LOAD CONFIG.CSV FILE
+	{
+		let i,v;
+		outcomes=[];																			// No outcomes yet
+		numIfs=numThens=0;																		// Assume none
+		let d=fs.readFileSync("data/config.csv","utf8").split("\n");							// Get config file
+		for (i=0;i<d.length;++i) {																// For each line
+			d[i]=d[i].replace(/\r/g,"");														// No CRs
+			if (d[i].match(/^if/i))				numIfs++;										// Add to if count
+			else if (d[i].match(/^then/i))		numThens++;										// Then											
+			else if (d[i].match(/^outcome/i))  {												// Get outcome
+				v=d[i].split(",");																// Get fields
+				outcomes.push({ amt: v[1], msg:v[2]} );											// Add outcome										
+				}
+			}	
+	}	
 	
 	function Vote(gs)																		// VOTE
 	{
