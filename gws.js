@@ -7,7 +7,9 @@
 	const local=os.hostname().match(/^bill|desktop/i);											// Running on localhost?
 	var webSocketServer;																		// Holds socket server	
 	var games=[];																				// Holds games
-	var numIfs=0,numThens=0
+	var outcomes=[];																			// Holds outcomes
+	var thens=[];																				// Holds thens
+	var numIfs=0;																				// Number of ifs
 
 /* SOCKET SERVER  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +44,7 @@ class Game {
 		this.startTime=new Date().getTime()/1000;														// Get start time in seconds
 		this.id=Math.floor(Math.random()*10000)+Math.floor(this.startTime);								// Set ID
 		this.ifs=new Array(numIfs);																		// Ifs active array
-		this.thens=new Array(numThens);																	// Thens
+		this.thens=new Array(thens.length);																// Thens
 		this.maxTime=45*60;																				// Max time in seconds
 		this.players=[];																				// Holds player info
 		this.stuPos=[0,0,5,2,1,0,0,5,2,1];																// Student track positions [ ...last, ...current]
@@ -219,18 +221,22 @@ try{
 	{
 		let i,v;
 		outcomes=[];																			// No outcomes yet
-		numIfs=numThens=0;																		// Assume none
+		thens=[];																				// No thens yet
+		numIfs=0;																				// Assume no ifs
 		let d=fs.readFileSync("data/config.csv","utf8").split("\n");							// Get config file
 		for (i=0;i<d.length;++i) {																// For each line
 			d[i]=d[i].replace(/\r/g,"");														// No CRs
 			if (d[i].match(/^if/i))				numIfs++;										// Add to if count
-			else if (d[i].match(/^then/i))		numThens++;										// Then											
+			else if (d[i].match(/^then/i))	{													// Get then							
+				v=d[i].match(/{.*}/)[0];														// Pull out time field
+				thens.push(JSON.parse(v));														// Add then										
+				}
 			else if (d[i].match(/^outcome/i))  {												// Get outcome
 				v=d[i].split(",");																// Get fields
 				outcomes.push({ amt: v[1], msg:v[2]} );											// Add outcome										
 				}
 			}	
-	}	
+		}	
 	
 	function Vote(gs)																		// VOTE
 	{

@@ -398,8 +398,7 @@ class App  {
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
 			else if (this.gs.curPhase == 1) 												this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);		// Deal
 			});										
-		trace(str)
-	
+
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
 			let col=(num == app.gs.curPhase) ? "#ea7f1d" : "#ccc";										// Hilite curPhase
 			let s=`<p><div class="lz-bs" id="lz-phase-${num}" style="cursor:auto;font-size:${fh}px;background-color:${col}">${name.toUpperCase()}</div></p>`;
@@ -415,7 +414,7 @@ class App  {
 		cols["Structure"]="cyan"; 	cols["Help resource"]="magenta";	
 		cols["Options"]="#d4dd46"; 	cols["Chance"]="#ccc";
 		let title=o.title.split(" ").join("<br>")
-
+		let oo=JSON.parse(o.time);																		// Parse time field
 		let str=`<div id="${"lz-cardDiv-"+id}" class="lz-card lz-hover" style="left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px">
 			<div style="grid-area:category;background-color:${cols[o.category]};font-size:${hgt/12.5}px;text-align:center;
 				padding:0 0 2px 0;border-bottom:1px solid #999"><b>${o.category}</b>`;
@@ -425,14 +424,14 @@ class App  {
 			<div style="grid-area:desc;padding:0 ${pad}px;overflow:hidden;font-size:${hgt/26}px">${o.desc}</div>
 			<div style="grid-area:time;padding:${pad}px;font-size:${hgt/30}px;text-align:center">
 				<div style="width:${hgt/6}px;float:right"><img src="img/clock.png" style="width:100%">
-					<div style="margin-top:-40%">${o.time} mins</div>
+					<div style="margin-top:-40%">${oo.time} mins</div>
 				</div>
 			</div>
 			<div style="grid-area:pic;text-align:center;padding-top:${pad}px">`;
 			if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/7}px">`;
 			str+=`</div><div style="grid-area:students;padding-left:${pad}px;align-self:end">`;
-			let i,v=o.students.split(",");
-			for (i=0;i<v.length;++i)str+=`<span style="display:inline-block;background-color:${this.stuCols[v[i]-1]};
+			let i;
+			for (i=0;i<oo.students.length;++i)str+=`<span style="display:inline-block;background-color:${this.stuCols[oo.students[i]-1]};
 				margin-right:3px;border-radius:25px;width:${hgt/15}px;height:${hgt/15}px"></span>`
 			str+="</div></div>";
 			return str;
