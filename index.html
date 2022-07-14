@@ -151,8 +151,13 @@ class App  {
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					}
 				$("#lz-infieldDiv").html(this.strings["help"]);											// Start with help
+				$("#lz-infieldDiv").append(`<br><br><div id="lz-start" class="lz-bs">START VIDEO CHAT!</div>`);
 				this.InitSocketServer();																// Start socket server
 				this.Draw();																			// Draw screen
+				$("#lz-start").on("click",()=>{															// ON START
+					$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["chatStart"]}</div>`);	// Show tip
+					this.VideoChat();																	// Start video
+					});
 			})
 	}
 
@@ -389,12 +394,13 @@ class App  {
 		if (this.gs.players)
 		for (j=0;j<this.gs.players.length;++j)															// For each player	
 			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" TALKS");							// Add player's name
-		str+=addItem(i++,"DECIDE");																	// DECIDE
+		str+=addItem(i++,"DECIDE");																		// DECIDE
 		str+=addItem(i++,"DISCUSS")	;																	// DISCUS
 		$("#lz-flowDiv").html(str);																		// Add flowchart
 		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
 		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
+			if (this.gs.curPhase == -1) trace("55555555555")
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
 			else if (this.gs.curPhase == 1) 												this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);		// Deal
 			});										

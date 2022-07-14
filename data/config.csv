@@ -112,19 +112,22 @@ then,Chance,What_do_your students need_most?,Choose any adjustment or design you
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,,"{"time":3,"students":[2,3]}"
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,,"{"time":4,"students":[2,5]}"
 
-string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1.8""><li>Press the <b style="color:#009900">PLAY</b> button to begin the game</li>
-<li>You will enter a Zoom-like video chat with the other three players</li>
+string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1.8"">
+<li>Press the <b style="color:#009900">START VIDEO CHAT</b> button to connect wit the other players</li>
+<li>You will enter a Zoom-like video chat</li>
+<li>Press the <b style="color:#009900">PLAY</b> button to begin the game</li>
 <li>Discuss it, and when you all are ready, a <b style="color:#009900">DEAL CARDS</b> button will appear at the top</li>
 <li>When pressed, six cards will be shown to you. Pick the best three that will move the students forward</li>
 <li>The video chat will reappear, and each player will explain their choices to the other players</li>
 <li>The screen show the cards you have selected</li>
-<li>You will be asked to vote on the best player's solution</li>
-<li>After everyone has voted, the winner is shown and you can discuss it</li>
+<li>You will discuss and then vote on the best player's solution</li>
+<li>After everyone has voted, the student progress is updated and you can discuss it</li>
 <li>Press the <b style="color:#009900">PLAY</b> button to play another round, until the the 45 minute period is up</li></ol>
 <p><b><i>Tips</i></b></p>
 Anytime you see an hourglass, you have until the sand runs out before going to the next phase.<br>
 The clock on the right shows how many minutes left in the class"
 
+string,chatStart,"When someone presses the <b>PLAY</b> button, the game will start."
 string,discussIf,"Discuss the IF presented with your team.<br>When you are ready to see the cards, someone press the </i><b>DEAL CARDS</b><i> button."
 string,pickHand,"You can choose up to three cards to play.<br>When the timer is up, each player will explain their choices."
 string,explainMyHand,"It's your turn to share with the team<br>why you chose your cards."
