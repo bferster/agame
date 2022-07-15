@@ -52,7 +52,7 @@ class Game {
 		this.curIf=-1;																					// No if condition yet
 		this.winner=-1;																					// No winner yet
 		this.curSpeed=2;																				// Current speed
-		this.time=5*1000;																				// Base time in ms
+		this.time=20*1000;																				// Base time in ms
 		this.timer=null;																				// Phase timer
 		this.numVotes=0;																				// Number of votes
 		this.numPlayers=1;																				// Number of active players
