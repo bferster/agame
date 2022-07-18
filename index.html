@@ -33,7 +33,7 @@
 							grid-template-areas:'category category category category' 'title title pic time' 
 							'subtitle subtitle subtitle subtitle' 'desc desc desc desc''students students students students';
 							}
-		.lz-hover:hover {	transform:scale(2);z-index:100; 
+		.lz-hover:hover {	transform:scale(3);z-index:100; 
 							}
 		.lz-confirm {		position:absolute;  width:300px; padding: 16px; left:calc(50% - 150px); top:calc(50vh - 50px); user-select: none;	
 							border-radius: 8px; background-color: #fff; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
@@ -132,7 +132,7 @@ class App  {
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.id="";																						// Set in InitSocket()
-		this.time=20;																					// Time in seconds
+		this.time=(window.location.host == "localhost") ? 5 : 20;	;									// Time in seconds
 		this.speed=2;																					// Speed multiplier = 2 1
 		app.winner=0;
 	}
@@ -187,7 +187,7 @@ class App  {
 						if (picks.length < 3)															// Less than 3
 							picks.push(this.id.substring(13)-0);										// Add card's index
 					});		
-				this.ws.send("PICKS|"+this.gs.gameId+"|"+this.id+"|"+JSON.stringify(picks));				// Send picked cards to server
+				this.ws.send("PICKS|"+this.gs.gameId+"|"+this.id+"|"+JSON.stringify(picks));			// Send picked cards to server
 				}
 			if (!redraw) this.VideoChat(this.gs.players[phase-3].name.split("@")[0]); 					// Open video with highlight
 			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name);				// Show picked cards
@@ -251,7 +251,7 @@ class App  {
 	Decide()																							// DECIDE
 	{
 		let i,j,o,x,y=0,str="";
-		let h=Math.min(200,$("#lz-infieldDiv").height()/(this.gs.players.length+1)-16);					// Card height
+		let h=Math.min(150,$("#lz-infieldDiv").height()/3-16);											// Card height
 		let w=h*.75+8;																					// Width
 		app.winner=-1;																					// No decision yet
 		for (i=0;i<this.gs.players.length;++i) {														// For each player
@@ -461,7 +461,6 @@ class App  {
 		let rad=$(window).width()/24;																	// Radius based on wifth
 		let step=(2*Math.PI)/tot;																		// Dot step
 		let ang=-Math.PI/2;																				// Start straight up
-
 		$("#lz-clockSVG").remove();																		// Remove old one
 		let str=`<svg id="lz-clockSVG" width="${rad*2+6}" height="${rad*2+6}" style="position:absolute;right:24px;top:12px">`;
 		for	(i=0;i<tot;++i) {																			// For each mark

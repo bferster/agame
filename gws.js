@@ -51,11 +51,14 @@ class Game {
 		this.curPhase=0;																				// Phase
 		this.curIf=-1;																					// No if condition yet
 		this.winner=-1;																					// No winner yet
+		this.curTime=0;																					// Current time used so far
 		this.curSpeed=2;																				// Current speed
-		this.time=20*1000;																				// Base time in ms
+		this.time=(local ? 5 : 20)*1000;																// Base time in ms
 		this.timer=null;																				// Phase timer
 		this.numVotes=0;																				// Number of votes
 		this.numPlayers=1;																				// Number of active players
+		this.round=0;																					// First round
+		this.outcome=0;																					// Outcome
 	}
 
 	StartNextPhase(v)																				// START NEXT PHASE
@@ -175,6 +178,7 @@ try{
 				++gs.numVotes;																	// Add to count
 				if (gs.numVotes == gs.players.length) {											// All voters in 
 					gs.curPhase++;																// Final phase
+					gs.round++;																	// Advance round
 					Advance(gs);																// Advance students	
 					Broadcast(webSocket.gameId, "VOTED|"+v[1]+"|"+v[2]); 						// Trigger redraw
 					}
@@ -189,8 +193,8 @@ try{
 			let index=games.findIndex(x => x.id == gameId)										// Find array index by id
 			if (index == -1) return;															// Quit if not found
 			let o=games[index];																	// Point at game data
-			let now=Math.floor(new Date().getTime()/1000-o.startTime);							// TRT in seconds
-			let data={ curPhase:o.curPhase, curIf:o.curIf, stuPos:o.stuPos, players:o.players, winner:o.winner, curSpeed:o.curSpeed, gameId:gameId, curTime:now };
+			let data={ gameId:gameId, curPhase:o.curPhase, curIf:o.curIf, stuPos:o.stuPos, players:o.players, 
+				       winner:o.winner, outcome:o.outcome, curSpeed:o.curSpeed, curTime:o.curTime };
 			msg+=`|${JSON.stringify(data)}`;													// Add data
 			webSocketServer.clients.forEach((client)=>{											// For each client
 				if (client.gameId == gameId) 													// In this game
@@ -249,9 +253,31 @@ try{
 	
 	function Advance(gs)																	// ADVANCE STUDENT POSITIONS
 	{
-		let i;
-		for (i=0;i<5;++i) gs.stuPos[i]= gs.stuPos[i+5];											// Copy current to last position
-		for (i=5;i<10;++i) gs.stuPos[i]+=Math.floor(Math.random()*4)+1;							// Advance new positions
+		let i,j,k,o;
+		for (i=0;i<5;++i) gs.stuPos[i]=gs.stuPos[i+5];											// Copy current to last position
+		if (gs.winner != -1) {																	// If a winner
+			let cards=gs.players[gs.winner].picks;												// Get winning cards
+			gs.outcome=getOutcome();															// Get progress amount
+			for (i=0;i<cards.length;++i) {														// For each one											
+				o=thens[cards[i]];																// Point at cad
+				gs.curTime+=o.time*60;															// Remove time (in minutes)
+				for (j=0;j<o.students.length;++j) {												// For each student, progress accoring to rule
+					k=o.students[j]-1;															// Student index (0-4)
+					gs.stuPos[k+5]+=gs.outcome;													// Advance now portion of index
+					}
+				}
+					
+			function getOutcome()	{														// PROGRESS STUDENT BASED ON RULE
+				let r;
+				if (gs.round < 3)	r=Math.floor(Math.random()*2)+1;							// First 2 rounds are always positive
+				else				r=Math.floor(Math.random()*4)-1;							// -1 to 2
+				return r;
+				}
+		}
+
+
+
+
 
 	}	
 
