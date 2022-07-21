@@ -113,7 +113,7 @@ then,Chance,What_do_your students need_most?,Choose any adjustment or design you
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,,"{"time":4,"students":[2,5]}"
 
 string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1.8"">
-<li>Press the <b style="color:#009900">START VIDEO CHAT</b> button to connect wit the other players</li>
+<li>Press the <b style="color:#009900">JOIN CHAT</b> button to connect with the other players in a video chat</li>
 <li>You will enter a Zoom-like video chat</li>
 <li>Press the <b style="color:#009900">PLAY</b> button to begin the game</li>
 <li>Discuss it, and when you all are ready, a <b style="color:#009900">DEAL CARDS</b> button will appear at the top</li>
@@ -135,7 +135,7 @@ string,explainHand," is explaining to the team<br>why they chose those cards."
 string,vote,"Discuss which set you think is the best to address the IF issue,<br>as well as progress the students, by checking the box to the right."
 string,discuss,"Discuss the card choices with the team.<br>When you are ready play again, someone press the </i><b>PLAY</b><i> button."
 
-outcome,-1,Back one
-outcome,-0,Neutral
-outcome,1,forward one
-outcome,2,forward two
+outcome,-1,Back one step. Sorry about that!
+outcome,0,Didn't have an effect
+outcome,1,You moved the class!
+outcome,2,You moved the class a lot!

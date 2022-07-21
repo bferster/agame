@@ -269,7 +269,7 @@ try{
 					
 			function getOutcome()	{														// PROGRESS STUDENT BASED ON RULE
 				let r;
-				if (gs.round < 3)	r=Math.floor(Math.random()*2)+1;							// First 2 rounds are always positive
+				if (gs.round < 3)	r=Math.floor(Math.random()*2)+2;							// First 2 rounds are always positive
 				else				r=Math.floor(Math.random()*4)-1;							// -1 to 2
 				return r;
 				}

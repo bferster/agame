@@ -128,13 +128,14 @@ class App  {
 		this.gs={};																						// Holds game state
 		this.ifs=[];																					// Holds ifs
 		this.thens=[];																					// Holds thens
+		this.outcomes=[];																				// Holds outcomes
 		this.strings=[];																				// Holds strings
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.id="";																						// Set in InitSocket()
 		this.time=(window.location.host == "localhost") ? 5 : 20;	;									// Time in seconds
 		this.speed=2;																					// Speed multiplier = 2 1
-		app.winner=0;
+		this.start=1;																					// Starting phase 1
 	}
 
 	LoadConfig()																					// LOAD CONFIG FILE
@@ -149,15 +150,10 @@ class App  {
 					else if (d[i].type == "then")		this.thens.push(d[i]);							// Add then											
 					else if (d[i].type == "string")		this.strings[d[i].category]=d[i].title;			// Add string										
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
+					else if (d[i].type == "outcome")	this.outcomes.push(d[i]);						// Add outcome										
 					}
-				$("#lz-infieldDiv").html(this.strings["help"]);											// Start with help
-				$("#lz-infieldDiv").append(`<br><br><div id="lz-start" class="lz-bs">START VIDEO CHAT!</div>`);
 				this.InitSocketServer();																// Start socket server
 				this.Draw();																			// Draw screen
-				$("#lz-start").on("click",()=>{															// ON START
-					$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["chatStart"]}</div>`);	// Show tip
-					this.VideoChat();																	// Start video
-					});
 			})
 	}
 
@@ -167,7 +163,6 @@ class App  {
 
 	SetPhase(phase, redraw)																			// SET PHASE OF GAME
 	{
-
 		if (phase == 1) {																				// START 
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
@@ -202,7 +197,8 @@ class App  {
 			if (!redraw) this.VideoChat();																// Open video chat	
 			if (this.gs.winner != -1)																	// A winner picked
 				this.ShowCards(this.gs.players[this.gs.winner].picks,"",`<div class="lz-tip">${this.strings["discuss"]}</div>`);	// Show tip
-			this.HourGlassTimer(this.time*this.speed, ()=>{ 											// Hourglass
+				this.DrawOutcome(this.gs.outcome);														// Show outcome																			
+				this.HourGlassTimer(this.time*this.speed, ()=>{ 										// Hourglass
 				$("#lz-topbut").css("background-color","#27ae60"); 										// Hilite button							
 				Sound("clicks"); 																		// Clicks
 				});
@@ -248,12 +244,12 @@ class App  {
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 	}
 
-	Decide()																							// DECIDE
+	Decide()																						// DECIDE
 	{
 		let i,j,o,x,y=0,str="";
 		let h=Math.min(150,$("#lz-infieldDiv").height()/3-16);											// Card height
 		let w=h*.75+8;																					// Width
-		app.winner=-1;																					// No decision yet
+		let winner=-1;																					// No decision yet
 		for (i=0;i<this.gs.players.length;++i) {														// For each player
 			x=$(window).width()*.3+12;																	// Reset x
 			o=this.gs.players[i].picks;																	// Point at picks
@@ -271,8 +267,8 @@ class App  {
 		$("[id^=lz-voteCheck-]").on("click", function() {												// ON CHECKBOX CLICK 
 			$("[id^=lz-voteCheck-]").prop("src","img/check.png" );										// Turn all off
 			$(this).prop("src", "img/checked.png");														// Highlight
-			app.winner=this.id.substring(13)-0;															// Set winner
-			app.ws.send("WINNER|"+app.gs.gameId+"|"+app.id+"|"+app.winner);							// Send winner to server
+			winner=this.id.substring(13)-0;																// Set winner
+			app.ws.send("WINNER|"+app.gs.gameId+"|"+app.id+"|"+winner);									// Send winner to server
 			Sound("click");
 			});
 	}
@@ -290,7 +286,7 @@ class App  {
 		},time*1000/16);																				// time
 	}
 
-	/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
 // DRAW 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -302,6 +298,16 @@ class App  {
 		this.DrawStudents(this.gs.stuPos);																// Draw students
 		this.DrawFlow();																				// Draw phase flow chart
 		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
+
+		if (this.start == 1) {																			// INIT
+			$("#lz-infieldDiv").html(this.strings["help"]);												// Start with help
+			$("#lz-topbut").html("JOIN CHAT");															// Set button
+			}
+		else if (this.start == 2) {																		// IN LOBBY
+			$("#lz-topbut").html("START");																// Set button
+			$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["chatStart"]}</div>`);			// Show tip
+			this.VideoChat();																			// Start video
+			}
 	}
 
 	VideoChat(focus="",pct=50)																				// OPEN VIDEO CHAT
@@ -400,9 +406,10 @@ class App  {
 		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
 		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if (this.gs.curPhase == -1) trace("55555555555")
+			if (this.start == 1) { this.start=2; this.Draw(); return; }									// Start
+			if (this.start == 2)  this.start=0; 														// Out of start sequence
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
-			else if (this.gs.curPhase == 1) 												this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);		// Deal
+			else if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);				// Deal
 			});										
 
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
@@ -454,6 +461,55 @@ class App  {
 			<img src="img/hourglass.png" style="position:absolute;width:100%;height:100%"></div>`;
 		$("body").append(str); 																			// Add to body
 	}
+
+	DrawOutcome(amount)																				// SHOW OUTCOME
+	{
+		$("#lz-outcome").remove();																		// Kill old one
+		let num=findOutcome(amount);																	// Get outcome
+		let x=$(window).width()/2+24;																	// Left
+		let w=($(window).width()/2*.5625/3-10)*.75;														// Same as card width
+		let t=w/11;																						// Line thickness
+		let y=(3*w/.75+12)+48;																			// Top
+		let pos=[-45,0,45,90];																			// Angles
+		let val=Math.min(Math.max(this.outcomes[num].category-0+1,0),3);								// Get val 0-3
+		pos=[pos[val]];																					// Get pos -45 to +90
+		let col=["#b0263e","#666","#25aa54","#25aa54"];													// Text color
+		col=[col[+val]];																				// Get color based on value
+		let str=`<div id="lz-outcome" 
+			style="position:absolute;overflow:hidden;left:${x}px;top:${y}px;width:${w}px;text-align:center;color:${col}">
+			<svg width="100%" height="${w/2+4}">
+			<path fill="none" stroke="#b0263e" stroke-width="8" d="${arc(w/2,w/2,w/2-t,-90,0)}"/>
+			<path fill="none" stroke="#25aa54" stroke-width="8" d="${arc(w/2,w/2,w/2-t,0,90)}"/>`;
+			str+=`<line stroke-linecap="round" x1="50%" y1="${t*2.3}" x2="50%" y2="${w/2-t/2}" transform="rotate(${pos},${w/2},${w/2-t/2})"
+			style="stroke:#999;stroke-width:${t}"/>`;	
+		str+="</svg><br><b>"+this.outcomes[num].title+"</b></div>";
+		$("#lz-infieldDiv").append(str)
+
+
+		function polarToCartesian(cx, cy, r, angleInDegrees) {
+			let a=(angleInDegrees-90)*Math.PI/180.0;
+			return { x:cx+r*Math.cos(a), y:cy+r*Math.sin(a) };
+			}
+
+		function arc(x, y, r, startAngle, endAngle) {
+			let start = polarToCartesian(x, y, r, endAngle);
+			let end = polarToCartesian(x, y, r, startAngle);
+			let largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+			let d=[ "M", start.x, start.y, "A", r, r, 0, largeArcFlag, 0, end.x, end.y ].join(" ");
+			return d;    
+			}		
+
+		function findOutcome(val) {
+			let i;
+			for (i=0;i<app.outcomes.length;++i)
+				if (app.outcomes[i].category == val)
+					return val;
+			return 1;
+			}
+
+
+		}
+
 
 	DrawClock(mins, tot=45)																			// DRAW CLOCK
 	{
