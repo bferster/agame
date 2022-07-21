@@ -127,8 +127,9 @@ string,help,"<p><b><i>How to play the game</i></b></p><r><ol style=line-height:1
 Anytime you see an hourglass, you have until the sand runs out before going to the next phase.<br>
 The clock on the right shows how many minutes left in the class"
 
-string,chatStart,"When someone presses the <b>PLAY</b> button, the game will start."
-string,discussIf,"Discuss the IF presented with your team.<br>When you are ready to see the cards, someone press the </i><b>DEAL CARDS</b><i> button."
+string,lobby,"Welcome to the Agility game lobby!"
+string,chatStart,"When other players log in, they will join the video chat.<br>When someone presses the PLAY button, the game will start."
+string,discussIf,"Discuss the IF presented with your team.<br>When you are ready to see the cards, someone press the DEAL CARDS button."
 string,pickHand,"You can choose up to three cards to play.<br>When the timer is up, each player will explain their choices."
 string,explainMyHand,"It's your turn to share with the team<br>why you chose your cards."
 string,explainHand," is explaining to the team<br>why they chose those cards."
@@ -136,6 +137,6 @@ string,vote,"Discuss which set you think is the best to address the IF issue,<br
 string,discuss,"Discuss the card choices with the team.<br>When you are ready play again, someone press the </i><b>PLAY</b><i> button."
 
 outcome,-1,Back one step. Sorry about that!
-outcome,0,Didn't have an effect
+outcome,0,It didn't have an effect on them...
 outcome,1,You moved the class!
 outcome,2,You moved the class a lot!

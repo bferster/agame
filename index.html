@@ -108,7 +108,7 @@
 
 	$(window).on("resize orientationchange", ()=>{                                       		 // ON WINDOW RESIZE
 		document.documentElement.style.setProperty("--maxvh", window.innerHeight+"px");				// Set CSS var for IOS 100vh isssue
-		app.Draw();																					// Redraw to fit screen
+		app.Draw(true);																				// Redraw to fit screen
 		let wid=$(window).width()*50/100;															// Set width
 		$("#lz-videoChat").css({ height:wid*.5625+"px",width:wid+"px" });							// Resize video if open
 		});
@@ -166,7 +166,6 @@ class App  {
 		if (phase == 1) {																				// START 
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
-			if (!redraw) this.VideoChat();																// Open video chat	
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["discussIf"]}</div>`);			// Show tip
 			}
 		else if (phase == 2) {																			// DEAL 
@@ -276,21 +275,22 @@ class App  {
 	HourGlassTimer(time, callback)																	// RUN HOURGLASS TIMER
 	{
 		let count=0;																					// Init seconds counter
+		let reps=time*20;																				// Number of reps
 		if (this.glassTimer) window.clearInterval(this.glassTimer);										// Stop timer
 		this.glassTimer=window.setInterval( ()=>{														// Start seconds timer
-			this.DrawHourGlass(count/16);																// Draw hourglass
-			if (count++ >= 16) {																		// Time's up
+			this.DrawHourGlass(count/reps);																// Draw hourglass
+			if (count++ >= reps) {																		// Time's up
 				window.clearInterval(this.glassTimer);													// Stop timer
 				if (callback) callback();																// Run callback
 				}
-		},time*1000/16);																				// time
+		},time*1000/reps);																				// time
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // DRAW 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-	Draw()
+	Draw(redraw)																					// DRAW GAME
 	{
 		let str=`<div style="display:inline-block;height:2.4vw;width:2.4vw;border-radius:100px;
 			background-color:#27ae60;color:#fff;text-align:center">IF</div> &nbsp;`;
@@ -300,13 +300,15 @@ class App  {
 		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
 
 		if (this.start == 1) {																			// INIT
+			$("#lz-ifDiv").html(`<img src="img/smlogo.png" style="height:10vw">`);						// Add logo
 			$("#lz-infieldDiv").html(this.strings["help"]);												// Start with help
 			$("#lz-topbut").html("JOIN CHAT");															// Set button
 			}
 		else if (this.start == 2) {																		// IN LOBBY
+			$("#lz-ifDiv").html(this.strings["lobby"]);													// Lobby welcome message
 			$("#lz-topbut").html("START");																// Set button
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["chatStart"]}</div>`);			// Show tip
-			this.VideoChat();																			// Start video
+			this.VideoChat();																			// Open video chat	
 			}
 	}
 
@@ -406,7 +408,7 @@ class App  {
 		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
 		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if (this.start == 1) { this.start=2; this.Draw(); return; }									// Start
+			if (this.start == 1) { this.start=2; this.Draw(true); return; }								// Start
 			if (this.start == 2)  this.start=0; 														// Out of start sequence
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
 			else if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);				// Deal
@@ -471,10 +473,10 @@ class App  {
 		let t=w/11;																						// Line thickness
 		let y=(3*w/.75+12)+48;																			// Top
 		let pos=[-45,0,45,90];																			// Angles
-		let val=Math.min(Math.max(this.outcomes[num].category-0+1,0),3);								// Get val 0-3
+		let val=Math.min(Math.max(this.outcomes[num].category-0+1,0),3);								// Get val, convert -1 to +2  to 0 to -3
 		pos=[pos[val]];																					// Get pos -45 to +90
 		let col=["#b0263e","#666","#25aa54","#25aa54"];													// Text color
-		col=[col[+val]];																				// Get color based on value
+		col=[col[val]];																					// Get color based on value
 		let str=`<div id="lz-outcome" 
 			style="position:absolute;overflow:hidden;left:${x}px;top:${y}px;width:${w}px;text-align:center;color:${col}">
 			<svg width="100%" height="${w/2+4}">
@@ -503,7 +505,7 @@ class App  {
 			let i;
 			for (i=0;i<app.outcomes.length;++i)
 				if (app.outcomes[i].category == val)
-					return val;
+					return i;
 			return 1;
 			}
 
@@ -569,7 +571,7 @@ class App  {
 		this.gs=JSON.parse(v[3]);																		// Get game state
 		if (v[0] == "INIT")			this.Draw();														// INIT
 		else if (v[0] == "START") 	this.SetPhase(1);													// START
-		else if (v[0] == "DRAW")  	this.Draw();														// DRAW 
+		else if (v[0] == "DRAW")  	this.Draw(true);													// DRAW 
 		else if (v[0] == "PICKS")  	this.ShowCards(this.gs.players[this.gs.curPhase-3].picks,this.gs.players[this.gs.curPhase-3].name);	// PICKED
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 

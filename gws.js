@@ -233,6 +233,7 @@ try{
 			if (d[i].match(/^if/i))				numIfs++;										// Add to if count
 			else if (d[i].match(/^then/i))	{													// Get then							
 				v=d[i].match(/{.*}/)[0];														// Pull out time field
+				v=v.replace(/'/g,'"');															// Apos to quotes
 				thens.push(JSON.parse(v));														// Add then										
 				}
 			else if (d[i].match(/^outcome/i))  {												// Get outcome
@@ -269,9 +270,10 @@ try{
 					
 			function getOutcome()	{														// PROGRESS STUDENT BASED ON RULE
 				let r;
-				if (gs.round < 3)	r=Math.floor(Math.random()*2)+2;							// First 2 rounds are always positive
-				else				r=Math.floor(Math.random()*4)-1;							// -1 to 2
-				return r;
+				if (gs.round < 3)	r=Math.floor(Math.random()*2)+1;							// First 2 rounds are always +1 or +2
+				else				r=Math.floor(Math.random()*4)-1;							// -1 to +2
+				trace(r)
+				return r;																		// Return round 
 				}
 		}
 
