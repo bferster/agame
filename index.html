@@ -176,12 +176,14 @@ class App  {
 			}
 		else if ((phase > 2) && (phase < this.gs.players.length+3)) {									// EXPLAIN
 			if (phase == 3) {																			// If 1st
-				let picks=[];																			// Reset picked cards
+				let i,v=[],picks=[];																	
 				$("[id^=lz-cardCheck-]").each( function() {												// Fro each checkbox image	
 					if ($(this).prop("src").match(/checked/)) 											// If checked
-						if (picks.length < 3)															// Less than 3
-							picks.push(this.id.substring(13)-0);										// Add card's index
+						if (v.length < 3)																// Less than 3
+							v.push({time:$(this).data("timeStamp"), card:this.id.substring(13)-0 });	// Add card's index
 					});		
+				v.sort((a,b) => a.time-b.time);															// Sort by timeStamp
+				for (i=0;i<v.length;++i) picks[i]=v[i].card;											// Simple array 
 				this.ws.send("PICKS|"+this.gs.gameId+"|"+this.id+"|"+JSON.stringify(picks));			// Send picked cards to server
 				}
 			if (!redraw) this.VideoChat(this.gs.players[phase-3].name.split("@")[0]); 					// Open video with highlight
@@ -223,9 +225,11 @@ class App  {
 		$("[id^=lz-cardDiv-]").removeClass("lz-hover");
 		$("[id^=lz-cardDiv-]").on("mousedown", function(e) { if (!e.target.id.match(/cardCheck/)) $(this).css({"transform":"scale(2)","z-index":100})});
 		$("[id^=lz-cardDiv-]").on("mouseup",  function() { $(this).css({"transform":"scale(1)","z-index":1})});
-		$("[id^=lz-cardCheck-]").on("click", function() {														// ON CARD CHECKBOX CLICK 
-			$(this).prop("src", $(this).prop("src").match(/checked/) ? "img/check.png" : "img/checked.png");
-			Sound("click");
+		
+		$("[id^=lz-cardCheck-]").on("click", function(e) {												// ON CARD CHECKBOX CLICK 
+			$(this).prop("src", $(this).prop("src").match(/checked/) ? "img/check.png" : "img/checked.png"); // Set box
+			$(this).data('timeStamp',e.timeStamp);														// Add timeStamp
+			Sound("click");																				// Click
 			});	
 	}
 
