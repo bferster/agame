@@ -23,7 +23,7 @@
 		.lz-flow { 			position:absolute; display:table; top:0; left:0; height:100%; width:calc(12.5% ); 
 							text-align:right;
 							}
-		.lz-tip { 			position:absolute; top:-5.5vw; left:3.4vw; font-size:2vh; font-style:italic;
+		.lz-tip { 			position:absolute; top:-5.5vw; left:0; font-size:2vh; font-style:italic;
 							}
 		.lz-dialog {		position:absolute; top:16px; left:16px; background-color: #eee; border: 1px solid #aaa;
 							padding:16px; border-radius: 16px; width: 600px;
@@ -164,6 +164,7 @@ class App  {
 	SetPhase(phase, redraw)																			// SET PHASE OF GAME
 	{
 		if (phase == 1) {																				// START 
+			this.start=0; 																				// Out of start sequence
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["discussIf"]}</div>`);			// Show tip
@@ -468,27 +469,25 @@ class App  {
 	{
 		$("#lz-outcome").remove();																		// Kill old one
 		let num=findOutcome(amount);																	// Get outcome
-		let x=$(window).width()/2+24;																	// Left
-		let w=($(window).width()/2*.5625/3-10)*.75;														// Same as card width
-		let t=w/11;																						// Line thickness
-		let y=(3*w/.75+12)+48;																			// Top
+		let w=$(window).width()/12;																		// Width
+		let t=w/10;																						// Line thickness
 		let pos=[-45,0,45,90];																			// Angles
 		let val=Math.min(Math.max(this.outcomes[num].category-0+1,0),3);								// Get val, convert -1 to +2  to 0 to -3
 		pos=[pos[val]];																					// Get pos -45 to +90
 		let col=["#b0263e","#666","#25aa54","#25aa54"];													// Text color
 		col=[col[val]];																					// Get color based on value
 		let str=`<div id="lz-outcome" 
-			style="position:absolute;overflow:hidden;left:${x}px;top:${y}px;width:${w}px;text-align:center;color:${col}">
-			<svg width="100%" height="${w/2+4}">
-			<path fill="none" stroke="#b0263e" stroke-width="8" d="${arc(w/2,w/2,w/2-t,-90,0)}"/>
-			<path fill="none" stroke="#25aa54" stroke-width="8" d="${arc(w/2,w/2,w/2-t,0,90)}"/>`;
-			str+=`<line stroke-linecap="round" x1="50%" y1="${t*2.3}" x2="50%" y2="${w/2-t/2}" transform="rotate(${pos},${w/2},${w/2-t/2})"
-			style="stroke:#999;stroke-width:${t}"/>`;	
-		str+="</svg><br><b>"+this.outcomes[num].title+"</b></div>";
-		$("#lz-infieldDiv").append(str)
+			style="position:absolute;overflow:hidden;left:(12.5vw + 24px);top:calc(28vw + 12px);width:50vw;text-align:center;color:${col}">
+			<svg width="12vw" height="6vw">
+				<path fill="none" stroke="#b0263e" stroke-width="${t}" d="${arc(w/2+t*2,w/2+t,w/2,-90,0)}"/>
+				<path fill="none" stroke="#25aa54" stroke-width="${t}" d="${arc(w/2+t*2,w/2+t,w/2,0,90)}"/>`;
+				str+=`<line stroke-linecap="round" x1="49%" y1="${t*2.3}" x2="49%" y2="${w/2+t/2}" transform="rotate(${pos})"
+				style="stroke:#999;stroke-width:${t};transform-origin:50% 80%;"
+		</svg>`;	
+		str+=`<div style="vertical-align:top;margin-left:12px"><b>${this.outcomes[num].title}</b></div></div>`;
+		$("#lz-infieldDiv").append(str);
 
-
-		function polarToCartesian(cx, cy, r, angleInDegrees) {
+		function polarToCartesian(cx, cy, r, angleInDegrees) {											// GET ARC
 			let a=(angleInDegrees-90)*Math.PI/180.0;
 			return { x:cx+r*Math.cos(a), y:cy+r*Math.sin(a) };
 			}
@@ -511,7 +510,6 @@ class App  {
 
 
 		}
-
 
 	DrawClock(mins, tot=45)																			// DRAW CLOCK
 	{

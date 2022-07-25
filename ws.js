@@ -117,7 +117,7 @@ class Game {
 				if (!games[i].numPlayers) 														// No players found
 					games.splice(i,1);															// Kill game
 				}	
-			trace("PINGPONG", webSocketServer.clients.size,games.length);
+			trace("CLIENTS & GAMES", webSocketServer.clients.size,games.length);
 			for (i=0;i<games.length;++i) games[i].numPlayers=0;									// No players found yet	
 			webSocketServer.clients.forEach((client)=>{											// For each client
 				if (!client.isAlive) { client.terminate(); return; };							// Kill dead one
@@ -174,9 +174,11 @@ try{
 			else if (v[0] == "WINNER") {														// WINNER
 				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
 				if (pdex != -1)	gs.players[pdex].winner=JSON.parse(v[3]);						// Record their picks
-				gs.winner=Vote(gs);																// Vote
 				++gs.numVotes;																	// Add to count
-				if (gs.numVotes == gs.players.length) {											// All voters in 
+				let numClients=0;																// Assume none
+				webSocketServer.clients.forEach(()=>{ numClients++; })							// Count clients
+				if (gs.numVotes >= Math.min(gs.players.length,numClients)) {					// All voters in 
+					gs.winner=Vote(gs);															// Vote
 					gs.curPhase++;																// Final phase
 					gs.round++;																	// Advance round
 					Advance(gs);																// Advance students	
@@ -245,11 +247,13 @@ try{
 	
 	function Vote(gs)																		// VOTE
 	{
-		let i,votes=[0,0,0,0,0];
+		let topdex=0,highest=0;
+		let i,votes=[0,0,0,0,0,0,0,0,0];
 		for (i=0;i<gs.players.length;++i) 														// For each player
-			if (gs.players[i].winner != -1)	votes[i]++;											// Add to vote count
-		votes.sort((a, b)=>{return a-b});														// Descending sort
-		return votes[0];																		// Return highest
+			if (gs.players[i].winner != -1)	votes[gs.players[i].winner]++;						// Add to vote count
+		for (i=0;i<gs.players.length;++i) 														// For each player
+			if (votes[i] > highest) { highest=votes[i]; topdex=i; }								// Get top index	 
+		return  topdex;																			// Return highest index
 	}
 	
 	function Advance(gs)																	// ADVANCE STUDENT POSITIONS
@@ -268,19 +272,13 @@ try{
 					}
 				}
 					
-			function getOutcome()	{														// PROGRESS STUDENT BASED ON RULE
-				let r;
-				if (gs.round < 3)	r=Math.floor(Math.random()*2)+1;							// First 2 rounds are always +1 or +2
-				else				r=Math.floor(Math.random()*4)-1;							// -1 to +2
-				trace(r)
-				return r;																		// Return round 
-				}
+		function getOutcome() {																	// PROGRESS STUDENT BASED ON RULE
+			let r;
+			if (gs.round < 3)	r=Math.floor(Math.random()*2)+1;								// First 2 rounds are always +1 or +2
+			else				r=Math.floor(Math.random()*4)-1;								// -1 to +2
+			return r;																			// Return round 
+			}
 		}
-
-
-
-
-
 	}	
 
 
