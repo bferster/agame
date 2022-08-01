@@ -133,7 +133,7 @@ class App  {
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.id="";																						// Set in InitSocket()
-		this.time=(window.location.host == "localhost") ? 5 : 20;	;									// Time in seconds
+		this.time=(window.location.host == "localhost") ? 5 : 60;										// Time in seconds
 		this.speed=2;																					// Speed multiplier = 2 1
 		this.start=1;																					// Starting phase 1
 	}
@@ -317,7 +317,7 @@ class App  {
 			}
 	}
 
-	VideoChat(focus="",pct=50)																				// OPEN VIDEO CHAT
+	VideoChat(focus="",pct=50)																		// OPEN VIDEO CHAT
 	{
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let wid=$(window).width()*pct/100;																// Set height
@@ -439,12 +439,11 @@ class App  {
 			<div style="grid-area:category;background-color:${cols[o.category]};font-size:${hgt/12.5}px;text-align:center;
 				padding:0 0 2px 0;border-bottom:1px solid #999"><b>${o.category}</b>`;
 			if (check)  str+=`<img id="${"lz-cardCheck-"+num}" src="img/check.png" style="float:left;height:2vh;margin:1vh 0 0 1vh;cursor:pointer">`;
-			str+=`</div><div style="grid-area:title;padding:${pad}px;color:#999;font-size:${hgt/20}px"><b>${title.replace(/_/g," ")}</b></div>
-			<div style="grid-area:subtitle;padding:0 ${pad}px;text-align:center;color:#000;font-size:${hgt/24}px"><b>${o.subtitle}</b></div>
+			str+=`</div><div style="grid-area:title;padding:${pad}px;color:#666;font-size:${hgt/20}px"><b>${title.replace(/_/g," ")}</b></div>
+			<div style="grid-area:subtitle;padding:0 ${pad}px;text-align:center;color:#000;font-size:${hgt/20}px"><b>${o.subtitle}</b></div>
 			<div style="grid-area:desc;padding:0 ${pad}px;overflow:hidden;font-size:${hgt/26}px">${o.desc}</div>
-			<div style="grid-area:time;padding:${pad}px;font-size:${hgt/30}px;text-align:center">
-				<div style="width:${hgt/6}px;float:right"><img src="img/clock.png" style="width:100%">
-					<div style="margin-top:-40%">${oo.time} mins</div>
+			<div style="grid-area:time;padding:${pad}px;font-size:${hgt/18}px;text-align:center">
+				<div style="width:${hgt/6}px;float:right;line-height:1;color:#666"><b>${oo.time}<br>mins</b></div>
 				</div>
 			</div>
 			<div style="grid-area:pic;text-align:center;padding-top:${pad}px">`;

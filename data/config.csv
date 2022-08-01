@@ -129,7 +129,7 @@ The clock on the right shows how many minutes left in the class"
 
 string,lobby,"Welcome to the Agility game lobby!"
 string,chatStart,"When other players log in, they will join the video chat.<br>When someone presses the PLAY button, the game will start."
-string,discussIf,"Discuss the IF presented with your team.<br>When you are ready to see the cards, someone press the DEAL CARDS button."
+string,discussIf,"Discuss the "IF" teaching challenge with your team<br>and identify goals for your "THEN" teaching responses."
 string,pickHand,"You can choose up to three cards to play.<br>When the timer is up, each player will explain their choices."
 string,explainMyHand,"It's your turn to share with the team<br>why you chose your cards."
 string,explainHand," is explaining to the team<br>why they chose those cards."
