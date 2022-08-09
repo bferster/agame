@@ -43,7 +43,8 @@ class Game {
 		this.started=false;																				// Game started flag
 		this.startTime=new Date().getTime()/1000;														// Get start time in seconds
 		this.id=Math.floor(Math.random()*10000)+Math.floor(this.startTime);								// Set ID
-		this.ifs=new Array(numIfs);																		// Ifs active array
+		this.ifs=new Array(numIfs);																		// Clone outcomes
+		this.outcomes=JSON.parse(JSON.stringify(outcomes));												// Outcomes active array
 		this.thens=new Array(thens.length);																// Thens
 		this.maxTime=45*60;																				// Max time in seconds
 		this.players=[];																				// Holds player info
@@ -268,15 +269,19 @@ try{
 				gs.curTime+=o.time*60;															// Remove time (in minutes)
 				for (j=0;j<o.students.length;++j) {												// For each student, progress accoring to rule
 					k=o.students[j]-1;															// Student index (0-4)
-					gs.stuPos[k+5]+=gs.outcome;													// Advance now portion of index
+					gs.stuPos[k+5]+=outcomes[gs.outcome].amt;									// Advance now portion of index
 					}
 				}
 					
 		function getOutcome() {																	// PROGRESS STUDENT BASED ON RULE
-			let r;
+			let i,r,v=[];
 			if (gs.round < 3)	r=Math.floor(Math.random()*2)+1;								// First 2 rounds are always +1 or +2
 			else				r=Math.floor(Math.random()*4)-1;								// -1 to +2
-			return r;																			// Return round 
+			for (i=0;i<gs.outcomes.length;++i)													// Get all outcomes that match
+				if (gs.outcomes[i].amt == r) v.push(i);											// Add to array
+			r=Math.floor(Math.random()*v.length);												// Get random outcome
+			if (v[r] > 3)	gs.outcomes[v[r]].amt=100;											// Remove it from picking again
+			return v[r];																		// Return outcome index 
 			}
 		}
 	}	

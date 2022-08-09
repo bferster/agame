@@ -140,3 +140,28 @@ outcome,-1,Back one step. Sorry about that!
 outcome,0,It didn't have an effect on them...
 outcome,1,You moved the class!
 outcome,2,You moved the class a lot!
+outcome,-1,There was a fire drill during class
+outcome,-1,Students got pulled for a Covid test
+outcome,-1,The copier was jammed and materials weren't ready
+outcome,-1,Students got pulled for a yearbook photo
+outcome,-1,There was a lockdown drill during class
+outomce,-1,Students were exhausted from field day
+outcome,-1,The projector stopped working mid-lesson
+outcome,-1,Students were distracted by something outside the window
+outcome,0,Students need additional skills to access the learning independently
+outcome,0,Students are hanging on to misconceptions
+outcome,0,Students don't see connections between the lesson and their prior knowledge
+outcome,0,Students don't have a way to apply the skill they're learning to a relevant situation
+outcome,0,Students don't see why the lesson is important and so don't use it again
+outcome,0,Students need more help resources to access the material
+outcome,0,Students didn't get a chance to practice the new skill with peers
+outcome,0,Students didn't get to reflect on and document their learning for the day
+outcome,1,Students knew who was speaking first
+outcome,1,Students knew why they were in a group
+outcome,1,Students understood the directions
+outcome,1,Students got to make choices
+outcome,1,Students could access help resources
+outcome,2,Students saw themselves in the lesson
+outcome,2,Students knew how to use their feedback
+outcome,2,The lesson built on students' knowledge
+outcome,2,The lesson was relevant to students' goals

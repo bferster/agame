@@ -468,10 +468,9 @@ class App  {
 		$("body").append(str); 																			// Add to body
 	}
 
-	DrawOutcome(amount)																				// SHOW OUTCOME
+	DrawOutcome(num)																				// SHOW OUTCOME
 	{
 		$("#lz-outcome").remove();																		// Kill old one
-		let num=findOutcome(amount);																	// Get outcome
 		let w=$(window).width()/12;																		// Width
 		let t=w/10;																						// Line thickness
 		let pos=[-45,0,45,90];																			// Angles
@@ -502,16 +501,6 @@ class App  {
 			let d=[ "M", start.x, start.y, "A", r, r, 0, largeArcFlag, 0, end.x, end.y ].join(" ");
 			return d;    
 			}		
-
-		function findOutcome(val) {
-			let i;
-			for (i=0;i<app.outcomes.length;++i)
-				if (app.outcomes[i].category == val)
-					return i;
-			return 1;
-			}
-
-
 		}
 
 	DrawClock(mins, tot=45)																			// DRAW CLOCK
