@@ -147,7 +147,10 @@ class App  {
 				let d=Papa.parse(res, { header:true, skipEmptyLines:true }).data;						// Parse CSV using papa lib
 				for (i=0;i<d.length;++i) {																// For each line
 					if (d[i].type == "if")				this.ifs.push(d[i].title);						// Add if
-					else if (d[i].type == "then")		this.thens.push(d[i]);							// Add then											
+					else if (d[i].type == "then") {														// Add then	
+						d[i].time=JSON.parse(d[i].time);												// Objectify					
+						this.thens.push(d[i]);															// Add																
+						}
 					else if (d[i].type == "string")		this.strings[d[i].category]=d[i].title;			// Add string										
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					else if (d[i].type == "outcome")	this.outcomes.push(d[i]);						// Add outcome										
@@ -429,12 +432,12 @@ class App  {
 	DrawCard(num, id, x, y, check, hgt)																// DRAW CARD
 	{
 		let o=this.thens[num];
-		let cols=[];
+		let i,cols=[];
 		let pad=hgt/30;																					// Responsive padding
 		cols["Structure"]="cyan"; 	cols["Help resource"]="magenta";	
 		cols["Options"]="#d4dd46"; 	cols["Chance"]="#ccc";
 		let title=o.title.split(" ").join("<br>")
-		let oo=JSON.parse(o.time);																		// Parse time field
+		let oo=o.time;																					// Extract time field
 		let str=`<div id="${"lz-cardDiv-"+id}" class="lz-card lz-hover" style="left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px">
 			<div style="grid-area:category;background-color:${cols[o.category]};font-size:${hgt/12.5}px;text-align:center;
 				padding:0 0 2px 0;border-bottom:1px solid #999"><b>${o.category}</b>`;
@@ -444,14 +447,14 @@ class App  {
 			<div style="grid-area:desc;padding:0 ${pad}px;overflow:hidden;font-size:${hgt/26}px">${o.desc}</div>
 			<div style="grid-area:time;padding:${pad}px;font-size:${hgt/18}px;text-align:center">
 				<div style="width:${hgt/6}px;float:right;line-height:1;color:#666"><b>${oo.time}<br>mins</b></div>
-				</div>
 			</div>
 			<div style="grid-area:pic;text-align:center;padding-top:${pad}px">`;
-			if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/7}px">`;
+				if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/7}px">`;
 			str+=`</div><div style="grid-area:students;padding-left:${pad}px;align-self:end">`;
-			let i;
-			for (i=0;i<oo.students.length;++i)str+=`<span style="display:inline-block;background-color:${this.stuCols[oo.students[i]-1]};
-				margin-right:3px;border-radius:25px;width:${hgt/15}px;height:${hgt/15}px"></span>`
+			
+			for (i=0;i<oo.students.length;++i)
+				str+=`<div style="display:inline-block;background-color:${this.stuCols[oo.students[i]-1]};
+				margin-right:3px;border-radius:25px;width:${hgt/15}px;height:${hgt/15}px"></div>`
 			str+="</div></div>";
 			return str;
 	}

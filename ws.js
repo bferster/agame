@@ -269,9 +269,9 @@ try{
 				gs.curTime+=o.time*60;															// Remove time (in minutes)
 				for (j=0;j<o.students.length;++j) {												// For each student, progress accoring to rule
 					k=o.students[j]-1;															// Student index (0-4)
-					gs.stuPos[k+5]+=outcomes[gs.outcome].amt;									// Advance now portion of index
+					gs.stuPos[k+5]+=(outcomes[gs.outcome].amt-0);								// Advance now portion of index
 					}
-				}
+				}``
 					
 		function getOutcome() {																	// PROGRESS STUDENT BASED ON RULE
 			let i,r,v=[];
