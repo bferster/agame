@@ -326,7 +326,7 @@ class App  {
 		let wid=$(window).width()*pct/100;																// Set height
 		let hgt=wid*.5625;																				// Width
 		let link="japp.htm?AgileGameChat"+("~"+app.gs.gameId).substring(8)+"&"+this.me+"&"+focus.toLowerCase();	// Make link
-//		if (window.location.host == "localhost")	link="";											// Debugging has no video
+		if (window.location.host == "localhost")	link="";											// Debugging has no video
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:11vw;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
@@ -407,14 +407,14 @@ class App  {
 			${(this.gs.curPhase == 1) ? "DEAL CARDS" : "&nbsp;PLAY&nbsp;"}</div><br><br><br>`;		
 		str+=addItem(i++,"DISCUSS IF...")		 														// Add IF phase
 		str+=addItem(i++,"PICK CARDS")																	// DEAL
-		if (this.gs.players)
+			if (this.gs.players)
 		for (j=0;j<this.gs.players.length;++j)															// For each player	
 			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" TALKS");							// Add player's name
 		str+=addItem(i++,"DECIDE");																		// DECIDE
-		str+=addItem(i++,"DISCUSS")	;																	// DISCUS
+		str+=addItem(i++,"DISCUSS")	;																	// DISCUSS
+		str+=`<p><div class="lz-bs" id="lz-finish" style="font-size:${fh}px;background-color#27ae6">FINISH</div></p>`;
 		$("#lz-flowDiv").html(str);																		// Add flowchart
-		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
-		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
+
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
 			if (this.start == 1) { this.start=2; this.Draw(); return; }									// Start
 			if (this.start == 2)  this.start=0; 														// Out of start sequence
@@ -422,6 +422,10 @@ class App  {
 			else if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);				// Deal
 			});										
 
+		$("#lz-finish").on("click", ()=>{ 																// ON FINISH CLICK
+			PopUp("<b>Thanks for playing the Agility game!</b><br><br>Here's what you did:<br><br><i>(Stats will show up here)</i>");
+			});
+		
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
 			let col=(num == app.gs.curPhase) ? "#ea7f1d" : "#ccc";										// Hilite curPhase
 			let s=`<p><div class="lz-bs" id="lz-phase-${num}" style="cursor:auto;font-size:${fh}px;background-color:${col}">${name.toUpperCase()}</div></p>`;
