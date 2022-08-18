@@ -133,7 +133,7 @@ class App  {
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.id="";																						// Set in InitSocket()
-		this.time=(window.location.host == "localhost") ? 5 : 60;										// Time in seconds
+		this.time=(window.location.host == "localhost") ? 5 : 30;										// Time in seconds
 		this.speed=2;																					// Speed multiplier = 2 1
 		this.start=1;																					// Starting phase 1
 	}
@@ -316,7 +316,7 @@ class App  {
 			$("#lz-ifDiv").html(this.strings["lobby"]);													// Lobby welcome message
 			$("#lz-topbut").html("START");																// Set button
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["chatStart"]}</div>`);			// Show tip
-			this.VideoChat();																			// Open video chat	
+			if (!redraw) this.VideoChat();																// Open video chat	
 			}
 	}
 
@@ -326,7 +326,7 @@ class App  {
 		let wid=$(window).width()*pct/100;																// Set height
 		let hgt=wid*.5625;																				// Width
 		let link="japp.htm?AgileGameChat"+("~"+app.gs.gameId).substring(8)+"&"+this.me+"&"+focus.toLowerCase();	// Make link
-		if (window.location.host == "localhost")	link="";											// Debugging has no video
+//		if (window.location.host == "localhost")	link="";											// Debugging has no video
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:11vw;left:calc(12.5% + 24px);display:block">
 			<iframe style="width:100%;height:100%" src="${link}" 
@@ -416,7 +416,7 @@ class App  {
 		$("[id^=lz-Speed]").css("opacity",.33);															// Dim all speed icons
 		$("#lz-Speed-"+app.gs.curSpeed).css("opacity",.66);												// Hilite current speed
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if (this.start == 1) { this.start=2; this.Draw(true); return; }								// Start
+			if (this.start == 1) { this.start=2; this.Draw(); return; }									// Start
 			if (this.start == 2)  this.start=0; 														// Out of start sequence
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
 			else if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);				// Deal
@@ -564,7 +564,7 @@ class App  {
 		this.gs=JSON.parse(v[3]);																		// Get game state
 		if (v[0] == "INIT")			this.Draw();														// INIT
 		else if (v[0] == "START") 	this.SetPhase(1);													// START
-		else if (v[0] == "DRAW")  	this.Draw(true);													// DRAW 
+		else if (v[0] == "DRAW")  	this.Draw();														// DRAW 
 		else if (v[0] == "PICKS")  	this.ShowCards(this.gs.players[this.gs.curPhase-3].picks,this.gs.players[this.gs.curPhase-3].name);	// PICKED
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
