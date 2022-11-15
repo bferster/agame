@@ -122,7 +122,8 @@ class App  {
 	constructor()   																				// CONSTRUCTOR
 	{
 		app=this;
-		this.me="Bill";
+		this.ip="0-0-0-0";																				// Player's ip addres
+		this.me="Bill";																					// Player's first name
 		this.curPlayer=0;																				// Player id
 		this.glassTimer=null;																			// Hourglass timer
 		this.gs={};																						// Holds game state
@@ -136,6 +137,11 @@ class App  {
 		this.time=(window.location.host == "localhost") ? 5 : 30;										// Time in seconds
 		this.speed=2;																					// Speed multiplier = 2 1
 		this.start=1;																					// Starting phase 1
+		this.round=0;																					// Round number
+
+		$.getJSON("https://api.ipify.org?format=json", (data)=> {										// Get IP
+  			this.ip=(data.ip.replace(/\./g,"-"));														// Set var
+		});
 	}
 
 	LoadConfig()																					// LOAD CONFIG FILE
@@ -159,6 +165,16 @@ class App  {
 				this.Draw();																			// Draw screen
 			})
 	}
+
+	Save() 																							// SAVE DATA
+		{
+			this.gs.round=this.round;
+			fetch(`//${window.location.host}:8081?q=save&email=${app.me+app.ip}&type=AG&password=`,
+				{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(app.gs)})
+					.then(res => res.text())															// Get as text
+					.then(text =>{																		// Process																	
+					})		
+		}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // ACT 
@@ -203,9 +219,11 @@ class App  {
 			if (this.gs.winner != -1)																	// A winner picked
 				this.ShowCards(this.gs.players[this.gs.winner].picks,"",`<div class="lz-tip">${this.strings["discuss"]}</div>`);	// Show tip
 				this.DrawOutcome(this.gs.outcome);														// Show outcome																			
+				this.round++;																			// Advance round
+				app.Save();																				// Save to DB
 				this.HourGlassTimer(this.time*this.speed, ()=>{ 										// Hourglass
-				$("#lz-topbut").css("background-color","#27ae60"); 										// Hilite button							
-				Sound("clicks"); 																		// Clicks
+					$("#lz-topbut").css("background-color","#27ae60"); 									// Hilite button							
+					Sound("clicks"); 																	// Clicks
 				});
 			}
 		this.Draw();																					// Redraw

@@ -13,13 +13,13 @@
 
 /* SOCKET SERVER  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-node gws.js
+node ws.js
 
-	cd /opt/bitnami/wordpress/game
  	forever logs | sudo cat /home/bitnami/.forever/<id>.log
-
-	forever stop gws.js 
-	forever start gws.js
+	
+	cd /opt/bitnami/wordpress/game
+	forever stop ws.js 
+	forever start ws.js
 
 	Ports: 8080,8085
 	A Records: @.agileteacher.org -> AgileTeacherIP     www.agileteacher.org -> AgileTeacherIP
