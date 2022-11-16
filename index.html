@@ -167,14 +167,24 @@ class App  {
 	}
 
 	Save() 																							// SAVE DATA
-		{
-			this.gs.round=this.round;
-			fetch(`//${window.location.host}:8081?q=save&email=${app.me+app.ip}&type=AG&password=`,
-				{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(app.gs)})
-					.then(res => res.text())															// Get as text
-					.then(text =>{																		// Process																	
-					})		
+	{
+		this.gs.round=this.round;
+		fetch(`//${window.location.host}:8081?q=save&email=${app.me+app.ip}&type=AG`,
+			{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(app.gs)})
+				.then(res => res.text())																// Get as text
+				.then(text =>{																			// Process																	
+				})		
 		}
+
+	GetAll()
+	{
+		fetch(`//${window.location.host}:8081?q=loadall&a=b&type=AG`)
+					.then(res => res.json())															// Get as text
+					.then(data =>{																		// Process
+						let str=Papa.unparse(data,{ header:true, skipEmptyLines:true, });				// Make CSV using lib
+						SaveTextAsFile("AGDatabase.csv", str);											// Save to file
+					})		
+	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 // ACT 
@@ -678,6 +688,25 @@ class App  {
 		str+="<div id='lz-loadingIconText' style='margin-top:-78px;color:#999'></div></div>";		// Progress
 		$("body").append(str);																		// Add icon to container
 	}
+
+	function SaveTextAsFile(file, contents)														// SAVE TEXT TO LOCAL FILE
+	{
+		if (file.charAt(0) == "*") {																// If asking
+			GetTextBox("Type file name","", file.substr(1), (s)=>{ SaveTextAsFile(s, contents); });	// Ask for name
+			return;																					// Quit
+			}
+		var textFileAsBlob=new Blob([contents], {type:'text/plain'});
+		var downloadLink=document.createElement("a");
+		downloadLink.download=file;
+		downloadLink.innerHTML="Download File";
+		downloadLink.href=window.URL.createObjectURL(textFileAsBlob);
+	    downloadLink.onclick=()=>{ downloadLink.remove(); };
+		downloadLink.style.display="none";
+		downloadLink.id="tdll";
+		document.body.appendChild(downloadLink);
+		downloadLink.click();
+	}
+
 
 </script>
 </body>
