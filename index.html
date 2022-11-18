@@ -378,14 +378,16 @@ class App  {
 
 	DrawStudents(pos=[0,0,0,0,0,0,0,0,0,0])															// DRAW STUDENTS	
 	{
-//pos=[0,0,5,2,1,9,1,8,7,1]
-		let i,str="";
-			str+=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
+		let i;
+		let str=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
 			border-radius:8px;background-color:#eee;text-align:center;color:#333;border:1px solid #999;font-size:1vw;
 			text-shadow:0 0 3px #fff, 0 0 3px #fff">
-				<div style="position:absolute;top:1vw;width:70%;right:15%;border-bottom:1px solid #999">LIBERATING</div>
-				<div style="position:absolute;top:20%;width:70%;right:15%;border-bottom:1px solid #999">THRIVING</div>
-				<div style="position:absolute;top:50%;width:82%;right:10%;border-bottom:1px solid #999">LEARNING</div>
+				<div style="position:absolute;top:1vw;width:70%;right:15%;border-bottom:1px solid #999"
+					title="Students use their learning to pursue their own interests and further learning goals">LIBERTY</div>
+				<div style="position:absolute;top:20%;width:70%;right:15%;border-bottom:1px solid #999"
+					title="Students feel valued and are building relationships within the learning community">COMMUNITY</div>
+				<div style="position:absolute;top:50%;width:82%;right:10%;border-bottom:1px solid #999"
+					title="Students feel challenged and joy as they build skills, knowledge, and understanding">LEARNING</div>
 				<div style="position:absolute;bottom:.5vw;width:100%;color:#666">STUDENT&nbsp;PROGRESS</div>
 			
 		<div style="display:grid;width:calc(100% - 32px);height:100%;padding:0 16px;grid-template-columns:1fr 1fr 1fr 1fr 1fr">`;
