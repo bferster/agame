@@ -33,14 +33,18 @@
 							grid-template-areas:'category category category category' 'title title pic time' 
 							'subtitle subtitle subtitle subtitle' 'desc desc desc desc''students students students students';
 							}
-		.lz-hover:hover {	transform:scale(3);z-index:100; 
+		.lz-tab {			width:100px; cursor:pointer; font-size:13px; padding:4px 0; border:1px solid #999;
+							border-radius:6px; margin-right:6px; border-bottom-left-radius:0; border-bottom-right-radius:0;
+							font-style:normal; background-color:#fff; display:inline-block; text-align:center; border-bottom:none;
+							}
+		.lz-hover:hover {	transform:scale(3); z-index:100; 
 							}
 		.lz-confirm {		position:absolute;  width:300px; padding: 16px; left:calc(50% - 150px); top:calc(50vh - 50px); user-select: none;	
 							border-radius: 8px; background-color: #fff; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
 							}
 		.lz-popup {			position:absolute;  width: auto; max-width:200px; padding: 12px; left: calc(50% - 100px); top: calc(66% - 50px);
 							border-radius: 8px; background-color: #eee; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
-							font-size: 14px; text-align:center; display: none;
+							font-size: 14px; text-align:center; display:none;
 			}
 		.lz-is {			border-radius:16px; padding:0 8px; width:250px; height: 24px;
 							border:1px solid #999; font-size: 13px;
@@ -78,11 +82,13 @@
 <script>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// MAIN 
+// MAIN   ../agileSQL/sql.js
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 	var app=null;																					// Holds app
 	var isMobile=false;																				// Mobile?
+
+
 
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
@@ -100,9 +106,16 @@
 			app.LoadConfig();																		// Load config to start round	
 			});
 
+		$("#lz-ifDiv").on("click",(e)=> { 															// ON LOG IN
+			if (e.ctrlKey && e.ctrlKey) {															// If keys pressed
+				Sound("ding");																		// Ding
+				app.GetAll();																		// Save DB to CSV
+				}
+			});
+
 		$(window).on("keydown",function(e) {														// HANDLE KEYPRESS
 			if ((e.which == 81) && e.ctrlKey)	{													// Test key (CTL-Q)
-				}
+					}
 			});
 		});
 
@@ -440,7 +453,7 @@ class App  {
 			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" TALKS");							// Add player's name
 		str+=addItem(i++,"DECIDE");																		// DECIDE
 		str+=addItem(i++,"DISCUSS")	;																	// DISCUSS
-		str+=`<p><div class="lz-bs" id="lz-finish" style="font-size:${fh}px;background-color#27ae6">FINISH</div></p>`;
+		str+=`<p><div class="lz-bs" id="lz-stats" style="font-size:${fh}px;background-color#27ae6">SCOREBOARD</div></p>`;
 		$("#lz-flowDiv").html(str);																		// Add flowchart
 
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
@@ -450,8 +463,9 @@ class App  {
 			else if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);				// Deal
 			});										
 
-		$("#lz-finish").on("click", ()=>{ 																// ON FINISH CLICK
-			PopUp("<b>Thanks for playing the Agility game!</b><br><br>Here's what you did:<br><br><i>(Stats will show up here)</i>");
+		$("#lz-stats").on("click",()=> {															// ON STATS BUTTON
+			if (!$("#lz-students").html())	this.Draw();												// If open, redraw
+			else							this.DrawStats();											// Show stats				
 			});
 		
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
@@ -602,6 +616,53 @@ class App  {
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
 		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// DECIDED
 	}
+
+	DrawStats()																						//	DRAW GAME STATS
+	{
+		let i,gd=[];
+		$("#lz-infieldDiv").html("");																	// Clear infield
+		$("#lz-students").html("");																		// Clear student
+		$("#lz-videoChat").remove(); 																	// Remove video
+		$("#lz-ifDiv").html(" <img src='img/smlogo.png' width='64' style='vertical-align:-8px'/>&nbsp;&nbsp; AGILITY GAME SCOREBOARD");
+		let str=`<div style="margin-top:-43px">
+			<div id="lzstab-0" class="lz-tab">This game</div>
+			<div id="lzstab-1" class="lz-tab">My games</div>
+			<div id="lzstab-2" class="lz-tab">All games</div>
+			</div>
+			<div id='lzstatsDiv' style="width:100%;border:1px solid #999;background-color:#eee;
+				border-top:none; border-radius:6px; border-top-left-radius:0;padding:12px;
+				overflow-y:auto;overflow:x:hidden;height:calc(var(--maxvh) - 11vw - 36px)"
+			</div>`;
+	
+		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add it
+		$("[id^=lzstab-]").on("click",function(e) {	drawPage($(this)[0].id.substring(7));	});			// ON TAB CLICK
+		
+		fetch(`//${window.location.host}:8081?q=loadall&a=b&type=AG`)									// Fetch history
+			.then(res => res.json()).then(data => {														// Process
+				for (i=0;i<data.length;++i)	gd[i]=JSON.parse(data[i].data); 							// Extract games data
+				drawPage(0);																			// Draw this game stats
+			})										
+	
+		function drawPage(num) {																		// DRAW STATS PAGE
+			trace(gd);	
+			$("[id^=lzstab-]").css({"background-color":"#fff","font-weight":"normal",color:"#999"});	// Reset all
+			$("#lzstab-"+num).css({"background-color":"#eee","font-weight":"bold",color:"#27ae60"});	// Set current one
+			if (num == 0) {																				// If this game
+				str="This game data will be displayed";
+				}
+			else if (num == 1) {																		// My games
+				str="My games data will be displayed";
+			}
+			else if (num == 3) {																		// All games
+				str="<All games data will be displayed";
+				}
+			$("#lzstatsDiv").html(str.replace(/\t|\n|\r/g,""));											// Draw
+		}
+
+	}
+
+
+
 
 } // CLASS CLOSURE
 
