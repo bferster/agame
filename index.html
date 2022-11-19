@@ -82,7 +82,7 @@
 <script>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
-// MAIN   ../agileSQL/sql.js
+// MAIN   node ../agileSQL/sql.js
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 	var app=null;																					// Holds app
@@ -174,7 +174,11 @@ class App  {
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					else if (d[i].type == "outcome")	this.outcomes.push(d[i]);						// Add outcome										
 					}
-				this.InitSocketServer();																// Start socket server
+				$.getJSON("https://api.ipify.org?format=json", (data)=> {								// Get IP
+  					this.ip=(data.ip.replace(/\./g,"-"));												// Set var
+					this.InitSocketServer();															// Start socket server
+					});
+
 				this.Draw();																			// Draw screen
 			})
 	}
@@ -182,7 +186,7 @@ class App  {
 	Save() 																							// SAVE DATA
 	{
 		this.gs.round=this.round;
-		fetch(`//${window.location.host}:8081?q=save&email=${app.me+app.ip}&type=AG`,
+		fetch(`//${window.location.host}:8081?q=save&email=${app.id}&type=AG`,							// Save to DB
 			{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(app.gs)})
 				.then(res => res.text())																// Get as text
 				.then(text =>{																			// Process																	
@@ -455,7 +459,7 @@ class App  {
 			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" TALKS");							// Add player's name
 		str+=addItem(i++,"DECIDE");																		// DECIDE
 		str+=addItem(i++,"DISCUSS")	;																	// DISCUSS
-		str+=`<p><div class="lz-bs" id="lz-stats" style="font-size:${fh}px;background-color#27ae6">SCOREBOARD</div></p>`;
+		str+=`<p><div class="lz-bs" id="lz-stats" style="font-size:${fh}px;background-color#27ae6">SCORE BOARD</div></p>`;
 		$("#lz-flowDiv").html(str);																		// Add flowchart
 
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
@@ -589,7 +593,7 @@ class App  {
 		this.ws.onerror=(e)=>  { console.log('error',e);	};											// ON ERROR
 		this.ws.onopen=()=> { 																			// ON OPEN	
 			console.log('connected'); 																	// Show connected
-			this.id=this.me+"@"+Math.floor(Math.random()*10000);										// Make unique id
+			this.id=this.me+"@"+this.ip;																// Make unique id
 			this.ws.send("INIT|"+this.id+"|"+this.me);													// Init																	
 			this.pollTimer= window.setInterval( ()=>{													// INIT POLLING SERVER
 			++this.secs;																				// Another second 
@@ -621,11 +625,14 @@ class App  {
 
 	DrawStats()																						//	DRAW GAME STATS
 	{
-		let i,gd=[];
+		let gd=[];
+		let rounds=[];
+let gameId="1668880928";
 		$("#lz-infieldDiv").html("");																	// Clear infield
 		$("#lz-students").html("");																		// Clear student
 		$("#lz-videoChat").remove(); 																	// Remove video
-		$("#lz-ifDiv").html(" <img src='img/smlogo.png' width='64' style='vertical-align:-8px'/>&nbsp;&nbsp; AGILITY GAME SCOREBOARD");
+		$("#lz-clockSVG").remove();																		// Remove cClock
+		$("#lz-ifDiv").html(" <img src='img/smlogo.png' width='64' style='vertical-align:-8px'/>&nbsp;&nbsp; AGILITY GAME SCORE BOARD");
 		let str=`<div style="margin-top:-43px">
 			<div id="lzstab-0" class="lz-tab">This game</div>
 			<div id="lzstab-1" class="lz-tab">My games</div>
@@ -641,30 +648,103 @@ class App  {
 		
 		fetch(`//${window.location.host}:8081?q=loadall&a=b&type=AG`)									// Fetch history
 			.then(res => res.json()).then(data => {														// Process
-				for (i=0;i<data.length;++i)	gd[i]=JSON.parse(data[i].data); 							// Extract games data
+				let i;
+				for (i=0;i<data.length;++i)	{															// For each round
+					gd[i]=JSON.parse(data[i].data); 													// Extract game data as an obj
+					gd[i].playerId=data[i].email;														// Get player name+ip
+					}
 				drawPage(0);																			// Draw this game stats
 			})										
 	
 		function drawPage(num) {																		// DRAW STATS PAGE
-			trace(gd);	
+			
+			let i,str="";
 			$("[id^=lzstab-]").css({"background-color":"#fff","font-weight":"normal",color:"#999"});	// Reset all
 			$("#lzstab-"+num).css({"background-color":"#eee","font-weight":"bold",color:"#27ae60"});	// Set current one
 			if (num == 0) {																				// If this game
-				str="This game data will be displayed";
+				for (i=0;i<gd.length;++i)																// For each round
+					if ((gd[i].gameId == gameId) && (gd[i].playerId == app.id)) rounds.push(gd[i]);		// If this game and my entry, add to list 
+				rounds.sort((a,b) => b.curTime-a.curTime);												// Sort by newest first
+				str+=drawGame(rounds);																	// Draw entire game
+				for (i=0;i<rounds.length;++i) str+=drawRound(i);										// Draw each round
+				trace(rounds)
 				}
 			else if (num == 1) {																		// My games
 				str="My games data will be displayed";
-			}
-			else if (num == 3) {																		// All games
+				}
+			else if (num == 2) {																		// All games
 				str="<All games data will be displayed";
 				}
 			$("#lzstatsDiv").html(str.replace(/\t|\n|\r/g,""));											// Draw
+			}
+
+		function drawProgress(x, y, h, pos) {															// DRAW STUDENT PROGRESS
+			let i;
+			let str=`<div style="position:absolute;top:${y}px;width:${h*.75}px;left:${x}px;height:${h}px;
+					display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr">`;
+			for (i=0;i<app.stuCols.length;++i) {														// For each student
+				pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);								// Cap 0-9
+				str+=`<div style="align-self:end">
+					<div style="background-color:${app.stuCols[i]};border-radius:6px 6px 0 0;height:${(pos[i+5]-pos[i])*h/10}px"></div>
+					<div style="background-color:${app.stuCols[i]};opacity:.75;`;	
+				if (!(pos[i]-pos[i+5]))	str+=`border-radius:6px 6px 0 0;`;								// Add curved top if same
+				str+=`height:${Math.max(2,pos[i]*h/10)}px"></div></div>`;
+				}
+			return(str+"</div>");
+			}
+
+		function drawGame(o) {																			// DRAW GAME
+			let i,j,k;
+			let h=80,w=h*.75+12;
+			str=`<p><div style="display:flex">
+				<div style="width:100px"><b>ENTIRE GAME</b></div></p>
+				</div><div style="display:flex">
+					<div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:12px">Cards played <br>by everyone</div>`;
+				str+=`</div><div style="display:flex">
+				<div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:12px">Student<br>progress</div>`;
+				for (i=rounds.length-1;i>=0;--i) {
+				str+=`<div style="position:relative;width:${w}px;height:${h+12}px">`;
+				str+=drawProgress(0,0,h,rounds[i].stuPos);
+				str+="</div>";
+				}
+			str+="</div><hr>";
+			return str;
+			}
+
+
+		function drawRound(num) {																		// DRAW ROUND
+			let i,j,k;
+			let h=80,w=h*.75+12;
+			let o=rounds[num];																			// Point at round
+			str=`<p><div style="display:flex">
+				<div style="width:100px"><b>ROUND ${o.round}</b></div><i><div>${app.ifs[o.curIf]}</i></div></p>
+				</div><div style="display:flex">
+					<div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:12px">Cards played <br>by everyone</div>`;
+			for (j=0;j<o.players.length;++j) 													// For each player
+				for (k=0;k<o.players[j].picks.length;++k) 										// For each pick
+					str+=`<div style="position:relative;width:${w}px;height:${h+12}px">${app.DrawCard(o.players[j].picks[k],0,0,0,0,h)}</div>`;
+			k=0;
+			for (j=0;j<o.players.length;++j) 													// For each player
+				if (o.players[j].name == app.id) { k=j; break; } 								// If it's me
+				str+=`</div><div style="display:flex">
+				<div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:12px">Cards played<br>by me</div>`;
+			for (j=0;j<o.players[k].picks.length;++j) 											// For each pick
+				str+=`<div style="position:relative;width:${w}px;height:${h+12}px">${app.DrawCard(o.players[k].picks[j],0,0,0,0,h)}</div>`;
+			str+=`<div style="font-size:12px;padding-top:24px;text-align:center;width:${50}px;padding-right:12px">Winning<br>cards</div>`;
+			for (j=0;j<o.players[o.winner].picks.length;++j) 									// For each winner
+				str+=`<div style="position:relative;width:${w}px;height:${h+12}px">${app.DrawCard(o.players[o.winner].picks[j],0,0,0,0,h)}</div>`;
+			str+=`</div><div style="display:flex">
+				<div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:12px">Student<br>progress</div>`;
+			for (i=rounds.length-1;i>=num;--i) {
+				str+=`<div style="position:relative;width:${w}px;height:${h+12}px">`;
+				str+=drawProgress(0,0,h,rounds[i].stuPos);
+				str+="</div>";
+				}
+			str+="</div><hr>";
+			return str;
 		}
 
 	}
-
-
-
 
 } // CLASS CLOSURE
 
