@@ -133,7 +133,9 @@ try{
 	webSocketServer.on('connection', (webSocket, req) => {										// ON CONNECTION
 		let d=new Date();																		// Get UTC time
 		d=new Date(d.getTime()+(-3600000*5));													// Get UTC-5 time	
-		let str=d.toLocaleDateString()+" -- "+d.toLocaleTimeString()+" -> "+ req.socket.remoteAddress.substring(7);
+		let ip=req.socket.remoteAddress.substring(7);											// Get client's IP
+		webSocket.clientIp=ip ? ip.replace(/\./g,"-") : "0-0-0-0";								// Set ip
+		let str=d.toLocaleDateString()+" -- "+d.toLocaleTimeString()+" -> "+webSocket.clientIp;	// Log connection
 		console.log(`Connect: (${webSocketServer.clients.size}) ${str}`);						// Log connect
 
 		webSocket.on("pong", () => { 															// ON PONG
@@ -151,10 +153,10 @@ try{
 			let v=message.split("|");															// Get params
 			if (v[0] == "INIT") {																// INIT
 				gs=FindGame();																	// Find open game or new one
-				gs.players.push( {name:v[1],picks:[]});											// Add player data
+				gs.players.push( {name:v[1]+"@"+webSocket.clientIp,picks:[]});					// Add player data
 				webSocket.gameId=gs.id;															// Set game id
 				webSocket.player=v[1];															// Set player name													
-				Broadcast(webSocket.gameId,"INIT|"+v[1].split("@")[0]+"|"+v[2]); 				// Send INIT message
+				Broadcast(webSocket.gameId,"INIT|"+webSocket.clientIp+"|"+v[2]); 				// Send INIT message
 				}
 			let index=games.findIndex(x => x.id == webSocket.gameId)							// Find array index by id
 			if (index == -1) return;															// Quit if not found
@@ -164,6 +166,7 @@ try{
 				gs.started=true;																// Close game for new entrants
 				gs.StartNextPhase(v);															// Start next phase	
 				}					
+				
 			else if (v[0] == "DEAL") {															// DEAL
 				gs.StartNextPhase(v);															// Start next phase	
 				}

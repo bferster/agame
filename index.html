@@ -135,7 +135,6 @@ class App  {
 	constructor()   																				// CONSTRUCTOR
 	{
 		app=this;
-		this.ip="0-0-0-0";																				// Player's ip addres
 		this.me="Bill";																					// Player's first name
 		this.curPlayer=0;																				// Player id
 		this.glassTimer=null;																			// Hourglass timer
@@ -151,10 +150,6 @@ class App  {
 		this.speed=2;																					// Speed multiplier = 2 1
 		this.start=1;																					// Starting phase 1
 		this.round=0;																					// Round number
-
-		$.getJSON("https://api.ipify.org?format=json", (data)=> {										// Get IP
-  			this.ip=(data.ip.replace(/\./g,"-"));														// Set var
-		});
 	}
 
 	LoadConfig()																					// LOAD CONFIG FILE
@@ -174,11 +169,7 @@ class App  {
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					else if (d[i].type == "outcome")	this.outcomes.push(d[i]);						// Add outcome										
 					}
-				$.getJSON("https://api.ipify.org?format=json", (data)=> {								// Get IP
-  					this.ip=(data.ip.replace(/\./g,"-"));												// Set var
-					this.InitSocketServer();															// Start socket server
-					});
-
+				this.InitSocketServer();																// Start socket server
 				this.Draw();																			// Draw screen
 			})
 	}
@@ -223,7 +214,7 @@ class App  {
 		else if ((phase > 2) && (phase < this.gs.players.length+3)) {									// EXPLAIN
 			if (phase == 3) {																			// If 1st
 				let i,v=[],picks=[];																	
-				$("[id^=lz-cardCheck-]").each( function() {												// Fro each checkbox image	
+				$("[id^=lz-cardCheck-]").each( function() {												// For each checkbox image	
 					if ($(this).prop("src").match(/checked/)) 											// If checked
 						if (v.length < 3)																// Less than 3
 							v.push({time:$(this).data("timeStamp"), card:this.id.substring(13)-0 });	// Add card's index
@@ -593,8 +584,7 @@ class App  {
 		this.ws.onerror=(e)=>  { console.log('error',e);	};											// ON ERROR
 		this.ws.onopen=()=> { 																			// ON OPEN	
 			console.log('connected'); 																	// Show connected
-			this.id=this.me+"@"+this.ip;																// Make unique id
-			this.ws.send("INIT|"+this.id+"|"+this.me);													// Init																	
+			this.ws.send("INIT|"+this.me+"|"+this.me);													// Init																	
 			this.pollTimer= window.setInterval( ()=>{													// INIT POLLING SERVER
 			++this.secs;																				// Another second 
 			if (this.retryWS) {																			// If reconnecting to websocket
@@ -614,7 +604,7 @@ class App  {
 		if (!event.data)			 return;															// Quit if no data
 		let v=event.data.split("|");																	// Get params
 		this.gs=JSON.parse(v[3]);																		// Get game state
-		if (v[0] == "INIT")			this.Draw();														// INIT
+		if (v[0] == "INIT")			{ this.id=this.me+"@"+v[1]; this.Draw(); }							// INIT and get IP
 		else if (v[0] == "START") 	this.SetPhase(1);													// START
 		else if (v[0] == "DRAW")  	this.Draw();														// DRAW 
 		else if (v[0] == "PICKS")  	this.ShowCards(this.gs.players[this.gs.curPhase-3].picks,this.gs.players[this.gs.curPhase-3].name);	// PICKED
@@ -627,7 +617,9 @@ class App  {
 	{
 		let gd=[];
 		let rounds=[];
-let gameId="1668880928";
+		let gameId=this.gs.gameId;
+gameId="1668977192";
+
 		$("#lz-infieldDiv").html("");																	// Clear infield
 		$("#lz-students").html("");																		// Clear student
 		$("#lz-videoChat").remove(); 																	// Remove video
@@ -659,15 +651,23 @@ let gameId="1668880928";
 		function drawPage(num) {																		// DRAW STATS PAGE
 			
 			let i,str="";
+			let h=80,w=h*.75+12;
 			$("[id^=lzstab-]").css({"background-color":"#fff","font-weight":"normal",color:"#999"});	// Reset all
 			$("#lzstab-"+num).css({"background-color":"#eee","font-weight":"bold",color:"#27ae60"});	// Set current one
 			if (num == 0) {																				// If this game
 				for (i=0;i<gd.length;++i)																// For each round
 					if ((gd[i].gameId == gameId) && (gd[i].playerId == app.id)) rounds.push(gd[i]);		// If this game and my entry, add to list 
 				rounds.sort((a,b) => b.curTime-a.curTime);												// Sort by newest first
-				str+=drawGame(rounds);																	// Draw entire game
+				str=`</div><div style="display:flex">
+					<div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:12px">Student<br>progress</div>`;
+				for (i=rounds.length-1;i>=0;--i) {														// For each round
+					str+=`<div style="position:relative;width:${w}px;height:${h+12}px">`;				// Container div			
+					str+=drawProgress(0,0,h,rounds[i].stuPos);											// Draw progress in time order
+					str+="</div>";																		// Close container
+					}
+				str+="</div><hr>";																		// End section
 				for (i=0;i<rounds.length;++i) str+=drawRound(i);										// Draw each round
-				trace(rounds)
+trace(rounds)
 				}
 			else if (num == 1) {																		// My games
 				str="My games data will be displayed";
@@ -692,25 +692,6 @@ let gameId="1668880928";
 				}
 			return(str+"</div>");
 			}
-
-		function drawGame(o) {																			// DRAW GAME
-			let i,j,k;
-			let h=80,w=h*.75+12;
-			str=`<p><div style="display:flex">
-				<div style="width:100px"><b>ENTIRE GAME</b></div></p>
-				</div><div style="display:flex">
-					<div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:12px">Cards played <br>by everyone</div>`;
-				str+=`</div><div style="display:flex">
-				<div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:12px">Student<br>progress</div>`;
-				for (i=rounds.length-1;i>=0;--i) {
-				str+=`<div style="position:relative;width:${w}px;height:${h+12}px">`;
-				str+=drawProgress(0,0,h,rounds[i].stuPos);
-				str+="</div>";
-				}
-			str+="</div><hr>";
-			return str;
-			}
-
 
 		function drawRound(num) {																		// DRAW ROUND
 			let i,j,k;
