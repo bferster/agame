@@ -64,7 +64,7 @@ class Game {
 
 	StartNextPhase(v)																				// START NEXT PHASE
 	{
-		let time,op="NEXT|";
+		let time=0,op="NEXT|";
 		this.curPhase++;																				// Inc phase
 		if (this.curPhase == 1) {																		// START
 			this.curIf=Math.floor(Math.random()*this.ifs.length);										// Set if with random number
@@ -74,7 +74,7 @@ class Game {
 			op="START|";																				// Set op
 			}
 		else if (this.curPhase == 2)					 	time=this.time*this.curSpeed;				// DEAL
-		else if ((this.curPhase > 2) && (this.curPhase < this.players.length+3)) time=this.time;		// EXPLAIN
+//		else if ((this.curPhase > 2) && (this.curPhase < this.players.length+3)) time=this.time;		// EXPLAIN
 		if (time) {																						// If waiting
 			clearInterval(this.timer);																	// Stop timer
 			this.timer=setInterval( ()=>{																// Start timer 
@@ -82,6 +82,7 @@ class Game {
 				this.StartNextPhase(v);																	// Recurse			
 				},time);
 			}
+	
 		Broadcast(this.id,op+v[1]+"|"+v[2]); 															// Send message
 	}
 
