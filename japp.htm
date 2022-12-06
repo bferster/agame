@@ -30,10 +30,7 @@
 
 	options.interfaceConfigOverwrite["TOOLBAR_BUTTONS"].push("mute-everyone");
 	const api = new JitsiMeetExternalAPI(domain, options);
-	
-//	window.onresize=function() { api.resizeLargeVideo(500, 500)}
-		
-
+	window.onresize=function() { document.getElementById("jitsiConferenceFrame0").style.height=window.innerHeight+"px" }
 	window.addEventListener("unload", ()=>{ api.dispose(); });
 	window.addEventListener("load",   ()=>{ api.executeCommand('displayName',v[1] ? v[1] : "");
 	api.addListener("participantJoined", (o)=>{
