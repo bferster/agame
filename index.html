@@ -92,18 +92,19 @@
 
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
+		let v=window.location.search.substring(1).split("&");
 		if (window.location.host != "localhost") 													// Not in debug
 			$("#splashDiv").fadeIn(2000);															// Fade in splash page
 		else{																						// Debug
 			$("#mainDiv").fadeIn(0);																// Load fast
-			app.LoadConfig();																		// Load config to start round	
+			app.LoadConfig(v[0]);																	// Load config to start round	
 			}
 	
 		$("#lz-login").on("change",()=> { 															// ON LOG IN
 			app.me=$("#lz-login").val().trim();														// Set player name
 			$("#splashDiv").fadeOut();																// Fade out splash
 			$("#mainDiv").fadeIn(2000);																// Fade in main
-			app.LoadConfig();																		// Load config to start round	
+			app.LoadConfig(v[0]);																	// Load config to start round	
 			});
 
 		$("#lz-ifDiv").on("click",(e)=> { 															// ON LOG IN
@@ -153,10 +154,11 @@ class App  {
 		this.inPlay=0;																					// Am I actively plays?
 	}
 
-	LoadConfig()																					// LOAD CONFIG FILE
+	LoadConfig(file="")																				// LOAD CONFIG FILE
 	{	
 		let i;
-		fetch('data/config.csv')																		// Load file
+		if (!file)	file="config";																		// If no file spec'd, use default														
+		fetch("data/"+file+".csv")																		// Load file
 			.then(res => res.text())																	// Get as text
 			.then(res =>{																				// Process																	
 				let d=Papa.parse(res, { header:true, skipEmptyLines:true }).data;						// Parse CSV using papa lib
