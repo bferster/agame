@@ -91,7 +91,6 @@
 	var isMobile=false;																				// Mobile?
 	var isLocal=window.location.host == "localhost" ? true : false;
 
-isLocal=false
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
 		let v=window.location.search.substring(1).split("&");
@@ -231,13 +230,15 @@ class App  {
 				v.sort((a,b) => a.time-b.time);															// Sort by timeStamp
 				for (i=0;i<v.length;++i) picks[i]=v[i].card;											// Simple array 
 				this.ws.send("PICKS|"+this.gs.gameId+"|"+this.id+"|"+JSON.stringify(picks));			// Send picked cards to server
-				if (!redraw) this.VideoChat(/*this.gs.players[phase-3].name.split("@")[0]*/); 			// Open video with highlight?
-				}
+				if (!redraw) this.VideoChat(/*this.gs.players[phase-3].name.split("@")[0]*/); 			// Open video 
+			trace("SENT",this.id+"|"+JSON.stringify(picks))	
+			
+			}
 			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name);				// Show picked cards
-			this.HourGlassTimer(90, ()=>{ Sound("ding"); $("#stopExplainBut").trigger("click");  });	// Fore quit after time is up
-			if (this.gs.players[phase-3].name == this.id) {												// If I'm expaining my choices
-				}			
-				$("#lz-infieldDiv").html("")	
+			this.HourGlassTimer(this.time*3, ()=>{ Sound("ding"); $("#stopExplainBut").trigger("click");  });	// Fore quit after time is up
+//			if (this.gs.players[phase-3].name == this.id) {												// If I'm expaining my choices
+//				}			
+//				$("#lz-infieldDiv").html("")	
 			this.Draw();																					// Redraw
 			}
 		else if (phase == this.gs.players.length+3) {													// DECIDE 
@@ -299,7 +300,7 @@ class App  {
 			let s='DEAL|'+app.gs.gameId+'|'+app.id;														// Cmd to change phase on server
 			str+=`<div class="lz-tip">${this.strings["explainMyHand"]}
 				</div><div id="stopExplainBut" class="lz-bs" 
-				style="margin-top:${$(window).width()*.5*.5265+32}px" 
+				style="margin-top:${$(window).width()*.5*.5265+48}px" 
 				onclick="app.ws.send('${s}')">Click when done sharing</div>`;							// Add button
 			}		
 		else if (who)	str+=`<div class="lz-tip">${who.split("@")[0]+this.strings["explainHand"]}</div>`;	// Someone else				
@@ -470,7 +471,7 @@ class App  {
 		str+=addItem(i++,"PICK CARDS")																	// DEAL
 			if (this.gs.players)
 		for (j=0;j<this.gs.players.length;++j)															// For each player	
-			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" TALKS");							// Add player's name
+			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" EXPLAINS");							// Add player's name
 		str+=addItem(i++,"DECIDE");																		// DECIDE
 		str+=addItem(i++,"DISCUSS")	;																	// DISCUSS
 		str+=`<p><div class="lz-bs" id="lz-statsBut" style="font-size:${fh}px;background-color#27ae6">SCORE BOARD</div></p>`;
@@ -751,7 +752,7 @@ trace(rounds)
 				str+=`</div><div style="display:flex"><div class="lz-scoreLabel">Cards played<br>by me</div>`;
 			for (j=0;j<o.players[k].picks.length;++j) 											// For each pick
 				str+=`<div style="position:relative;width:${w}px;height:${h+12}px">${app.DrawCard(o.players[k].picks[j],0,0,0,0,h)}</div>`;
-			str+=`<div class="lz-scoreLabel" style="width:${50}px;text-align:center">Winning<br>cards</div>`;
+			str+=`<div class="lz-scoreLabel" style="width:${50}px;text-align:center">Chosen<br>cards</div>`;
 			for (j=0;j<o.players[o.winner].picks.length;++j) 									// For each winner
 				str+=`<div style="position:relative;width:${w}px;height:${h+12}px">${app.DrawCard(o.players[o.winner].picks[j],0,0,0,0,h)}</div>`;
 			str+=`<div style="display:flex"><div class="lz-scoreLabel" style="width:${50}px;text-align:center">Student<br>progress</div>`;

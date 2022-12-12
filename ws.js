@@ -34,6 +34,9 @@ node ws.js
 	sudo /opt/bitnami/bncert-tool
 	PASS=prename
 	
+	ssh -i c:/Bill/CC/js/agile.pem bitnami@54.88.128.161 (access console via terminal)
+
+	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 	
 class Game {																					
@@ -53,7 +56,7 @@ class Game {
 		this.curIf=-1;																					// No if condition yet
 		this.winner=-1;																					// No winner yet
 		this.curTime=0;																					// Current time used so far
-		this.curSpeed=2;																				// Current speed
+		this.curSpeed=1.5;																				// Current speed
 		this.time=(local ? 5 : 30)*1000;																// Base time in ms
 		this.timer=null;																				// Phase timer
 		this.numVotes=0;																				// Number of votes
@@ -74,7 +77,6 @@ class Game {
 			op="START|";																				// Set op
 			}
 		else if (this.curPhase == 2)					 	time=this.time*this.curSpeed;				// DEAL
-//		else if ((this.curPhase > 2) && (this.curPhase < this.players.length+3)) time=this.time;		// EXPLAIN
 		if (time) {																						// If waiting
 			clearInterval(this.timer);																	// Stop timer
 			this.timer=setInterval( ()=>{																// Start timer 
@@ -135,7 +137,7 @@ try{
 		let d=new Date();																		// Get UTC time
 		d=new Date(d.getTime()+(-3600000*5));													// Get UTC-5 time	
 		let ip=req.socket.remoteAddress.substring(7);											// Get client's IP
-		webSocket.clientIp=ip ? ip.replace(/\./g,"-") : "0-0-0-0";								// Set ip
+		webSocket.clientIp=ip ? ip.replace(/\./g,"-") : Math.floor(Math.random()*100000);		// Set ip
 		let str=d.toLocaleDateString()+" -- "+d.toLocaleTimeString()+" -> "+webSocket.clientIp;	// Log connection
 		console.log(`Connect: (${webSocketServer.clients.size}) ${str}`);						// Log connect
 
