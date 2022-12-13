@@ -71,7 +71,7 @@
 			<div id="lz-flowDiv" class="lz-flow"></div>
 			<div id="lz-ifDiv" class="lz-if"></div>
 			<div id="lz-infieldDiv" class="lz-infield"></div>
-			<img src="img/ACTlogo.png" style="position:absolute;left:calc(2.25% + 12px);bottom:12px;width:8vw">
+			<img src="img/ACTlogo.png" style="position:absolute;left:calc(3.25% + 12px);bottom:12px;width:6vw">
 		</div>
 			<div id="splashDiv" class="lz-splash">
 			<img src="img/ACTlogo.png" style='width:200px' alt="logo"><br>
@@ -137,7 +137,7 @@ class App  {
 	constructor()   																				// CONSTRUCTOR
 	{
 		app=this;
-		this.me="Bill";																					// Player's first name
+		this.me="Me-"+Math.floor(Math.random()*100);													// Player's first name
 		this.curPlayer=0;																				// Player id
 		this.glassTimer=null;																			// Hourglass timer
 		this.gs={};																						// Holds game state
@@ -148,11 +148,12 @@ class App  {
 		this.flow=[];																					// Holds flow
 		this.stuCols=["#b0263e","#256caa","#ea7f1d","#9c25aa","#25aa54"]								// Student colors
 		this.id="";																						// Set in InitSocket()
-		this.time=isLocal ? 5 : 30;																		// Time in seconds
-		this.speed=2;																					// Speed multiplier = 2 1
+		this.time=isLocal ? 8 : 30;																		// Time in seconds
+		this.curSpeed=1.5;																				// Speed multiplier = 2 1
 		this.start=1;																					// Starting phase 1
 		this.round=0;																					// Round number
 		this.inPlay=0;																					// Am I actively plays?
+		this.curLeader=0;																				// Current leader
 	}
 
 	LoadConfig(file="")																				// LOAD CONFIG FILE
@@ -205,58 +206,55 @@ class App  {
 	SetPhase(phase, redraw)																			// SET PHASE OF GAME
 	{
 		this.inPlay=(phase && phase < this.gs.players.length+4) ? 1 : 0;								// In play?	
-		this.Draw();																					// Redraw
 		if (phase == 1) {																				// START 
 			this.start=0; 																				// Out of start sequence
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
-			$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["discussIf"]}</div>`);			// Show tip
+			let s=this.strings["discussIf"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0]+"</b>");
+			this.curLeader=(this.curLeader+1)%app.gs.players.length;									// Choose next leader
+			$("#lz-infieldDiv").html(`<div class="lz-tip">${s}</div>`);									// Show tip
 			this.Draw();																				// Redraw
 			}
 		else if (phase == 2) {																			// DEAL 
 			$("#lz-videoChat").remove(); 																// Remove old one
 			this.DealCards();																			// Deal cards
-			this.HourGlassTimer(this.time*this.speed, ()=>{ Sound("ding");  })							// Ding when time's up
-			this.Draw();																				// Redraw
-			}
-		else if ((phase > 2) && (phase < this.gs.players.length+3)) {									// EXPLAIN
-			if (phase == 3) {																			// If 1st
+			this.HourGlassTimer(this.time*this.curSpeed-2, ()=>{	 									// When time is up (minus 2 secs)
 				let i,v=[],picks=[];																	
 				$("[id^=lz-cardCheck-]").each( function() {												// For each checkbox image	
 					if ($(this).prop("src").match(/checked/)) 											// If checked
-						if (v.length < 3)																// Less than 3
-							v.push({time:$(this).data("timeStamp"), card:this.id.substring(13)-0 });	// Add card's index
+						v.push({time:$(this).data("timeStamp"), card:this.id.substring(13)-0 });		// Add card's index
 					});		
 				v.sort((a,b) => a.time-b.time);															// Sort by timeStamp
 				for (i=0;i<v.length;++i) picks[i]=v[i].card;											// Simple array 
 				this.ws.send("PICKS|"+this.gs.gameId+"|"+this.id+"|"+JSON.stringify(picks));			// Send picked cards to server
-				if (!redraw) this.VideoChat(/*this.gs.players[phase-3].name.split("@")[0]*/); 			// Open video 
-			trace("SENT",this.id+"|"+JSON.stringify(picks))	
-			
+				});	
 			}
+		else if ((phase > 2) && (phase < this.gs.players.length+3)) {									// EXPLAIN
+			if (phase == 3) this.VideoChat(/*this.gs.players[phase-3].name.split("@")[0]*/); 			// Open video 
+			this.HourGlassTimer(this.time*3, ()=>{ Sound("ding"); $("#stopExplainBut").trigger("click");  });	// Force quit after time is up
+			Sound("ding"); 																				// Ding
+			this.Draw();																				// Redraw
 			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name);				// Show picked cards
-			this.HourGlassTimer(this.time*3, ()=>{ Sound("ding"); $("#stopExplainBut").trigger("click");  });	// Fore quit after time is up
-//			if (this.gs.players[phase-3].name == this.id) {												// If I'm expaining my choices
-//				}			
-//				$("#lz-infieldDiv").html("")	
-			this.Draw();																					// Redraw
 			}
 		else if (phase == this.gs.players.length+3) {													// DECIDE 
 			if (!redraw) this.VideoChat("",30);															// Open smaller video chat	
 			this.Decide();																				// Show all picked
-			this.HourGlassTimer(this.time*this.speed, ()=>{ Sound("clicks");  })						// Clicks when time's up
+			this.HourGlassTimer(this.time*this.curSpeed, ()=>{ Sound("clicks");  })						// Clicks when time's up
 			this.Draw();																				// Redraw
 			}
 		else if (phase == this.gs.players.length+4) {													// DISCUSS
 			if (!redraw) this.VideoChat();																// Open video chat	
+			let s=this.strings["discuss"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0]+"</b>");
+			this.curLeader=(this.curLeader+1)%app.gs.players.length;									// Choose next leader
 			if (this.gs.winner != -1)																	// A winner picked
-				this.ShowCards(this.gs.players[this.gs.winner].picks,"",`<div class="lz-tip">${this.strings["discuss"]}</div>`);	// Show tip
-				this.DrawOutcome(this.gs.outcome);														// Show outcome																			
-				this.round++;																			// Advance round
-				app.Save();																				// Save to DB
-				this.HourGlassTimer(this.time*this.speed, ()=>{ 										// Hourglass
-					$("#lz-topbut").css("background-color","#27ae60"); 									// Hilite button							
-					Sound("clicks"); 																	// Clicks
+				this.ShowCards(this.gs.players[this.gs.winner].picks,"",`<div class="lz-tip">${s}</div>`);	// Show tip
+			this.DrawOutcome(this.gs.outcome);															// Show outcome																			
+			this.round++;																				// Advance round
+			app.Save();																					// Save to DB
+			this.HourGlassTimer(this.time*this.curSpeed, ()=>{ 											// Hourglass
+				$("#lz-topbut").css("background-color","#27ae60"); 										// Hilite button							
+				$("#lz-hourGlass").remove();															// Remove hourglass
+				Sound("clicks"); 																		// Clicks
 				});
 			this.Draw();																				// Redraw
 			}
@@ -281,8 +279,15 @@ class App  {
 		$("[id^=lz-cardDiv-]").on("mouseup",  function() { $(this).css({"transform":"scale(1)","z-index":1})});
 		
 		$("[id^=lz-cardCheck-]").on("click", function(e) {												// ON CARD CHECKBOX CLICK 
+			let v=[];
 			$(this).prop("src", $(this).prop("src").match(/checked/) ? "img/check.png" : "img/checked.png"); // Set box
 			$(this).data('timeStamp',e.timeStamp);														// Add timeStamp
+				$("[id^=lz-cardCheck-]").each( function() {												// For each checkbox image	
+				if ($(this).prop("src").match(/checked/)) 												// If checked, add to array
+					v.push({time:$(this).data("timeStamp"), card:this.id.substring(13)-0 });			// Add card's index
+					});		
+			v.sort((a,b) => a.time-b.time);																// Sort by timeStamp
+			if (v.length > 3) 	$("#lz-cardCheck-"+v[0].card).prop("src", "img/check.png"); 			// Uncheck first one
 			Sound("click");																				// Click
 			});	
 	}
@@ -297,7 +302,7 @@ class App  {
 			y+=h+12;
 			}
 		if (who == this.id) {																			// It's me
-			let s='DEAL|'+app.gs.gameId+'|'+app.id;														// Cmd to change phase on server
+			let s='EXPLAIN|'+app.gs.gameId+'|'+app.id;													// Cmd to change phase on server
 			str+=`<div class="lz-tip">${this.strings["explainMyHand"]}
 				</div><div id="stopExplainBut" class="lz-bs" 
 				style="margin-top:${$(window).width()*.5*.5265+48}px" 
@@ -325,7 +330,9 @@ class App  {
 			<img id="${"lz-voteCheck-"+i}" src="img/check.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
 			y+=h+16;																					// Next row
 			}
-		str+=`<div class="lz-tip">${this.strings["vote"]}</div>`;										// Show tip			
+		let s=this.strings["vote"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0]+"</b>");
+		this.curLeader=(this.curLeader+1)%app.gs.players.length;										// Choose next leader
+		str+=`<div class="lz-tip">${s}</div>`;															// Show tip			
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 		
 		$("[id^=lz-voteCheck-]").on("click", function() {												// ON CHECKBOX CLICK 
@@ -345,7 +352,6 @@ class App  {
 		this.glassTimer=window.setInterval( ()=>{														// Start seconds timer
 			this.DrawHourGlass(count/reps,time);														// Draw hourglass
 			if (count++ >= reps) {																		// Time's up
-	//			$("#lz-hourGlass").remove();															// Remove hourglass
 				window.clearInterval(this.glassTimer);													// Stop timer
 				if (callback) callback();																// Run callback
 				}
@@ -368,14 +374,16 @@ class App  {
 		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
 
 		if (this.start == 1) {																			// INIT
-			$("#lz-ifDiv").html(`<img src="img/ACTlogo.png" style="height:9vw">`);						// Add logo
-			$("#lz-infieldDiv").html(this.strings["help"]);												// Start with help
+			$("#lz-ifDiv").html(`<img src="img/smlogo.png" style="height:6vw">`);						// Add logo
+			$("#lz-infieldDiv").html(this.strings["help"]+`<div class="lz-tip"><br><br>How to play the Agility Game</div>`); // Start with help
 			$("#lz-topbut").html("JOIN CHAT");															// Set button
 			}
 		else if (this.start == 2) {																		// IN LOBBY
 			$("#lz-ifDiv").html(this.strings["lobby"]);													// Lobby welcome message
 			$("#lz-topbut").html("START");																// Set button
-			$("#lz-infieldDiv").html(`<div class="lz-tip">${this.strings["chatStart"]}</div>`);			// Show tip
+			let s=this.strings["chatStart"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0]+"</b>");
+			this.curLeader=(this.curLeader+1)%app.gs.players.length;									// Choose next leader
+			$("#lz-infieldDiv").html(`<div class="lz-tip">${s}</div>`);									// Show tip
 			if (!redraw) this.VideoChat();																// Open video chat	
 			}
 	}
@@ -520,7 +528,6 @@ class App  {
 			<div style="grid-area:pic;text-align:center;padding-top:${pad}px">`;
 				if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/7}px">`;
 			str+=`</div><div style="grid-area:students;padding-left:${pad}px;align-self:end">`;
-			
 			for (i=0;i<oo.students.length;++i)
 				str+=`<div style="display:inline-block;background-color:${this.stuCols[oo.students[i]-1]};
 				margin-right:3px;border-radius:25px;width:${hgt/15}px;height:${hgt/15}px"></div>`
@@ -637,8 +644,12 @@ class App  {
 		this.gs=JSON.parse(v[3]);																		// Get game state
 		if ((v[0] == "INIT") && (v[2] == this.me))	{ this.id=this.me+"@"+v[1]; this.Draw(); }			// INIT and get IP for my name
 		else if (v[0] == "START") 	this.SetPhase(1);													// START
+		else if (v[0] == "DEAL") 	this.SetPhase(2);													// DEAL
 		else if (v[0] == "DRAW")  	this.Draw();														// DRAW 
-		else if (v[0] == "PICKS")  	this.ShowCards(this.gs.players[this.gs.curPhase-3].picks,this.gs.players[this.gs.curPhase-3].name);	// PICKED
+		else if (v[0] == "PICKS")  	{																	// PICKED
+			if (this.gs.players[this.gs.curPhase-3])													// If valid
+				this.ShowCards(this.gs.players[this.gs.curPhase-3].picks,this.gs.players[this.gs.curPhase-3].name);	// Show cards
+			}
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
 		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// DECIDED
@@ -656,6 +667,8 @@ class App  {
 		$("#lz-infieldOverDiv").remove();																// Remove overlay
 		$(".lz-tip").remove();																			// Remove tip
 		
+
+		$("#lz-statsBut").html("BACK");																	// Set button
 		$("#lz-ifDiv").html("<img src='img/smlogo.png' width='64' style='vertical-align:-8px'/>&nbsp;&nbsp; AGILITY GAME SCORE BOARD");
 		let str=`<div id="lz-infieldOverDiv" class="lz-infield">
 			<div style="margin-top:-43px">

@@ -34,7 +34,7 @@ node ws.js
 	sudo /opt/bitnami/bncert-tool
 	PASS=prename
 	
-	ssh -i c:/Bill/CC/js/agile.pem bitnami@54.88.128.161 (access console via terminal)
+	ssh -i c:/Bill/CC/js/agile.pem bitnami@54.88.128.161
 
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -49,7 +49,6 @@ class Game {
 		this.ifs=new Array(numIfs);																		// Clone outcomes
 		this.outcomes=JSON.parse(JSON.stringify(outcomes));												// Outcomes active array
 		this.thens=new Array(thens.length);																// Thens
-		this.maxTime=45*60;																				// Max time in seconds
 		this.players=[];																				// Holds player info
 		this.stuPos=[0,0,5,2,1,0,0,5,2,1];																// Student track positions [ ...last, ...current]
 		this.curPhase=0;																				// Phase
@@ -57,35 +56,10 @@ class Game {
 		this.winner=-1;																					// No winner yet
 		this.curTime=0;																					// Current time used so far
 		this.curSpeed=1.5;																				// Current speed
-		this.time=(local ? 5 : 30)*1000;																// Base time in ms
-		this.timer=null;																				// Phase timer
-		this.numVotes=0;																				// Number of votes
+		this.time=(local ? 8 : 30)*1000;																// Base time in ms
 		this.numPlayers=1;																				// Number of active players
 		this.round=0;																					// First round
 		this.outcome=0;																					// Outcome
-	}
-
-	StartNextPhase(v)																				// START NEXT PHASE
-	{
-		let time=0,op="NEXT|";
-		this.curPhase++;																				// Inc phase
-		if (this.curPhase == 1) {																		// START
-			this.curIf=Math.floor(Math.random()*this.ifs.length);										// Set if with random number
-			this.ifs.splice(this.curIf,1);																// Remove it
-			this.numVotes=0;																			// No votes
-			time=0; 																					// No interval needed
-			op="START|";																				// Set op
-			}
-		else if (this.curPhase == 2)					 	time=this.time*this.curSpeed;				// DEAL
-		if (time) {																						// If waiting
-			clearInterval(this.timer);																	// Stop timer
-			this.timer=setInterval( ()=>{																// Start timer 
-				clearInterval(this.timer);																// Stop timer
-				this.StartNextPhase(v);																	// Recurse			
-				},time);
-			}
-	
-		Broadcast(this.id,op+v[1]+"|"+v[2]); 															// Send message
 	}
 
 	PlayerIndex(name)																				// GET PLAYER'S INDEX FROM NAME
@@ -121,7 +95,7 @@ class Game {
 				if (!games[i].numPlayers) 														// No players found
 					games.splice(i,1);															// Kill game
 				}	
-			trace("CLIENTS & GAMES", webSocketServer.clients.size,games.length);
+//			trace("CLIENTS & GAMES", webSocketServer.clients.size,games.length);
 			for (i=0;i<games.length;++i) games[i].numPlayers=0;									// No players found yet	
 			webSocketServer.clients.forEach((client)=>{											// For each client
 				if (!client.isAlive) { client.terminate(); return; };							// Kill dead one
@@ -165,34 +139,37 @@ try{
 			if (index == -1) return;															// Quit if not found
 				gs=games[index];																// Point at game data
 			if (v[0] == "START") {	  															// START
-				gs.curPhase=0;																	// Reset phase
+				gs.curPhase=1;																	// Set phase
 				gs.started=true;																// Close game for new entrants
-				gs.StartNextPhase(v);															// Start next phase	
+				gs.curIf=Math.floor(Math.random()*gs.ifs.length);								// Set if with random number
+				gs.ifs.splice(this.curIf,1);													// Remove it
+				this.numVotes=0;																// No votes
+				Broadcast(gs.id,"START|"+v[1]+"|"+v[2]); 										// Send START message
 				}					
-				
 			else if (v[0] == "DEAL") {															// DEAL
-				gs.StartNextPhase(v);															// Start next phase	
+				gs.curPhase=2;																	// Set phase
+				Broadcast(gs.id,"DEAL|"+v[1]+"|"+v[2]); 										// Send DEAL message
+				setTimeout(()=>{ 																// Wait
+					gs.curPhase=3;																// Reset phase
+					Broadcast(gs.id,"NEXT|"+v[1]+"|"+v[2]); 									// Send NEXT message to start explaining
+					}, gs.time*gs.curSpeed);													// Wait, then advance
 				}
+			else if (v[0] == "EXPLAIN") {														// EXPLAIN
+				gs.curPhase++;																	// Advance phase
+				Broadcast(webSocket.gameId, "NEXT|"+v[1]+"|"+v[2]); 							// Trigger next phase (EXPLAIN or DECIDE)
+				}	
 			else if (v[0] == "PICKS") {															// PICKS
 				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
 				if (pdex != -1)	gs.players[pdex].picks=JSON.parse(v[3]);						// Record their picks
 				Broadcast(webSocket.gameId, "PICKS|"+v[1]+"|"+v[2]); 							// Trigger players
 				}	
 			else if (v[0] == "WINNER") {														// WINNER
-				let pdex=gs.PlayerIndex(v[2]);													// Get index of player from name
-				if (pdex != -1)	gs.players[pdex].winner=JSON.parse(v[3]);						// Record their picks
-				++gs.numVotes;																	// Add to count
-				let numClients=0;																// Assume none
-				webSocketServer.clients.forEach(()=>{ numClients++; })							// Count clients
-				if (gs.numVotes >= Math.min(gs.players.length,numClients)) {					// All voters in 
-					gs.winner=Vote(gs);															// Vote
-					gs.curPhase++;																// Final phase
-					gs.round++;																	// Advance round
-					Advance(gs);																// Advance students	
-					Broadcast(webSocket.gameId, "VOTED|"+v[1]+"|"+v[2]); 						// Trigger redraw
-					}
+				gs.curPhase++;																	// Advance phase
+				gs.winner=v[3];																	// Record their picks
+				Advance(gs);																	// Advance students	
+				Broadcast(webSocket.gameId, "VOTED|"+v[1]+"|"+v[2]); 							// Trigger redraw
 				}
-			});
+			})
 		});
 } catch(e) { console.log(e) }
 	
@@ -251,17 +228,6 @@ try{
 				}
 			}	
 		}	
-	
-	function Vote(gs)																		// VOTE
-	{
-		let topdex=0,highest=0;
-		let i,votes=[0,0,0,0,0,0,0,0,0];
-		for (i=0;i<gs.players.length;++i) 														// For each player
-			if (gs.players[i].winner != -1)	votes[gs.players[i].winner]++;						// Add to vote count
-		for (i=0;i<gs.players.length;++i) 														// For each player
-			if (votes[i] > highest) { highest=votes[i]; topdex=i; }								// Get top index	 
-		return  topdex;																			// Return highest index
-	}
 	
 	function Advance(gs)																	// ADVANCE STUDENT POSITIONS
 	{
