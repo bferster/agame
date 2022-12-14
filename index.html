@@ -649,7 +649,7 @@ class App  {
 		trace(event.data);
 		if (!event.data)			 return;															// Quit if no data
 		let v=event.data.split("|");																	// Get params
-		this.gs=JSON.parse(v[3]);																		// Get game state
+		if (v[3])	this.gs=JSON.parse(v[3]);															// Get game state, if sent
 		if ((v[0] == "INIT") && (v[2] == this.me))	{ this.id=this.me+"@"+v[1]; this.Draw(); }			// INIT and get IP for my name
 		else if (v[0] == "START") 	this.SetPhase(1);													// START
 		else if (v[0] == "DEAL") 	this.SetPhase(2);													// DEAL

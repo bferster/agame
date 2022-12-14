@@ -123,19 +123,12 @@ try{
 
 		webSocket.on('message', (msg) => {														// ON MESSAGE
 			let gs;
-			webSocket.isAlive=true;																// It's live
 			if (!msg)	return;																	// Quit if no message
+			webSocket.isAlive=true;																// It's live
 			message=msg.toString();																// Get as string
 			trace('In:', message);																// Log
 			let v=message.split("|");															// Get params
-			if (v[0] == "INIT") {																// INIT
-				gs=FindGame();																	// Find open game or new one
-				gs.players.push( {name:v[1]+"@"+webSocket.clientIp,picks:[]});					// Add player data
-				webSocket.gameId=gs.id;															// Set game id
-				webSocket.player=v[1];															// Set player name													
-				Broadcast(webSocket.gameId,"INIT|"+webSocket.clientIp+"|"+v[2]); 				// Send INIT message
-				}
-			else if (v[0] == "GAMES") {															// GAMES
+			if (v[0] == "GAMES") {																// GAMES
 				let i,j,o,p,g=[];
 				for (i=0;i<games.length;++i) {													// For each game
 					o=games[i];																	// Point at game
@@ -144,7 +137,23 @@ try{
 					g.push(p);																	// Add to games list
 					}
 				SendData(webSocket,"GAMES|"+JSON.stringify(g));									// Send to client					
+				return;																			// Quit
 				}	
+			else if (v[0] == "INIT") {															// INIT
+				webSocket.player=v[1];															// Set player name													
+				gs=FindGame();																	// Find open game or new one
+				gs.players.push( {name:v[1]+"@"+webSocket.clientIp,picks:[]});					// Add player data
+				webSocket.gameId=gs.id;															// Set game id
+				Broadcast(webSocket.gameId,"INIT|"+webSocket.clientIp+"|"+v[2]); 						// Send INIT message
+				return;																			// Quit
+				}
+			else if (v[0] == "JOIN") {															// JOIN
+				gs=FindGame();																	// Find open game or new one
+				gs.players.push( {name:v[1]+"@"+webSocket.clientIp,picks:[]});					// Add player data
+				webSocket.gameId=gs.id;															// Set game id
+				return;																			// Quit
+				}
+
 			let index=games.findIndex(x => x.id == webSocket.gameId)							// Find array index by id
 			if (index == -1) return;															// Quit if not found
 				gs=games[index];																// Point at game data
@@ -190,8 +199,6 @@ try{
 			if (client.readyState === WebSocket.OPEN)	client.send(data);						// Send it
 		} catch(e) { console.log(e) }
 	}
-
-
 
 	function Broadcast(gameId, msg)															// BROADCAST DATA TO ALL CLIENTS 
 	{
