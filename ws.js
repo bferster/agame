@@ -135,6 +135,16 @@ try{
 				webSocket.player=v[1];															// Set player name													
 				Broadcast(webSocket.gameId,"INIT|"+webSocket.clientIp+"|"+v[2]); 				// Send INIT message
 				}
+			else if (v[0] == "GAMES") {															// GAMES
+				let i,j,o,p,g=[];
+				for (i=0;i<games.length;++i) {													// For each game
+					o=games[i];																	// Point at game
+					p={ players:[], started:o.started };										// Init obj
+					for (j=0;j<o.players.length;++j) p.players.push(o.players[j].name);			// Add players
+					g.push(p);																	// Add to games list
+					}
+				SendData(webSocket,"GAMES|"+JSON.stringify(g));									// Send to client					
+				}	
 			let index=games.findIndex(x => x.id == webSocket.gameId)							// Find array index by id
 			if (index == -1) return;															// Quit if not found
 				gs=games[index];																// Point at game data
@@ -173,6 +183,16 @@ try{
 		});
 } catch(e) { console.log(e) }
 	
+	
+	function SendData(client, data) 														// SEND DATA TO CLIENT
+	{
+		try{
+			if (client.readyState === WebSocket.OPEN)	client.send(data);						// Send it
+		} catch(e) { console.log(e) }
+	}
+
+
+
 	function Broadcast(gameId, msg)															// BROADCAST DATA TO ALL CLIENTS 
 	{
 		try{

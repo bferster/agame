@@ -377,6 +377,8 @@ class App  {
 			$("#lz-ifDiv").html(`<img src="img/smlogo.png" style="height:6vw">`);						// Add logo
 			$("#lz-infieldDiv").html(this.strings["help"]+`<div class="lz-tip"><br><br>How to play the Agility Game</div>`); // Start with help
 			$("#lz-topbut").html("JOIN CHAT");															// Set button
+			if (!redraw) this.VideoChat();																// Open video chat	
+			this.MoveVideoChat(12.5,"12px",$("#lz-statsBut").offset().top+40+"px");						// Minimize video
 			}
 		else if (this.start == 2) {																		// IN LOBBY
 			$("#lz-ifDiv").html(this.strings["lobby"]);													// Lobby welcome message
@@ -384,7 +386,7 @@ class App  {
 			let s=this.strings["chatStart"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
 			this.curLeader=(this.curLeader+1)%app.gs.players.length;									// Choose next leader
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${s}</div>`);									// Show tip
-			if (!redraw) this.VideoChat();																// Open video chat	
+			this.MoveVideoChat();																		// Full video
 			}
 	}
 
@@ -485,9 +487,9 @@ class App  {
 		str+=addItem(i++,"PICK CARDS")																	// DEAL
 			if (this.gs.players)
 		for (j=0;j<this.gs.players.length;++j)															// For each player	
-			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" EXPLAINS");							// Add player's name
+			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" EXPLAINS");						// Add player's name
 		str+=addItem(i++,"DECIDE");																		// DECIDE
-		str+=addItem(i++,"DISCUSS")	;																	// DISCUSS
+		str+=addItem(i++,"REFLECT")	;																	// DISCUSS/REFLECT
 		str+=`<p><div class="lz-bs" id="lz-statsBut" style="font-size:${fh}px;background-color#27ae6">SCORE BOARD</div></p>`;
 		$("#lz-flowDiv").html(str);																		// Add flowchart
 
@@ -659,6 +661,8 @@ class App  {
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
 		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// DECIDED
+		else if (v[0] == "GAMES") 	trace(v[1]);														// GAMES
+
 	}
 
 	DrawStats()																						//	DRAW GAME STATS
