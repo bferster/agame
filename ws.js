@@ -98,7 +98,7 @@ class Game {
 //			trace("CLIENTS & GAMES", webSocketServer.clients.size,games.length);
 			for (i=0;i<games.length;++i) games[i].numPlayers=0;									// No players found yet	
 			webSocketServer.clients.forEach((client)=>{											// For each client
-				if (!client.isAlive) { client.terminate(); return; };							// Kill dead one
+//				if (!client.isAlive) { client.terminate(); return; };							// Kill dead one
 				client.isAlive=false;															// Set flag to not alive
 				client.ping();																	// Ping client																		
 				});

@@ -12,7 +12,7 @@
 		 body { 			font-family:SegoeUI,Verdana,Geneva,sans-serif; font-size:16px; box-sizing:border-box; 
 							padding:0; margin:0; position:fixed; width:100%; 
 							}
-		.lz-splash { 		color:#999; text-align:center; margin-top:10%; display:none;
+		.lz-splash { 		color:#999; text-align:center; margin-top:10vh; display:none;
 							}
 		.lz-main { 			width:100%; height:var(--maxvh);  user-select: none; display:none;
 							}
@@ -28,7 +28,7 @@
 		.lz-dialog {		position:absolute; top:16px; left:16px; background-color: #eee; border: 1px solid #aaa;
 							padding:16px; border-radius: 16px; width: 600px;
 							}
-		.lz-card {			position:absolute;	background-color:#fff; border:2px solid #999; border-radius:6px; overflow:hidden;
+		.lz-card {			position:absolute; background-color:#fff; border:2px solid #999; border-radius:6px; overflow:hidden;
 							display:grid;align-items:start;  grid-template-rows: 1fr 2fr 2fr 8fr 1fr;
 							grid-template-areas:'category category category category' 'title title pic time' 
 							'subtitle subtitle subtitle subtitle' 'desc desc desc desc''students students students students';
@@ -94,18 +94,18 @@
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
 		let v=window.location.search.substring(1).split("&");
-		if (!isLocal) 																				// Not in debug
+		if (isLocal) 																				// Not in debug
 			$("#splashDiv").fadeIn(2000);															// Fade in splash page
 		else{																						// Debug
 			$("#mainDiv").fadeIn(0);																// Load fast
 			app.LoadConfig(v[0]);																	// Load config to start round	
+			app.start=1; 																			// Set start phase
+			app.ws.send("INIT|"+app.me+"|"+app.me);													// Init																	
 			}
 	
 		$("#lz-login").on("change",()=> { 															// ON LOG IN
 			app.me=$("#lz-login").val().trim();														// Set player name
-			$("#splashDiv").fadeOut();																// Fade out splash
-			$("#mainDiv").fadeIn(2000);																// Fade in main
-			app.LoadConfig(v[0]);																	// Load config to start round	
+			$("#splashDiv").fadeOut(()=>{ JoinTeam(v[0]); })										// Fade out splash
 			});
 
 		$("#lz-ifDiv").on("click",(e)=> { 															// ON LOG IN
@@ -121,10 +121,53 @@
 			});
 		});
 
-	$(window).on("resize orientationchange", ()=>{                                       		 // ON WINDOW RESIZE
+	$(window).on("resize orientationchange", ()=>{                                       		// ON WINDOW RESIZE
 		document.documentElement.style.setProperty("--maxvh", window.innerHeight+"px");				// Set CSS var for IOS 100vh isssue
 		app.Draw(true);																				// Redraw to fit screen
 		});
+
+	function JoinTeam(version)																	// JOIN A TEAM
+	{
+		let w=window.innerWidth/4-64;																// Panel width
+		let str=`<img src="img/AGlogo.png" style="height:18vh;margin-top:-6vh">	
+			<br><br>
+		<div style="display:flex;justify-content:center;color:#000">
+			<div style="width:25%"><p>INTRODUCTORY VIDEO</p>
+				<iframe width="${w}px" height="${w*.5625}px" src="https://www.youtube.com/embed/hTETYuGXFJU" 
+				title="About the Agility game" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+				</iframe>			
+			</div>
+			<div style="width:25%"><p>CHOOSE A TEAM TO JOIN</b>
+				<div id="lz-teamList" style="width:calc(100% -24px);height:50vh;overflow:auto;border-radius:8px;padding:12px;
+				border:1px solid #999;background-color:#f8f8f8;text-align:left">
+			</div></div>
+			<div style="width:25%"><p>EXPLORE THE CARDS</p>
+				<img src="img/cards.png" style="width:${w}px;cursor:pointer" onclick="ExploreCards()"></div>`;
+		$("#splashDiv").html(str.replace(/\t|\n|\r/g,""));											// Add  markup
+		app.LoadConfig(version);																	// Load config to start round	
+		app.ws.send("GAMES");																		// Get games																
+		app.ws.send("INIT|"+app.me+"|"+app.me);														// Init																	
+		$("#splashDiv").fadeIn(2000);																// Show
+	}
+
+	function ExploreCards()																		// EXPLORE THE CARDS
+	{
+		$("#lz-infieldOverDiv").remove();															// Remove overlay
+		let i,str=`<div id="lz-infieldOverDiv" style="position:absolute;top:0;left:0;width:100%;height:100%;
+			text-align:left;background-color:#fff">	
+				<p style="color:#27ae60;font-size:24px;margin-left:24px"><b>EXPLORE THE CARDS</b></p>
+				<div style="margin:24px;height:60vh;overflow:auto;border-radius:8px;border:1px solid #999">
+				<br><span style="margin-left:16px">HOVER OVER ANY CARD TO ENLARGE IT</span><br>
+				<div style="display:flex;flex-wrap:wrap; m">`
+				for (i=0;i<app.thens.length;++i) {
+					str+=`<div style="width:75px;height:100px;margin:16px 0 0 16px">`;
+					str+=app.DrawCard(i,i,0,0,0,100,true)+"</div>";	
+					}
+				str+=`</div></div><div class="lz-bs" style="margin-left:24px" onclick="$('#lz-infieldOverDiv').remove()">Done</div>
+		</div>`;
+		$("body").append(str.replace(/\t|\n|\r/g,""));												// Add it
+	}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // APP
@@ -148,10 +191,11 @@ class App  {
 		this.id="";																						// Set in InitSocket()
 		this.time=isLocal ? 8 : 30;																		// Time in seconds
 		this.curSpeed=1.5;																				// Speed multiplier = 2 1
-		this.start=1;																					// Starting phase 1
+		this.start=0;																					// Starting phase 0
 		this.round=0;																					// Round number
 		this.inPlay=0;																					// Am I actively plays?
 		this.curLeader=0;																				// Current leader
+		this.InitSocketServer();																		// Start socket server
 	}
 
 	LoadConfig(file="")																				// LOAD CONFIG FILE
@@ -172,8 +216,6 @@ class App  {
 					else if (d[i].type == "phase")		this.flow.push(d[i]);							// Add flow										
 					else if (d[i].type == "outcome")	this.outcomes.push(d[i]);						// Add outcome										
 					}
-				this.InitSocketServer();																// Start socket server
-				this.Draw();																			// Draw screen
 			})
 	}
 
@@ -519,7 +561,7 @@ class App  {
 			}
 	}
 
-	DrawCard(num, id, x, y, check, hgt)																// DRAW CARD
+	DrawCard(num, id, x, y, check, hgt, inline)														// DRAW CARD
 	{
 		let o=this.thens[num];
 		let i,cols=[];
@@ -528,8 +570,9 @@ class App  {
 		cols["Options"]="#d4dd46"; 	cols["Chance"]="#ccc";
 		let title=o.title.split(" ").join("<br>")
 		let oo=o.time;																					// Extract time field
-		let str=`<div id="${"lz-cardDiv-"+id}" class="lz-card lz-hover" style="left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px">
-			<div style="grid-area:category;background-color:${cols[o.category]};font-size:${hgt/12.5}px;text-align:center;
+		let str=`<div id="${"lz-cardDiv-"+id}" class="lz-card lz-hover" style="left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px`;
+		if (inline) str+=";position:static";															// Not absolute
+		str+=`"><div style="grid-area:category;background-color:${cols[o.category]};font-size:${hgt/12.5}px;text-align:center;
 				padding:0 0 2px 0;border-bottom:1px solid #999"><b>${o.category}</b>`;
 			if (check)  str+=`<img id="${"lz-cardCheck-"+num}" src="img/check.png" style="float:left;height:2vh;margin:1vh 0 0 1vh;cursor:pointer">`;
 			str+=`</div><div style="grid-area:title;padding:${pad}px;color:#666;font-size:${hgt/20}px"><b>${title.replace(/_/g," ")}</b></div>
@@ -635,7 +678,6 @@ class App  {
 		this.ws.onerror=(e)=>  { console.log('error',e);	};											// ON ERROR
 		this.ws.onopen=()=> { 																			// ON OPEN	
 			console.log('connected'); 																	// Show connected
-			this.ws.send("INIT|"+this.me+"|"+this.me);													// Init																	
 			this.pollTimer= window.setInterval( ()=>{													// INIT POLLING SERVER
 			++this.secs;																				// Another second 
 			if (this.retryWS) {																			// If reconnecting to websocket
@@ -666,10 +708,34 @@ class App  {
 		else if (v[0] == "NEXT")  	this.SetPhase(this.gs.curPhase);									// NEXT 
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
 		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// DECIDED
-		else if (v[0] == "GAMES") 	trace(v[1]);														// GAMES
+		else if (v[0] == "GAMES") 	showTeams(JSON.parse(v[1]));										// GAMES
 
+		function showTeams(games) {																	// SHOW LIST OF TEAMS
+			let i,j,str=""
+			games.push({ players:[], started:false });													// Add empty game
+			trace(games);
+			for (i=0;i<games.length;++i) {																// For each team
+				str+=`<div id="lz-team-${i}"><b>`;														// Add header													
+				if (games[i].players.length) 	str+="Team "+games[i].players[0].split("@")[0];			// Team name
+				else							str+="Start a new team";								// New team
+				str+="</b><ol>";																		// Start list
+				for (j=0;j<games[i].players.length;++j)	  str+="<li>"+games[i].players[j].split("@")[0]+"</li>";	 // Add player
+				for (j=0<games[i].players.length;j<4;++j) str+="<li style='cursor:pointer'>Click here to join</li>"; // Click to join
+				str+="</ol>";																			// End list
+				}
+			$("#lz-teamList").html(str.replace(/\t|\n|\r/g,""));										// Add teams
+
+			$("[id^=lz-team-]").on("click",function(e) {												// ON CHOICE
+				let id=e.currentTarget.id.substring(8);													// Get id
+				if (app.start)	return;																	// Stop double entry??
+				app.start=1; 																			// Set start phase
+				$("#splashDiv").remove();																// Remove splash
+				$("#mainDiv").fadeIn(2000);																// Fade in main
+				app.Draw();																				// Draw
+				});
+		}
 	}
-
+	
 	DrawStats()																						//	DRAW GAME STATS
 	{
 		let gd=[];
@@ -896,7 +962,6 @@ trace(rounds)
 		document.body.appendChild(downloadLink);
 		downloadLink.click();
 	}
-
 
 </script>
 </body>
