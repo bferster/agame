@@ -124,8 +124,6 @@
 	$(window).on("resize orientationchange", ()=>{                                       		 // ON WINDOW RESIZE
 		document.documentElement.style.setProperty("--maxvh", window.innerHeight+"px");				// Set CSS var for IOS 100vh isssue
 		app.Draw(true);																				// Redraw to fit screen
-		let wid=$(window).width()*50/100;															// Set width
-		$("#lz-videoChat").css({ height:wid*.5625+"px",width:wid+"px" });							// Resize video if open
 		});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -209,7 +207,7 @@ class App  {
 		if (phase == 1) {																				// START 
 			this.start=0; 																				// Out of start sequence
 			Sound("ding");																				// Ding
-			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-topbut").css("background-color","#27ae60"); });	// Hilite button							
+			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-phase-2").css("background-color","#27ae60"); });	// Hilite DEAL button							
 			let s=this.strings["discussIf"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
 			this.curLeader=(this.curLeader+1)%app.gs.players.length;									// Choose next leader
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${s}</div>`);									// Show tip
@@ -218,6 +216,8 @@ class App  {
 		else if (phase == 2) {																			// DEAL 
 			this.MoveVideoChat(12.5,"12px",$("#lz-statsBut").offset().top+40+"px");						// Minimize video
 			this.DealCards();																			// Deal cards
+			$("#lz-phase-1").css("background-color","#ccc" ); 											// Set IF button off
+			$("#lz-phase-2").css("background-color","#ea7f1d" ); 										// Set DEAL button active
 			this.HourGlassTimer(this.time*this.curSpeed-2, ()=>{	 									// When time is up (minus 2 secs)
 				let i,v=[],picks=[];																	
 				$("[id^=lz-cardCheck-]").each( function() {												// For each checkbox image	
@@ -374,8 +374,8 @@ class App  {
 		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
 
 		if (this.start == 1) {																			// INIT
-			$("#lz-ifDiv").html(`<img src="img/smlogo.png" style="height:6vw">`);						// Add logo
-			$("#lz-infieldDiv").html(this.strings["help"]+`<div class="lz-tip"><br><br>How to play the Agility Game</div>`); // Start with help
+			$("#lz-ifDiv").html(`<img src="img/AGlogo.png" style="height:8vw">`);						// Add logo
+			$("#lz-infieldDiv").html(this.strings["help"]+`<div class="lz-tip"><br><br><br>How to play</div>`); // Start with help
 			$("#lz-topbut").html("JOIN CHAT");															// Set button
 			if (!redraw) this.VideoChat();																// Open video chat	
 			this.MoveVideoChat(12.5,"12px",$("#lz-statsBut").offset().top+40+"px");						// Minimize video
@@ -482,18 +482,19 @@ class App  {
 		let y=$(window).height()-59;
 		let str=`<div class="lz-bs" id="lz-topbut" style="font-size:${fh}px;margin-top:30px;
 			background-color:${(this.gs.curPhase == 0) ? "#27ae60" : "#ccc"}">
-			${(this.gs.curPhase == 1) ? "DEAL CARDS" : "&nbsp;PLAY&nbsp;"}</div><br><br><br>`;		
+			&nbsp;PLAY&nbsp;</div><br><br><br>`;		
 		str+=addItem(i++,"DISCUSS IF...")		 														// Add IF phase
-		str+=addItem(i++,"PICK CARDS")																	// DEAL
+		str+=addItem(i++,"DEAL CARDS")																	// DEAL
+		str+=addItem(i++,"PICK CARDS")																	// PICK
 			if (this.gs.players)
 		for (j=0;j<this.gs.players.length;++j)															// For each player	
 			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" EXPLAINS");						// Add player's name
 		str+=addItem(i++,"DECIDE");																		// DECIDE
 		str+=addItem(i++,"REFLECT")	;																	// DISCUSS/REFLECT
-		str+=`<p><div class="lz-bs" id="lz-statsBut" style="font-size:${fh}px;background-color#27ae6">SCORE BOARD</div></p>`;
+		str+=`<p><div class="lz-bs" id="lz-statsBut" style="font-size:${fh}px">SCORE BOARD</div></p>`;	// STATS
 		$("#lz-flowDiv").html(str);																		// Add flowchart
 
-		$("#lz-statsBut").css("background-color",this.inPlay ? "#ccc" : "#27ae60" ); 					// Set stats button color
+		$("#lz-statsBut").css("background-color",(this.inPlay || !this.round)  ? "#ccc" : "#27ae60" ); 	// Set stats button color
 
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
 			if (this.start == 1) { this.start=2; this.Draw(); return; }									// Start
@@ -501,14 +502,18 @@ class App  {
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
 			else if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);				// Deal
 			});										
-
+		$("#lz-phase-2").on("click", ()=>{ 																// ON TOP CLICK
+			if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);					// Deal
+			});										
 		$("#lz-statsBut").on("click",()=> {																// ON STATS BUTTON
 			if ($("#lz-statsDiv")[0])		this.Draw();												// If showing stats, redraw to close
 			else							if (!this.inPlay) this.DrawStats();							// Show stats if not actively playing				
 			});
 		
 		function addItem(num, name) {																	// ADD PHASE/PLAYER TO MENU
-			let col=(num == app.gs.curPhase) ? "#ea7f1d" : "#ccc";										// Hilite curPhase
+			let n=num;	
+			if (n > 2) --n;
+			let col=(n == app.gs.curPhase) ? "#ea7f1d" : "#ccc";										// Hilite curPhase
 			let s=`<p><div class="lz-bs" id="lz-phase-${num}" style="cursor:auto;font-size:${fh}px;background-color:${col}">${name.toUpperCase()}</div></p>`;
 			return s;																					// Return item markup
 			}

@@ -113,6 +113,7 @@ then,Chance,What_do_your students need_most?,Choose any adjustment or design you
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,,"{"time":4,"students":[2,5]}"
 
 string,help,"<ol style=line-height:1.8"">
+<br>
 <li>Press the <b style="color:#009900">JOIN CHAT</b> button to connect with the other players in a video chat</li>
 <li>You will enter a Zoom-like video chat</li>
 <li>Press the <b style="color:#009900">PLAY</b> button to begin the game</li>
