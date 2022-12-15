@@ -158,7 +158,7 @@ class App  {
 	{	
 		let i;
 		if (!file)	file="config";																		// If no file spec'd, use default														
-		fetch("data/"+file+".csv")																		// Load file
+		fetch("data/"+file+".csv#"+Math.floor(Math.random()*100000))									// Load file and twart caching
 			.then(res => res.text())																	// Get as text
 			.then(res =>{																				// Process																	
 				let d=Papa.parse(res, { header:true, skipEmptyLines:true }).data;						// Parse CSV using papa lib
@@ -374,8 +374,8 @@ class App  {
 		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
 
 		if (this.start == 1) {																			// INIT
-			$("#lz-ifDiv").html(`<img src="img/AGlogo.png" style="height:8vw">`);						// Add logo
-			$("#lz-infieldDiv").html(this.strings["help"]+`<div class="lz-tip"><br><br><br>How to play</div>`); // Start with help
+			$("#lz-ifDiv").html(`<img src="img/AGlogo.png" style="height:7vw">`);						// Add logo
+			$("#lz-infieldDiv").html(this.strings["help"]+`<div class="lz-tip" style="color:#009900;font-style:normal"><br><br><br><b>HOW TO PLAY</b></div>`); // Start with help
 			$("#lz-topbut").html("JOIN CHAT");															// Set button
 			if (!redraw) this.VideoChat();																// Open video chat	
 			this.MoveVideoChat(12.5,"12px",$("#lz-statsBut").offset().top+40+"px");						// Minimize video
