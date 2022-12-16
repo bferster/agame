@@ -57,7 +57,6 @@ class Game {
 		this.curTime=0;																					// Current time used so far
 		this.curSpeed=1.5;																				// Current speed
 		this.time=(local ? 8 : 30)*1000;																// Base time in ms
-		this.numPlayers=1;																				// Number of active players
 		this.round=0;																					// First round
 		this.outcome=0;																					// Outcome
 	}
@@ -86,25 +85,24 @@ class Game {
 		}
 	else webSocketServer = new WebSocket.Server({ port:8085 });									// Open in debug
 
-	try{
-		LoadConfig();																			// Load config file
+	LoadConfig();																				// Load config file
 	
-		setInterval(()=>{																		// PING PONG TIMER
-			let i;
-			for (i=0;i<games.length;++i) {														// For each game
-				if (!games[i].numPlayers) 														// No players found
-					games.splice(i,1);															// Kill game
-				}	
-//			trace("CLIENTS & GAMES", webSocketServer.clients.size,games.length);
-			for (i=0;i<games.length;++i) games[i].numPlayers=0;									// No players found yet	
-			webSocketServer.clients.forEach((client)=>{											// For each client
-//				if (!client.isAlive) { client.terminate(); return; };							// Kill dead one
-				client.isAlive=false;															// Set flag to not alive
-				client.ping();																	// Ping client																		
+	setInterval(()=>{																			// GAME/PLAYER PURGER TIMER
+		try{
+			let i,j,o;
+			let activePlayers=[];
+			webSocketServer.clients.forEach((client)=>{											// For each client active on server
+				activePlayers.push(client.player+"@"+client.clientIp); 							// Add active players to list
 				});
-			}, 5000);																			// Every 5 seconds
-	} catch(e) { console.log(e) }
-
+			for (i=0;i<games.length;++i) {														// For each game										
+				o=games[i].players;																// Point at players in game
+				for (j=0;j<o.length;++j) {														// For each player
+					if (activePlayers.findIndex(x => x == o[j].name) == -1)	o.splice(j,1);		// Purge player from game if not in active list
+					}
+				if (!o.length)	games.splice(i,1);												// Purge game if no players in game
+				}	
+			} catch(e) { console.log(e) }
+		}, 10000);																				// Every 10 seconds
 
 try{
 	webSocketServer.on('connection', (webSocket, req) => {										// ON CONNECTION
@@ -115,16 +113,9 @@ try{
 		let str=d.toLocaleDateString()+" -- "+d.toLocaleTimeString()+" -> "+webSocket.clientIp;	// Log connection
 		console.log(`Connect: (${webSocketServer.clients.size}) ${str}`);						// Log connect
 
-		webSocket.on("pong", () => { 															// ON PONG
-			webSocket.isAlive=true; 															// It's alive
-			let index=games.findIndex(x => x.id == webSocket.gameId);							// Find array index by id
-			if (index != -1)	games[index].numPlayers++;										// Add to count
-			});
-
 		webSocket.on('message', (msg) => {														// ON MESSAGE
 			let gs;
 			if (!msg)	return;																	// Quit if no message
-			webSocket.isAlive=true;																// It's live
 			message=msg.toString();																// Get as string
 			trace('In:', message);																// Log
 			let v=message.split("|");															// Get params
@@ -132,7 +123,7 @@ try{
 				let i,j,o,p,g=[];
 				for (i=0;i<games.length;++i) {													// For each game
 					o=games[i];																	// Point at game
-					p={ players:[], started:o.started };										// Init obj
+					p={ id:o.id, players:[], started:o.started };								// Init obj
 					for (j=0;j<o.players.length;++j) p.players.push(o.players[j].name);			// Add players
 					g.push(p);																	// Add to games list
 					}
@@ -141,16 +132,15 @@ try{
 				}	
 			else if (v[0] == "INIT") {															// INIT
 				webSocket.player=v[1];															// Set player name													
-				gs=FindGame();																	// Find open game or new one
-				gs.players.push( {name:v[1]+"@"+webSocket.clientIp,picks:[]});					// Add player data
-				webSocket.gameId=gs.id;															// Set game id
-				Broadcast(webSocket.gameId,"INIT|"+webSocket.clientIp+"|"+v[2]); 						// Send INIT message
+				SendData(webSocket,"INIT|"+webSocket.clientIp+"|"+v[2]); 						// Send INIT message
 				return;																			// Quit
 				}
 			else if (v[0] == "JOIN") {															// JOIN
-				gs=FindGame();																	// Find open game or new one
-				gs.players.push( {name:v[1]+"@"+webSocket.clientIp,picks:[]});					// Add player data
+				gs=FindGame(v[2]-0);															// Find named game or open a new one
+				if (gs.players.findIndex(x => x.name == v[1]) == -1)							// If playernot already in game
+					gs.players.push( {name:v[1],picks:[]});										// Add player to game
 				webSocket.gameId=gs.id;															// Set game id
+				Broadcast(gs.id,"JOIN|"+v[1]+"|"+v[2]); 										// Send START message
 				return;																			// Quit
 				}
 
@@ -217,16 +207,12 @@ try{
 		} catch(e) { console.log(e) }
 	}
 
-	function FindGame()																		// FIND OPEN GAME OR CREATE ONE
+	function FindGame(id)																	// FIND GAME BY ID OR CREATE ONE IF NOT FOUND
 	{	
-		let i,gs=null;
-		if (games.length)
-		for (i=0;i<games.length;++i)															// For each game
-			if ((games[i].players.length < 4) && !games[i].started) {							// If an unstarted < 4 player game
-				gs=games[i];  																	// Point at it	
-				break; 																			// Quit looking
-				}											
-		if (!gs) {																				// Nothing found		
+		let gs;
+		let i=games.findIndex(x => x.id == id);													// Find array index by id
+		if (i != -1)	gs=games[i];															// Get pointer to game
+		else{																					// Start a new game		
 			gs=new Game();																		// Alloc new game
 			games.push(gs);																		// Add to games array
 			trace("NEW GAME",games.length,gs.id);												// Log
@@ -270,7 +256,7 @@ try{
 					k=o.students[j]-1;															// Student index (0-4)
 					gs.stuPos[k+5]+=(outcomes[gs.outcome].amt-0);								// Advance now portion of index
 					}
-				}``
+				}
 					
 		function getOutcome() {																	// PROGRESS STUDENT BASED ON RULE
 			let i,r,v=[];
