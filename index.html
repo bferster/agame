@@ -93,15 +93,8 @@
 
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
-		let v=window.location.search.substring(1).split("&");
-		if (isLocal) 																				// Not in debug
-			$("#splashDiv").fadeIn(2000);															// Fade in splash page
-		else{																						// Debug
-			$("#mainDiv").fadeIn(0);																// Load fast
-			app.LoadConfig(v[0]);																	// Load config to start round	
-			app.start=1; 																			// Set start phase
-			app.ws.send("INIT|"+app.me+"|"+app.me);													// Init																	
-			}
+		let v=window.location.search.substring(1).split("&");										// Get options
+		$("#splashDiv").fadeIn(2000);																// Fade in splash page
 	
 		$("#lz-login").on("change",()=> { 															// ON LOG IN
 			app.me=$("#lz-login").val().trim();														// Set player name
@@ -419,8 +412,6 @@ class App  {
 			$("#lz-ifDiv").html(`<img src="img/AGlogo.png" style="height:7vw">`);						// Add logo
 			$("#lz-infieldDiv").html(this.strings["help"]+`<div class="lz-tip" style="color:#009900;font-style:normal"><br><br><br><b>HOW TO PLAY</b></div>`); // Start with help
 			$("#lz-topbut").html("JOIN CHAT");															// Set button
-			if (!redraw) this.VideoChat();																// Open video chat	
-			this.MoveVideoChat(12.5,"12px",$("#lz-statsBut").offset().top+40+"px");						// Minimize video
 			}
 		else if (this.start == 2) {																		// IN LOBBY
 			$("#lz-ifDiv").html(this.strings["lobby"]);													// Lobby welcome message
@@ -646,6 +637,7 @@ class App  {
 	DrawClock(mins, tot=45)																			// DRAW CLOCK
 	{
 		let i,x1,y1,col;
+		if (isNaN(mins))	mins=0;																		// Force 0 if not set
 		let rad=$(window).width()/24;																	// Radius based on width
 		let step=(2*Math.PI)/tot;																		// Dot step
 		let ang=-Math.PI/2;																				// Start straight up
@@ -709,6 +701,10 @@ class App  {
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
 		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// DECIDED
 		else if (v[0] == "GAMES") 	showTeams(JSON.parse(v[1]));										// GAMES
+		else if (v[0] == "JOIN") {																		// JOIN
+			app.VideoChat();																			// Open video chat	
+			app.MoveVideoChat(12.5,"12px",$("#lz-statsBut").offset().top+40+"px");						// Minimize video
+			}
 
 		function showTeams(games) {																	// SHOW LIST OF TEAMS
 			let i,j,str=""
@@ -716,6 +712,7 @@ class App  {
 			trace(games);
 			for (i=0;i<games.length;++i) {																// For each team
 				if (games[i].players.length > 3)	continue;											// Skip filled games
+				if (games[i].started)				continue;											// Skip started
 				str+=`<div><b>`;																		// Add header													
 				if (games[i].players.length) 	str+="Team "+games[i].players[0].split("@")[0];			// Team name
 				else							str+="Start a new team";								// New team

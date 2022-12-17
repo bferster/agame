@@ -44,8 +44,7 @@ class Game {
 	constructor()   																				// CONSTRUCTOR
 	{
 		this.started=false;																				// Game started flag
-		this.startTime=new Date().getTime()/1000;														// Get start time in seconds
-		this.id=Math.floor(Math.random()*10000)+Math.floor(this.startTime);								// Set ID
+		this.id=new Date().getTime();																	// Get id as start time in mseconds
 		this.ifs=new Array(numIfs);																		// Clone outcomes
 		this.outcomes=JSON.parse(JSON.stringify(outcomes));												// Outcomes active array
 		this.thens=new Array(thens.length);																// Thens
