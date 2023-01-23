@@ -91,7 +91,7 @@ class Game {
 			let i,j,o;
 			let activePlayers=[];
 			webSocketServer.clients.forEach((client)=>{											// For each client active on server
-				activePlayers.push(client.player+"@"+client.clientIp); 							// Add active players to list
+				activePlayers.push(client.playerId); 											// Add active players to list
 				});
 			for (i=0;i<games.length;++i) {														// For each game										
 				o=games[i].players;																// Point at players in game
@@ -131,7 +131,8 @@ try{
 				}	
 			else if (v[0] == "INIT") {															// INIT
 				webSocket.player=v[1];															// Set player name													
-				SendData(webSocket,"INIT|"+webSocket.clientIp+"|"+v[2]); 						// Send INIT message
+				webSocket.playerId=v[2];														// Set player id													
+				SendData(webSocket,"INIT|"+v[2]+"|"+webSocket.clientIp); 						// Send INIT message
 				return;																			// Quit
 				}
 			else if (v[0] == "JOIN") {															// JOIN

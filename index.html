@@ -74,10 +74,13 @@
 			<img src="img/ACTlogo.png" style="position:absolute;left:calc(3.25% + 12px);bottom:12px;width:6vw">
 		</div>
 			<div id="splashDiv" class="lz-splash">
-			<img src="img/ACTlogo.png" style='width:200px' alt="logo"><br>
+			<img src="img/ACTlogo.png" style='width:200px' alt="logo">
 			<br><p style="color:#000;font-size:14px"><em>A game to practice teaching techniques</em></p>
-			<br><p style="color:#000;font-size:14px"><b>Please type in your first name below</b></p>
-			<p></p><input class='lz-is'  type='text' id='lz-login'></p>
+			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px"><b>Please type in your first name:</b></div>
+			<input class='lz-is'  style="width:100px" type='text' id='lz-loginName'>
+			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px""><b>and your email:</b></div>
+			<input class='lz-is'  type='text' id='lz-loginId'>
+			<br><br><br><div class="lz-bs" id='lz-login'>Enter</div> 
 			<br><br><br><br><div style="font-size:11px">&copy; 2022 StageTools </div>
 		</div>
 	
@@ -96,8 +99,9 @@
 		let v=window.location.search.substring(1).split("&");										// Get options
 		$("#splashDiv").fadeIn(2000);																// Fade in splash page
 	
-		$("#lz-login").on("change",()=> { 															// ON LOG IN
-			app.me=$("#lz-login").val().trim();														// Set player name
+		$("#lz-login").on("click",()=> { 															// ON LOG IN
+			app.me=$("#lz-loginName").val().trim();													// Set player name
+			app.id=app.me+"@"+$("#lz-loginId").val().trim();										// Add email to make id
 			$("#splashDiv").fadeOut(()=>{ JoinTeam(v[0]); })										// Fade out splash
 			});
 
@@ -138,7 +142,7 @@
 				<img src="img/cards.png" style="width:${w}px;cursor:pointer" onclick="ExploreCards()"></div>`;
 		$("#splashDiv").html(str.replace(/\t|\n|\r/g,""));											// Add  markup
 		app.LoadConfig(version);																	// Load config to start round	
-		app.ws.send("INIT|"+app.me+"|"+app.me);														// Init																	
+		app.ws.send("INIT|"+app.me+"|"+app.id);														// Init																	
 		app.ws.send("GAMES");																		// Get games
 		app.glassTimer=window.setInterval( ()=>{ app.ws.send("GAMES"); },15000);					// Refresh games every 15 seconds
 		$("#splashDiv").fadeIn(2000);																// Show
@@ -690,7 +694,7 @@ class App  {
 		if (!event.data)			 return;															// Quit if no data
 		let v=event.data.split("|");																	// Get params
 		if (v[3])	this.gs=JSON.parse(v[3]);															// Get game state, if sent
-		if ((v[0] == "INIT") && (v[2] == this.me))	{ this.id=this.me+"@"+v[1]; this.Draw(); }			// INIT and get IP for my name
+		if (v[0] == "INIT") 		this.Draw(); 														// INIT
 		else if (v[0] == "START") 	this.SetPhase(1);													// START
 		else if (v[0] == "DEAL") 	this.SetPhase(2);													// DEAL
 		else if (v[0] == "DRAW")  	this.Draw();														// DRAW 
@@ -710,7 +714,6 @@ class App  {
 		function showTeams(games) {																	// SHOW LIST OF TEAMS
 			let i,j,str=""
 			games.push({ id:-1, players:[], started:false });											// Add empty game
-			trace(games);
 			for (i=0;i<games.length;++i) {																// For each team
 				if (games[i].players.length > 3)	continue;											// Skip filled games
 				if (games[i].started)				continue;											// Skip started
@@ -786,7 +789,6 @@ class App  {
 				rounds.sort((a,b) => b.curTime-a.curTime);												// Sort by newest first
 				str+=drawGame(rounds);																	// Draw game
 				for (i=0;i<rounds.length;++i) str+=drawRound(i);										// Draw each round
-trace(rounds)
 				}
 			else if (num == 1) {																		// My games
 				str="My game data will be displayed";
