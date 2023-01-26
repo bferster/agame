@@ -746,7 +746,7 @@ class App  {
 		let gd=[];
 		let rounds=[];
 		let gameId=this.gs.gameId;
-		if (isLocal) gameId="1668977192";																// Debug
+//		if (isLocal) gameId="1668977192";																// Debug
 		$("#lz-students").html("");																		// Clear student
 		$("#lz-clockSVG").remove();																		// Remove clock
 		$("#lz-infieldOverDiv").remove();																// Remove overlay
@@ -786,7 +786,7 @@ class App  {
 			if (num == 0) {																				// If this game
 				for (i=0;i<gd.length;++i)																// For each round
 					if ((gd[i].gameId == gameId) && (gd[i].playerId == app.id)) rounds.push(gd[i]);		// If this game and my entry, add to list 
-				rounds.sort((a,b) => b.curTime-a.curTime);												// Sort by newest first
+						rounds.sort((a,b) => b.curTime-a.curTime);										// Sort by newest first
 				str+=drawGame(rounds);																	// Draw game
 				for (i=0;i<rounds.length;++i) str+=drawRound(i);										// Draw each round
 				}
@@ -815,6 +815,8 @@ class App  {
 			}
 
 		function drawGame(o) {																			// DRAW GAME
+			if (o.length < 1)	return "";																	// Nothing to show
+			trace(o)
 			let i,h=80,w=h*.75+12,str="";
 			str+=`<div style="display:flex"><div class="lz-scoreLabel">Student<br>progress</div>`;
 			for (i=o.length-1;i>=0;--i) {																// For each round
