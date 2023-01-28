@@ -96,7 +96,10 @@
 
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
-		let v=window.location.search.substring(1).split("&");										// Get options
+		let url=window.location.search.substring(1);												// Get query line
+		let v=url.split("&");																		// Get options
+		if (url.match("admin")) app.admin=true;														// Admin mode
+
 		$("#splashDiv").fadeIn(2000);																// Fade in splash page
 	
 		$("#lz-login").on("click",()=> { 															// ON LOG IN
@@ -125,14 +128,18 @@
 
 	function JoinTeam(version)																	// JOIN A TEAM
 	{
+//				<iframe width="${w}px" height="${w*.5625}px" src="https://www.youtube.com/embed/hTETYuGXFJU" 
+//				title="About the Agility game" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+//				</iframe>			
 		let w=window.innerWidth/4-64;																// Panel width
+		if (version && version.match(/v=/i)) 	version=version.substring(3);						// Extract version, if set
+		else									version="";											// Use default
+		
 		let str=`<img src="img/AGlogo.png" style="height:18vh;margin-top:-6vh">	
 			<br><br>
 		<div style="display:flex;justify-content:center;color:#000">
 			<div style="width:25%"><p>INTRODUCTORY VIDEO</p>
-				<iframe width="${w}px" height="${w*.5625}px" src="https://www.youtube.com/embed/hTETYuGXFJU" 
-				title="About the Agility game" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-				</iframe>			
+<img style="width:${w}px;height:${w*.5625}px" src="temp.jpg"> 
 			</div>
 			<div style="width:25%"><p>CHOOSE A TEAM TO PLAY WITH</b>
 				<div id="lz-teamList" style="width:calc(100% -24px);height:50vh;overflow:auto;border-radius:8px;padding:12px;
@@ -177,6 +184,7 @@ class App  {
 	{
 		app=this;
 		this.me="Me-"+Math.floor(Math.random()*100);													// Player's first name
+		this.admin=false;																				// Admin mode
 		this.curPlayer=0;																				// Player id
 		this.glassTimer=null;																			// Hourglass timer
 		this.gs={};																						// Holds game state
@@ -715,10 +723,10 @@ class App  {
 			let i,j,str=""
 			games.push({ id:-1, players:[], started:false });											// Add empty game
 			for (i=0;i<games.length;++i) {																// For each team
-				if (games[i].players.length > 3)	continue;											// Skip filled games
-				if (games[i].started)				continue;											// Skip started
+				if (!app.admin && games[i].players.length > 3)	continue;								// Skip filled games, if player
+				if (!app.admin && games[i].started)				continue;								// Skip started. if player
 				str+=`<div><b>`;																		// Add header													
-				if (games[i].players.length) 	str+="Team "+games[i].players[0].split("@")[0];			// Team name
+				if (games[i].players.length) 	str+=`<span id="lz-game-${i}">Team ${games[i].players[0].split("@")[0]}</span>`;	// Team name
 				else							str+="Start a new team";								// New team
 				str+="</b><ol>";																		// Start list
 				for (j=0;j<4;++j) {
@@ -728,6 +736,19 @@ class App  {
 				str+="</ol>";																			// End list
 				}
 			$("#lz-teamList").html(str.replace(/\t|\n|\r/g,""));										// Add teams
+
+			$("[id^=lz-game-]").on("click",function(e) {												// ON HEADER CLICK
+				app.ws.send("GAMES");																	// Get games
+				if (!app.admin)	return;																	// Only if an admin
+				let i=e.target.id.substring(8);															// Get id
+				$("#splashDiv").html(`<span style="color:#000;">Chatting with team ${games[i].players[0].split("@")[0]}</span>				
+				<div style="width:25%;color:#000;float:right;margin-right:40px"><p>CHOOSE A TEAM TO VIDEO CHAT WITH</b>
+				<div id="lz-teamList" style="width:calc(100% - 24px);height:50vh;overflow:auto;border-radius:8px;padding:12px;
+				border:1px solid #999;background-color:#f8f8f8;text-align:left;">
+				</div></div>`);
+				app.gs.id=games[i].id; 																	// Force id
+				app.VideoChat();																		// Open video chat	
+				});
 
 			$("[id^=lz-team-]").on("click",function(e) {												// ON CHOICE
 				let i=e.target.id.substring(8);															// Get id
@@ -816,7 +837,6 @@ class App  {
 
 		function drawGame(o) {																			// DRAW GAME
 			if (o.length < 1)	return "";																	// Nothing to show
-			trace(o)
 			let i,h=80,w=h*.75+12,str="";
 			str+=`<div style="display:flex"><div class="lz-scoreLabel">Student<br>progress</div>`;
 			for (i=o.length-1;i>=0;--i) {																// For each round
