@@ -96,12 +96,18 @@ class Game {
 			for (i=0;i<games.length;++i) {														// For each game										
 				o=games[i].players;																// Point at players in game
 				for (j=0;j<o.length;++j) {														// For each player
-					if (activePlayers.findIndex(x => x == o[j].name) == -1)	o.splice(j,1);		// Purge player from game if not in active list
+					if (activePlayers.findIndex(x => x == o[j].name) == -1)	{					// Not found in game
+						trace(o[j].name+" REMOVED!");											// Log
+						o.splice(j,1);															// Purge player from game if not in active list
+						}
 					}
-				if (!o.length)	games.splice(i,1);												// Purge game if no players in game
+				if (!o.length) {	
+					trace(i+" GAME REMOVED!");													// Log
+					games.splice(i,1);															// Purge game if no players in game
+					}
 				}	
 			} catch(e) { console.log(e) }
-		}, 10000);																				// Every 10 seconds
+		}, 20*60*1000);																			// Every 20 minutes
 
 try{
 	webSocketServer.on('connection', (webSocket, req) => {										// ON CONNECTION

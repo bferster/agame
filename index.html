@@ -720,7 +720,7 @@ class App  {
 			}
 
 		function showTeams(games) {																	// SHOW LIST OF TEAMS
-			let i,j,str=""
+			let i,j,k,str="";
 			games.push({ id:-1, players:[], started:false });											// Add empty game
 			for (i=0;i<games.length;++i) {																// For each team
 				if (!app.admin && games[i].players.length > 3)	continue;								// Skip filled games, if player
@@ -732,9 +732,16 @@ class App  {
 				for (j=0;j<4;++j) {
 					if (j<games[i].players.length)	str+="<li>"+games[i].players[j].split("@")[0]+"</li>"; 						 // Add player
 					else 							str+=`<li id="lz-team-${i}" style='cursor:pointer'>Click here to join</li>`; // Click to join
+					if (app.id == games[i].players[j]) {												// If already in a game
+						k=i;																			// Sve current index
+						ConfirmBox("You' are already in a game!","Do you want to rejoin it?",()=>{		// Ask to rejoin
+							$("#lz-team-"+k).trigger("click");											// Join again
+							});
+						}
 					}
 				str+="</ol>";																			// End list
 				}
+			
 			$("#lz-teamList").html(str.replace(/\t|\n|\r/g,""));										// Add teams
 
 			$("[id^=lz-game-]").on("click",function(e) {												// ON HEADER CLICK
@@ -746,7 +753,7 @@ class App  {
 				<div id="lz-teamList" style="width:calc(100% - 24px);height:50vh;overflow:auto;border-radius:8px;padding:12px;
 				border:1px solid #999;background-color:#f8f8f8;text-align:left;">
 				</div></div>`);
-				app.gs.id=games[i].id; 																	// Force id
+				app.gs.gameId=games[i].id; 																// Force id
 				app.VideoChat();																		// Open video chat	
 				});
 
@@ -926,6 +933,29 @@ class App  {
 		$(div ? "#"+div : "body").append(str);															// Add popup to div or body
 		$("#pu-close").click(function() { $("#popupDiv").remove(); });									// Remove on click of close but
 		$("#popupDiv").fadeIn(500).delay(time ? time*1000 : 3000).fadeOut(500);							// Animate in and out		
+	}
+
+
+	function ConfirmBox(title, msg, callback)														// CONFIRMATION BOX
+	{
+		Sound("ding");																					// Ding sound
+		$("#confirmBoxDiv").remove();																	// Remove 
+		let str="<div id='confirmBoxDiv' class='lz-confirm'>"; 											// Add div
+		str+="<img src='img/smlogo.png' width='64' style='vertical-align:-8px'/>&nbsp;&nbsp;";			// Add logo
+		str+="<span style='font-size:18px; color:#666'><b>"+title+"</b></span><br><br>";
+		if (msg) str+=msg;																				// Add submessage
+		str+="<br><br><div id='confirmOK' class='lz-bs'>OK</div>&nbsp;&nbsp;";							// OK
+		str+="<div id='confirmCancel' class='lz-bs'>Cancel</div><br><br></div>";						// Cancel
+		$("body").append(str);																			// Add popup to div or body
+	
+		$("#confirmOK").on("click", function() {														// ON OK BUT
+				$("#confirmBoxDiv").remove();															// Kill div
+				if (callback)	callback();																// If callback defines, run it
+				});
+
+		$("#confirmCancel").on("click", function() {													// ON cancel BUT
+				$("#confirmBoxDiv").remove();															// Kill div
+			});
 	}
 
 	function GetTextBox(title, content, def, callback)											// GET TEXT LINE BOX
