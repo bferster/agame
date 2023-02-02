@@ -265,6 +265,7 @@ class App  {
 			this.MoveVideoChat(12.5,"12px",$("#lz-statsBut").offset().top+40+"px");						// Minimize video
 			this.DealCards();																			// Deal cards
 			$("#lz-phase-1").css("background-color","#ccc" ); 											// Set IF button off
+			$("#lz-phase-2").css("background-color","#ccc" ); 											// Set IF button off
 			$("#lz-phase-3").css("background-color","#ea7f1d" ); 										// Set DEAL button active
 			this.HourGlassTimer(this.time*this.curSpeed-2, ()=>{	 									// When time is up (minus 2 secs)
 				let i,v=[],picks=[];																	
@@ -352,9 +353,8 @@ class App  {
 		if (who == this.id) {																			// It's me
 			let s='EXPLAIN|'+app.gs.gameId+'|'+app.id;													// Cmd to change phase on server
 			str+=`<div class="lz-tip">${this.strings["explainMyHand"]}
-				</div><div id="stopExplainBut" class="lz-bs" 
-				style="margin-top:${$(window).width()*.5*.5265+48}px" 
-				onclick="app.ws.send('${s}')">Click when done sharing</div>`;							// Add button
+				</div><div id="stopExplainBut" class="lz-bs" style="float:right;margin:-60px 8px 0 0;" 
+				onclick="app.ws.send('${s}')">Click if done sharing</div>`;							// Add button
 			}		
 		else if (who)	str+=`<div class="lz-tip">${who.split("@")[0]+this.strings["explainHand"]}</div>`;	// Someone else				
 		else			str+=tip;																		// Just add tip															
@@ -422,17 +422,13 @@ class App  {
 		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
 
 		if (this.start == 1) {																			// INIT
-			$("#lz-ifDiv").html(`<img src="img/AGlogo.png" style="height:7vw">`);						// Add logo
-			$("#lz-infieldDiv").html(this.strings["help"]+`<div class="lz-tip" style="color:#009900;font-style:normal"><br><br><br><b>HOW TO PLAY</b></div>`); // Start with help
-			$("#lz-topbut").html("JOIN CHAT");															// Set button
-			}
-		else if (this.start == 2) {																		// IN LOBBY
-			$("#lz-ifDiv").html(this.strings["lobby"]);													// Lobby welcome message
+			let s="";
+			let y=window.innerWidth*.33*.5625+12;														// Below video 
 			$("#lz-topbut").html("PLAY");																// Set button
-			let s=this.strings["chatStart"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
-			this.curLeader=(1)%app.gs.players.length;													// Choose next leader
-			$("#lz-infieldDiv").html(`<div class="lz-tip">${s}</div>`);									// Show tip
-			this.MoveVideoChat();																		// Full video
+			$("#lz-ifDiv").html(this.strings["lobby"]);													// Lobby welcome message
+			if (app.gs.players) 																		// If any players active yet
+				s=this.strings["chatStart"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
+			$("#lz-infieldDiv").html(`<div style="margin-top:${y}px">${this.strings["help"]}<div class="lz-tip">${s}</div></div>`); // Start with help
 			}
 	}
 
@@ -464,11 +460,11 @@ class App  {
 			border-radius:8px;background-color:#eee;text-align:center;color:#333;border:1px solid #999;font-size:1vw;
 			text-shadow:0 0 3px #fff, 0 0 3px #fff">
 				<div style="position:absolute;top:1vw;width:70%;right:15%;border-bottom:1px solid #999"
-					title="Students use their learning to pursue their own interests and further learning goals">LIBERTY</div>
+					title="Students use their learning to pursue their own interests and further learning goals"></div>
 				<div style="position:absolute;top:20%;width:70%;right:15%;border-bottom:1px solid #999"
-					title="Students feel valued and are building relationships within the learning community">COMMUNITY</div>
+					title="Students feel valued and are building relationships within the learning community"></div>
 				<div style="position:absolute;top:50%;width:82%;right:10%;border-bottom:1px solid #999"
-					title="Students feel challenged and joy as they build skills, knowledge, and understanding">LEARNING</div>
+					title="Students feel challenged and joy as they build skills, knowledge, and understanding"></div>
 				<div style="position:absolute;bottom:.5vw;width:100%;color:#666">STUDENT&nbsp;PROGRESS</div>
 			
 		<div style="display:grid;width:calc(100% - 32px);height:100%;padding:0 16px;grid-template-columns:1fr 1fr 1fr 1fr 1fr">`;
@@ -543,8 +539,7 @@ class App  {
 		$("#lz-statsBut").css("background-color",(this.inPlay || !this.round)  ? "#ccc" : "#27ae60" ); 	// Set stats button color
 
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if (this.start == 1) { this.start=2; this.Draw(); return; }									// Start
-			if (this.start == 2)  this.start=0; 														// Out of start sequence
+			if (this.start == 1)  this.start=0; 														// Out of start sequence
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
 			else if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);				// Deal
 			});										
@@ -716,7 +711,8 @@ class App  {
 		else if (v[0] == "GAMES") 	showTeams(JSON.parse(v[1]));										// GAMES
 		else if (v[0] == "JOIN") {																		// JOIN
 			app.VideoChat();																			// Open video chat	
-			app.MoveVideoChat(12.5,"12px",$("#lz-statsBut").offset().top+40+"px");						// Minimize video
+			app.MoveVideoChat(33);																		// 33% size
+			app.Draw();																					// Redraw
 			}
 
 		function showTeams(games) {																	// SHOW LIST OF TEAMS

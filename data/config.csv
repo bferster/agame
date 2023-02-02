@@ -112,21 +112,17 @@ then,Chance,What_do_your students need_most?,Choose any adjustment or design you
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,,"{"time":3,"students":[2,3]}"
 then,Chance,What_do_your students need_most?,Choose any adjustment or design your own!,,"{"time":4,"students":[2,5]}"
 
-string,help,"<ol style=line-height:1.8"">
-<br>
-<li>Press the <b style="color:#009900">JOIN CHAT</b> button to connect with the other players in a video chat</li>
-<li>You will enter a Zoom-like video chat</li>
-<li>Press the <b style="color:#009900">PLAY</b> button to begin the game</li>
+string,help," <b style="color:#009900">HOW TO PLAY</b><ol>
+<li>Press the <b style="color:#009900">PLAY</b> only if you are asked button to begin the game</li>
 <li>Discuss it, and when you all are ready, click on the <b style="color:#009900">DEAL CARDS</b> button</li>
 <li>Six cards will be shown to you. Pick the best three that will move the students forward</li>
-<li>The video chat will reappear, and each player will explain their choices to the other players</li>
-<li>The screen will show the cards you have selected</li>
+<li>Each player will explain their choices to the other players</li>
 <li>You all can discuss and then vote on the best player's solution</li>
-<li>After everyone has voted, the student progress is updated and you can reflect on it</li>
+<li>After voting, the student progress is updated and you can reflect on it</li>
 <li>Press the <b style="color:#009900">PLAY</b> button to play another round, until the the 45 minute period is up</li></ol>
-<p><b><i>Tips</i></b></p>
-Anytime you see an hourglass, you have until the sand runs out before going to the next phase.<br>
-The clock on the right shows how many minutes left in the class"
+<p><b><i>Tips</i></b></p><ul>
+<li>Anytime you see an hourglass, you have until the sand runs out before going to the next phase.</li>
+<li>The clock on the right shows how many minutes left in the class</li></ul>"
 
 string,lobby,"Welcome to the Agility game lobby!"
 string,chatStart,"When other players log in, they will join the video chat.<br>When someone presses the PLAY button, the game will start."
