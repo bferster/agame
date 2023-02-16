@@ -90,6 +90,7 @@ class Game {
 		try{
 			let i,j,o;
 			let activePlayers=[];
+
 			webSocketServer.clients.forEach((client)=>{											// For each client active on server
 				activePlayers.push(client.playerId); 											// Add active players to list
 				});

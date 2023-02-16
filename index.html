@@ -249,11 +249,11 @@ class App  {
 // ACT 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-	SetPhase(phase, redraw)																			// SET PHASE OF GAME
+	SetPhase(phase)																					// SET PHASE OF GAME
 	{
 		this.inPlay=(phase && phase < this.gs.players.length+4) ? 1 : 0;								// In play?	
+		if (phase)	this.start=0; 																		// Out of start sequence
 		if (phase == 1) {																				// START 
-			this.start=0; 																				// Out of start sequence
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-phase-2").css("background-color","#27ae60"); });	// Hilite DEAL button							
 			let s=this.strings["discussIf"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
@@ -711,10 +711,11 @@ class App  {
 		else if (v[0] == "OVER")  	this.SetPhase(100);													// OVER 
 		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// DECIDED
 		else if (v[0] == "GAMES") 	showTeams(JSON.parse(v[1]));										// GAMES
-		else if (v[0] == "JOIN") {																		// JOIN
+		else if ((v[0] == "JOIN") && (v[1] ==  app.id))	{												// JOIN (just me)
+			app.Draw();																					// Redraw
+			this.SetPhase(this.gs.curPhase);															// Set phase
 			app.VideoChat();																			// Open video chat	
 			app.MoveVideoChat(33);																		// 33% size
-			app.Draw();																					// Redraw
 			}
 
 		function showTeams(games) {																	// SHOW LIST OF TEAMS
