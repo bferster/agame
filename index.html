@@ -350,14 +350,16 @@ class App  {
 			str+=this.DrawCard(cards[i],0,x,y,0,h);														// Add card
 			y+=h+12;
 			}
-		if (who == this.id) {																			// It's me
-			let s='EXPLAIN|'+app.gs.gameId+'|'+app.id;													// Cmd to change phase on server
-			str+=`<div class="lz-tip">${this.strings["explainMyHand"]}
-				</div><div id="stopExplainBut" class="lz-bs" style="float:right;margin:-60px 8px 0 0;" 
-				onclick="app.ws.send('${s}')">Click if done sharing</div>`;							// Add button
-			}		
-		else if (who)	str+=`<div class="lz-tip">${who.split("@")[0]+this.strings["explainHand"]}</div>`;	// Someone else				
-		else			str+=tip;																		// Just add tip															
+		let s='EXPLAIN|'+app.gs.gameId+'|'+app.id;														// Cmd to change phase on server
+		if (who == this.id) 																			// It's me
+			str+=`<div class="lz-tip">${this.strings["explainMyHand"]}</div>
+				<div id="stopExplainBut" class="lz-bs" style="float:right;margin:-60px 8px 0 0;" 
+				onclick="app.ws.send('${s}')">Click if done sharing</div>`;								// Add button
+		else if (who)																					// Someone else
+			str+=`<div class="lz-tip">${who.split("@")[0]+this.strings["explainHand"]}</div>		
+				<div id="stopExplainBut" class="lz-bs" style="float:right;margin:-60px 8px 0 0;"		
+				onclick="app.ws.send('${s}')">Click if done sharing</div>`;								// Add button
+		else	str+=tip;																				// Just add tip															
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 	}
 
@@ -717,6 +719,22 @@ class App  {
 
 		function showTeams(games) {																	// SHOW LIST OF TEAMS
 			let i,j,k,str="";
+			games.sort((a,b) => b.id-a.id);																// Sort by newest first
+			for (i=0;i<games.length;++i) {																// For each team
+				for (j=0;j<4;++j) {
+					if (app.id == games[i].players[j]) {												// If already in a game
+						k=i;																			// Sve current index
+						ConfirmBox("You're are already in a game!","Do you want to rejoin it?",()=>{	// Ask to rejoin
+							app.ws.send("JOIN|"+app.id+"|"+games[k].id);								// Join a game																
+							app.start=1; 																// Set start phase
+							$("#splashDiv").remove();													// Remove splash
+							$("#mainDiv").fadeIn(2000);													// Fade in main
+							if (app.glassTimer) window.clearInterval(app.glassTimer);					// Stop games refresh timer
+							app.Draw();																	// Draw
+							});
+						}
+					}
+				}
 			games.push({ id:-1, players:[], started:false });											// Add empty game
 			for (i=0;i<games.length;++i) {																// For each team
 				if (!app.admin && games[i].players.length > 3)	continue;								// Skip filled games, if player
@@ -726,14 +744,8 @@ class App  {
 				else							str+="Start a new team";								// New team
 				str+="</b><ol>";																		// Start list
 				for (j=0;j<4;++j) {
-					if (j<games[i].players.length)	str+="<li>"+games[i].players[j].split("@")[0]+"</li>"; 						 // Add player
+					if (j<games[i].players.length)	str+="<li>"+games[i].players[j].split("@")[0]+"</li>"; 	// Add player
 					else 							str+=`<li id="lz-team-${i}" style='cursor:pointer'>Click here to join</li>`; // Click to join
-					if (app.id == games[i].players[j]) {												// If already in a game
-						k=i;																			// Sve current index
-						ConfirmBox("You' are already in a game!","Do you want to rejoin it?",()=>{		// Ask to rejoin
-							$("#lz-team-"+k).trigger("click");											// Join again
-							});
-						}
 					}
 				str+="</ol>";																			// End list
 				}
@@ -940,8 +952,8 @@ class App  {
 		str+="<img src='img/smlogo.png' width='64' style='vertical-align:-8px'/>&nbsp;&nbsp;";			// Add logo
 		str+="<span style='font-size:18px; color:#666'><b>"+title+"</b></span><br><br>";
 		if (msg) str+=msg;																				// Add submessage
-		str+="<br><br><div id='confirmOK' class='lz-bs'>OK</div>&nbsp;&nbsp;";							// OK
-		str+="<div id='confirmCancel' class='lz-bs'>Cancel</div><br><br></div>";						// Cancel
+		str+="<br><br><div id='confirmOK' class='lz-bs'>Yes</div>&nbsp;&nbsp;";							// OK
+		str+="<div id='confirmCancel' class='lz-bs'>No</div><br><br></div>";							// Cancel
 		$("body").append(str);																			// Add popup to div or body
 	
 		$("#confirmOK").on("click", function() {														// ON OK BUT

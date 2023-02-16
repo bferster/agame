@@ -107,7 +107,7 @@ class Game {
 					}
 				}	
 			} catch(e) { console.log(e) }
-		}, 20*60*1000);																			// Every 20 minutes
+		}, 5*60*1000);																			// Every 5 minutes
 
 try{
 	webSocketServer.on('connection', (webSocket, req) => {										// ON CONNECTION
