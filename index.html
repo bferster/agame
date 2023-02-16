@@ -253,6 +253,7 @@ class App  {
 	{
 		this.inPlay=(phase && phase < this.gs.players.length+4) ? 1 : 0;								// In play?	
 		if (phase)	this.start=0; 																		// Out of start sequence
+
 		if (phase == 1) {																				// START 
 			Sound("ding");																				// Ding
 			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-phase-2").css("background-color","#27ae60"); });	// Hilite DEAL button							
@@ -425,7 +426,7 @@ class App  {
 
 		if (this.start == 1) {																			// INIT
 			let s="";
-			let y=window.innerWidth*.33*.5625+12;														// Below video 
+			let y=window.innerWidth*.5*.5625+12;														// Below video 
 			$("#lz-topbut").html("PLAY");																// Set button
 			$("#lz-ifDiv").html(this.strings["lobby"]);													// Lobby welcome message
 			if (app.gs.players) 																		// If any players active yet
@@ -712,13 +713,12 @@ class App  {
 		else if (v[0] == "VOTED") 	this.SetPhase(this.gs.curPhase);									// DECIDED
 		else if (v[0] == "GAMES") 	showTeams(JSON.parse(v[1]));										// GAMES
 		else if ((v[0] == "JOIN") && (v[1] ==  app.id))	{												// JOIN (just me)
+			app.VideoChat();																			// Open video chat	
 			app.Draw();																					// Redraw
 			this.SetPhase(this.gs.curPhase);															// Set phase
-			app.VideoChat();																			// Open video chat	
-			app.MoveVideoChat(33);																		// 33% size
 			}
 
-		function showTeams(games) {																	// SHOW LIST OF TEAMS
+		function showTeams(games) {																		// SHOW LIST OF TEAMS
 			let i,j,k,str="";
 			games.sort((a,b) => b.id-a.id);																// Sort by newest first
 			for (i=0;i<games.length;++i) {																// For each team
@@ -783,7 +783,6 @@ class App  {
 		let gd=[];
 		let rounds=[];
 		let gameId=this.gs.gameId;
-//		if (isLocal) gameId="1668977192";																// Debug
 		$("#lz-students").html("");																		// Clear student
 		$("#lz-clockSVG").remove();																		// Remove clock
 		$("#lz-infieldOverDiv").remove();																// Remove overlay
