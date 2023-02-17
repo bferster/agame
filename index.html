@@ -103,8 +103,8 @@
 		$("#splashDiv").fadeIn(2000);																// Fade in splash page
 	
 		$("#lz-login").on("click",()=> { 															// ON LOG IN
-			app.me=$("#lz-loginName").val().trim();													// Set player name
-			app.id=app.me+"@"+$("#lz-loginId").val().trim();										// Add email to make id
+			app.me=$("#lz-loginName").val().trim().toLowerCase();									// Set player name
+			app.id=app.me+"@"+$("#lz-loginId").val().trim().toLowerCase();							// Add email to make id
 			$("#splashDiv").fadeOut(()=>{ JoinTeam(v[0]); })										// Fade out splash
 			});
 
@@ -256,7 +256,7 @@ class App  {
 
 		if (phase == 1) {																				// START 
 			Sound("ding");																				// Ding
-			this.HourGlassTimer(this.time, ()=>{ Sound("clicks"); $("#lz-phase-2").css("background-color","#27ae60"); });	// Hilite DEAL button							
+			this.HourGlassTimer(this.time/2, ()=>{ Sound("clicks"); $("#lz-phase-2").css("background-color","#27ae60"); });	// Hilite DEAL button							
 			let s=this.strings["discussIf"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
 			this.curLeader=(1)%app.gs.players.length;													// Choose next leader
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${s}</div>`);									// Show tip

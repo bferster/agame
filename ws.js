@@ -88,9 +88,8 @@ class Game {
 	
 	setInterval(()=>{																			// GAME/PLAYER PURGER TIMER
 		try{
-			let i,j,o;
+/*			let i,j,o;
 			let activePlayers=[];
-
 			webSocketServer.clients.forEach((client)=>{											// For each client active on server
 				activePlayers.push(client.playerId); 											// Add active players to list
 				});
@@ -107,8 +106,15 @@ class Game {
 					games.splice(i,1);															// Purge game if no players in game
 					}
 				}	
-			} catch(e) { console.log(e) }
-		}, 5*60*1000);																			// Every 5 minutes
+*/
+		let d=new Date();																		// Get  time	
+		if (d.getUTCHours() == 8) {																// 3am our time
+			games=[];																			// Remove all games
+			trace("GAMES PURGED!");																// Log
+			}
+
+} catch(e) { console.log(e) }
+		}, 1*60*1000);																			// Every 50 minutes
 
 try{
 	webSocketServer.on('connection', (webSocket, req) => {										// ON CONNECTION
