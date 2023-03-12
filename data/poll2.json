@@ -1,0 +1,28 @@
+{"pages":[
+
+	{"title":"<br>PRACTICAL</br></br>Is it a practical solution?",
+	"text":"<b>Rate your teaching solution?</b>,<br><br>Move slider as to how practical it is",
+	"optionType":"slider",
+	"options":["No:Yes"]},
+
+	{"title":"<br>LEARNING</br></br>Is it likely to result in greater student learning?",
+	"text":"<b>Rate your teaching solution?</b>,<br><br>Move slider to what you think is the result",
+	"optionType":"slider",
+	"options":["No:Yes"]},
+
+	{"title":"<br>USEFUL</br></br>Is it useful in your own Context?",
+	"text":"<b>Rate your teaching solution?</b>,<br><br>Move slider as to how useful it is",
+	"optionType":"slider",
+	"options":["No:Yes"]},
+
+	{"title":"<br>What did you learn from playing the game?", 
+	"text":"Check all options that apply",
+	"optionType":"checkbox",
+	"options":["How other teachers think about challenges",
+				"A teaching routine",
+				"Something about student learning",
+				"Something about how my teacher colleague think about teaching"
+			   ]}
+	]}
+
+

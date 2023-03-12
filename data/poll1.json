@@ -1,15 +1,28 @@
 {"pages":[
 
-	{"title":"Radio choice images",
-	"text":"Choose the one that will get PacMan home",
-	"pic":"//viseyes.org/scale/res/pacman.JPG",
-	"optionType":"radio",
-	"options":["A pic(//viseyes.org/scale/res/01_A.png)","B pic(//viseyes.org/scale/res/01_B.png)","C pic(//viseyes.org/scale/res/01_C.png)"]},
+	{"title":"<br>CLARITY</br></br>Do students understand what they&apos;re learning?",
+	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Move slider to the amount of change needed in teaching strategy",
+	"optionType":"slider",
+	"options":["No change:Lots of change"]},
 
-	{"title":"Multiple choice",
-	"text":"Choose the one that says &quot;Yes&quot",
-	"optionType":"checkbox",
-	"options":["Yes","No","Maybe"]}
+	{"title":"<br>ACCESS</br></br>Can students being on their own?",
+	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Move slider to the amount of change needed in teaching strategy",
+	"optionType":"slider",
+	"options":["No change:Lots of change"]},
+
+	{"title":"<br>RIGOR</br></br> Is learning challenging?<br>In what ways (i.e. focus time, complexity, energy)?",
+	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Move slider to the amount of change needed in teaching strategy",
+	"optionType":"slider",
+	"options":["No change:Lots of change"]},
+
+	{"title":"<br>RELEVANT</br></br>How meaningful and interesting is the learning",
+	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Move slider to the amount of change needed in teaching strategy",
+	"optionType":"slider",
+	"options":["No change:Lots of change"]},
+
+	{"title":"<br>Does this &quot;If &quot; affect…",
+	"optionType":"radio",
+	"options":["All students","Some students","One student"]}
 	]}
 
 

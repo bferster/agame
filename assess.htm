@@ -38,7 +38,7 @@
 		.optionsRSty { 	padding-top:.33em;padding-left:1.33em;display:inline-block;
 						vertical-align:top;
 						} 
- 		.nextbutSty {	border-radius:.83em;color:#009900;font-size:1em;
+ 		.nextbutSty {	border-radius:100px;color:#009900;font-size:14px; padding:3px 12px; cursor:pointer;
  						}
   		#sortable li {  margin-bottom:.6em; padding:1px; padding-left:.75em; padding-right:.75em;
   						border:1px solid #999;border-radius:.8em; background-color:#ddd; cursor:pointer
@@ -68,9 +68,10 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	let aData=null;																// Holds assessment data
+	let answers=[];																// Holds answers
 	let promptVars=[];															// Holds prompt variables
 	let curPage=0;																// Current page of assessment
-	let curAssess=0;															// Current assessment id
+	let curAssess="";															// Current assessment id
 	let numTries=0;																// Number of tries at page
 	let curTime;																// Current player time
 	let numAnswers=0, numCorrect=0;												// Correct answer count
@@ -79,10 +80,9 @@
 	let poll=true;																// Poll mide vs. assess
 	let dbEmail="";																// Email holder
 	let dbAddress="";															// Database endpoint															
-	let dbType="AGASS";															// Database type
+	let dbType="AGQ";															// Database type
 
 	$(document).ready(function() {											// WHEN PAGE LOADED
-		
 		let i;
 		let p=window.location.search.substring(1).split("&");					// Split into parts													
 		if (window.addEventListener) 											// If supported this way
@@ -96,11 +96,13 @@
 
 		for (i=0;i<p.length;++i) {												// For each param
 			if (p[i].match(/e=/i))	dbEmail=p[i].split("=")[1];					// Get email
+			if (p[i].match(/t=/i))	dbType=p[i].split("=")[1];					// Get db type
 			if (p[i].match(/j=/i))	{											// Get JSONP script
-				fetch("data/"+p[i].split("=")[1]+".json#"+Math.floor(Math.random()*100000))	// Load file and twart caching
+				curAssess=p[i].split("=")[1];									// Get id
+				fetch("data/"+curAssess+".json#"+Math.floor(Math.random()*100000))	// Load file and twart caching
 				.then(res => res.json())										// Get as json
 				.then(res =>{													// Process		
-					AssessEventHandler({data:res});													
+					AssessEventHandler({data:res});								// Show											
 					});													
 				}
 		if (p[i].match(/test/i))	{											// Get JSONP script
@@ -176,6 +178,8 @@
 		let studentRes="";														// Hold's student response
 		if (num >= aData.pages.length) {										// Past last page
 			SendMessage("done",curAssess+"|"+numCorrect/numAnswers);			// Send done message
+			fetch(`//${window.location.host}:8081?q=save&type=AGQ&email=${dbEmail}&password=${curAssess}`,	
+			{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(aData)})	// Save to DB
 			return;																// Quit
 			}
 		if (curPage != num)														// If a new page
@@ -192,7 +196,7 @@
 
 		$("#containerDiv").css("font-size",fontSize+"px");						// Set fontsize
 		if ((d.options) &&  (d.optionType == "radio" || d.optionType == "checkbox")) {	// CHECK/RADIO OPTIONS
-			d.options=Shuffle(d.options);										// Shuffle options
+//			d.options=Shuffle(d.options);										// Shuffle options
 			for (i=0;i<d.options.length;++i) {									// For each option
 				if (showRight) {												// If showing correct answers
 					if (d.options[i].match(/^\*/)) 	col="#00aa00";				// If a correct one
@@ -259,7 +263,7 @@
 				}
 			str+="<br><br>";	
 			}
-		str+="<br><p style='text-align:center'><input id='nextBut' type='button' value='OK' class='nextbutSty'>"; 	// Add button
+		str+="<br><p style='text-align:center;margin-left:30px'><input id='nextBut' type='button' value='OK' class='nextbutSty'>"; 	// Add button
 		if (d.skip && d.skip != "false")										// If allowing skip button
 			str+="&nbsp;&nbsp;<input id='skipBut' type='button' value='Skip' class='nextbutSty'>"; 	// Add button
 		str+="</p>";															// End tag
@@ -316,7 +320,7 @@
 				ans=CheckWrittenAnswer(ans,d);									// Check answer
 				}	
 			else if (d.optionType == "slider") {								// Slider style
-				AssessEventHandlerSendMessage("answer",curAssess+"|"+curPage+"|"+sliAns);		// Send answer message
+				SendMessage("answer",curAssess+"|"+curPage+"|value|"+sliAns);	// Send answer message
 				Draw(curPage+1);												// Move on
 				return;															// Quit
 				}
@@ -381,14 +385,10 @@
 				else if (correct < requiredCorrect && !wrong && correct) ans="partial"	// If partial
 				}
 			
-			if ($("#otherOpt").val())											// If *other written in
-				studentResponse=ans=$("#otherOpt").val();						// Use its value
-				if (poll) {														// If poll mode
-					Draw(curPage+1);											// Show next page 
-					return; 													// Quit
-					}						
-				let ss;
-				str="<div style='margin-left:1.33em;margin-right:1.33em'><div style='font-size:1.5em;text-align:center;font-weight:bold;color:#";	// Title
+			if ($("#otherOpt").val()) studentResponse=ans=$("#otherOpt").val();	// If *other written in use its value
+			let ss;
+			str="<div style='margin-left:1.33em;margin-right:1.33em'><div style='font-size:1.5em;text-align:center;font-weight:bold;color:#";	// Title
+			if (!poll) {
 				if (ans == "right") {											// Right
 					ss=DoneMacro(d.whyRight);									// Run macros
 					if (!ss) ss="That's right";									// Default message
@@ -415,21 +415,25 @@
 					}				
 				str+="</p><div style='text-align:center'>";						// Center
 				str+="<input id='contBut' type='button' value='Continue' class='nextbutSty'></div></div>"; 	// Add button
-				$("#optionsLDiv").html(str);									// Set div
-				$("#optionsRDiv").html("");										// Set div
-				$("#contBut").on("click",function() {							// CONTINUE BUTTON HANDLER
-					if (ans == "right")											// If right		
-						Draw(curPage+1);										// Show next
-					else{
-						if (numTries < d.numTries)	Draw(curPage);				// Reshow
-						else 						Draw(curPage+1);			// Move on
-						}
-					});
-			AssessEventHandlerSendMessage("answer",curAssess+"|"+curPage+"|"+ans+"|"+ResolveVars(studentResponse)+"|"+curPrompt); // Send answer message
+				}
+			$("#optionsLDiv").html(str);										// Set div
+			$("#optionsRDiv").html("");											// Set div
+
+	
+			$("#contBut").on("click",function() {								// CONTINUE BUTTON HANDLER
+				if (ans == "right")												// If right		
+					Draw(curPage+1);											// Show next
+				else{
+					if (numTries < d.numTries)	Draw(curPage);					// Reshow
+					else 						Draw(curPage+1);				// Move on
+					}
+				});
+			SendMessage("answer",curAssess+"|"+curPage+"|"+ans+"|"+ResolveVars(studentResponse)+"|"+curPrompt); // Send answer message
+			Draw(curPage+1);
 			});																	// End nextbut
 			
 		$("#skipBut").on("click",function() {									// SKIP BUTTON HANDLER
-			AssessEventHandlerSendMessage("answer",curAssess+"|"+curPage+"|skip");				// Send answer message
+			SendMessage("answer",curAssess+"|"+curPage+"|skip");				// Send answer message
 			Draw(curPage+1);													// Move on
 			});
 		
@@ -444,7 +448,9 @@
 	{
 		if (cmd == "answer") {													// An answer
 			numAnswers++;														// Add to count
-			if (msg.split("|")[2] == "right")	numCorrect++;					// Add to correct
+			let v=msg.split("|");												// Get parts
+			if (v[2] == "right")	numCorrect++;								// Add to correct
+			aData.pages[v[1]].answer=v[3];										// Save in answers
 			}
 		var str="Assess|"+cmd;													// Add header				
 		if (msg) str+="|"+msg;													// If more to it, add
@@ -493,12 +499,9 @@
 		ans=ans.replace(/\r|\n| /g,"");												// Remove white space from student answer
 		right=right.replace(/\r|\n| /g,"");											// Remove white space from correct answer
 		if (ans == right)				 	 return "right";						// Right if a direct textual match
-//		trace(right,math.evaluate(right))
 		try {																		// Inhibit errors
 			let ifr,ev;
 			if (ifr=(""+right).match(/simp\((.*)\)/i)) {							// If a SIMP() tag
-				trace(ifr, math.simplify("2 * 3 * x, {x: 4}"))
-//				if (ans == math.simplify(ifr[1])) return "right"; 					// Right if a simplified match
 				return "wrong";														// Wrong
 				}
 			ev=math.evaluate(right);
@@ -559,7 +562,6 @@
 				}
 			}
 		if (ifr=txt.match(/\$\[.*?\]/g)) {											// If in need evaluation
-			trace(ifr)
 			for (i=0;i<ifr.length;++i) {											// For each one
 				r=math.evaluate(ifr[i].substr(2,ifr[i].length-3));					// Evaluate expression
 				txt=txt.replace(/\$\[.*?\]/,r);										// Replace tag with calulated number
@@ -575,7 +577,7 @@
 		if (ifr=txt.match(/val\((.*?)\)/i)) {										// If a VAL() tag
 			v=ifr[1].split(",");													// Isolate parameters
 			txt=txt.replace(/val\((.*?)\)/i,"");									// Erase tag
-			AssessEventHandlerSendMessage("rule","STATUS|"+v[0]+":"+v[1]);							// Send rule message
+			SendMessage("rule","STATUS|"+v[0]+":"+v[1]);							// Send rule message
 			}
 		return(txt)
 	}
