@@ -1,0 +1,15 @@
+{"pages":[
+
+	{"title":"Radio choice images",
+	"text":"Choose the one that will get PacMan home",
+	"pic":"//viseyes.org/scale/res/pacman.JPG",
+	"optionType":"radio",
+	"options":["A pic(//viseyes.org/scale/res/01_A.png)","B pic(//viseyes.org/scale/res/01_B.png)","C pic(//viseyes.org/scale/res/01_C.png)"]},
+
+	{"title":"Multiple choice",
+	"text":"Choose the one that says &quot;Yes&quot",
+	"optionType":"checkbox",
+	"options":["Yes","No","Maybe"]}
+	]}
+
+
