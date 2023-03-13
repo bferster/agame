@@ -1,22 +1,22 @@
 {"pages":[
 
 	{"title":"<br>CLARITY</br></br>Do students understand what they&apos;re learning?",
-	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Move slider to the amount of change needed in teaching strategy",
+	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Click on the slider to show how much teaching should change to increase clarity",
 	"optionType":"slider",
 	"options":["No change:Lots of change"]},
 
-	{"title":"<br>ACCESS</br></br>Can students being on their own?",
-	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Move slider to the amount of change needed in teaching strategy",
+	{"title":"<br>ACCESS</br></br>Can students begin on their own?",
+	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Click on the slider to show how much teaching should change to increase access",
 	"optionType":"slider",
 	"options":["No change:Lots of change"]},
 
 	{"title":"<br>RIGOR</br></br> Is learning challenging?<br>In what ways (i.e. focus time, complexity, energy)?",
-	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Move slider to the amount of change needed in teaching strategy",
+	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Click on the slider to show how much teaching should change to increase rigor",
 	"optionType":"slider",
 	"options":["No change:Lots of change"]},
 
 	{"title":"<br>RELEVANT</br></br>How meaningful and interesting is the learning",
-	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Move slider to the amount of change needed in teaching strategy",
+	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Click on the slider to show how much teaching should change to increase relevance",
 	"optionType":"slider",
 	"options":["No change:Lots of change"]},
 
