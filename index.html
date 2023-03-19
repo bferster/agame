@@ -458,8 +458,14 @@ class App  {
 
 	DrawStudents(pos=[0,0,0,0,0,0,0,0,0,0])															// DRAW STUDENTS	
 	{
-		let i;
-		let str=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
+		let i,j;
+		let waver=[ [0,0,2,3,2,1,4,1,0,0],
+					[0,0,3,1,-1,3,0,1,0,0],
+					[0,0,2,-2,1,4,2,1,0,0],
+					[0,0,-2,-1,-3,1,2,-1,0,0],
+					[0,0,1,-2,-3,-2,-1,0,0]]
+		
+				let str=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
 			border-radius:8px;background-color:#eee;text-align:center;color:#333;border:1px solid #999;font-size:1vw;
 			text-shadow:0 0 3px #fff, 0 0 3px #fff">
 				<div style="position:absolute;top:1vw;width:70%;right:15%;border-bottom:1px solid #999"
@@ -469,7 +475,26 @@ class App  {
 				<div style="position:absolute;top:50%;width:82%;right:10%;border-bottom:1px solid #999"
 					title="Students feel challenged and joy as they build skills, knowledge, and understanding"></div>
 				<div style="position:absolute;bottom:.5vw;width:100%;color:#666">STUDENT&nbsp;PROGRESS</div>
-			
+				<svg width="calc(100% - 32px)" height="calc(100% - 32px)">`;
+			let h=(window.innerHeight-window.innerWidth*.11-18-32);										// Bar hgt
+			let xInc=(window.innerWidth*.125-32)/5;														// Student spacing
+			let x=xInc/2,y;																				// Starting positions
+				for (i=0;i<this.stuCols.length;++i) {													// For each student
+				pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);								// Cap 0-9
+				pos[i]=9;
+				y=h;																					// Start fresh
+				str+=`<path  fill="transparent" stroke="${this.stuCols[i]}" stroke-linecap="round" stroke-width="${xInc*2/3}" 
+					d="M${xInc/2+xInc*i} ${y}`; 														// Start path
+					for (j=0;j<=pos[i];++j) {															// For each leg of progress
+						x=(xInc*i)+(xInc/2)+waver[i][j]*xInc/2;											// Xpos
+						str+=" L"+x+" "+(y);															// Add seg
+						y-=(h-24)/9;																	// Up a notch
+					}													
+				str+="\"/>"																				// End path
+				}
+		str+="</sgv></div>";																			// End displat
+		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add frame
+/*			
 		<div style="display:grid;width:calc(100% - 32px);height:100%;padding:0 16px;grid-template-columns:1fr 1fr 1fr 1fr 1fr">`;
 		for (i=0;i<this.stuCols.length;++i) {															// For each student
 			pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);									// Cap 0-9
@@ -477,13 +502,14 @@ class App  {
 				<div>	
 					<div style="background-color:${this.stuCols[i]};border-radius:20px 20px 0 0;height:${(pos[i+5]-pos[i])*7.2}vh"></div>
 					<div style="background-color:${this.stuCols[i]};opacity:.75;`;	
-					if (!(pos[i]-pos[i+5]))	str+=`border-radius:20px 20px 0 0;`;					// Add curved top if same
+					if (!(pos[i]-pos[i+5]))	str+=`border-radius:20px 20px 0 0;`;						// Add curved top if same
 						str+=`height:${Math.max(2,pos[i]*7.2)}vh"></div>
 					</div>
 			</div>`;
 			}
 		str+="</div></div>";	
 		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add dot
+*/
 	}
 
 	DrawTrack(pos)																					// DRAW STUDENT TRACK	

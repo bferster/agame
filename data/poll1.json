@@ -1,5 +1,9 @@
 {"pages":[
 
+	{"title":"<br>Does this &quot;If &quot; affect…",
+	"optionType":"radio",
+	"options":["All students","Some students","One student"]},
+
 	{"title":"<br>CLARITY</br></br>Do students understand what they&apos;re learning?",
 	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Click on the slider to show how much teaching should change to increase clarity",
 	"optionType":"slider",
@@ -18,11 +22,7 @@
 	{"title":"<br>RELEVANT</br></br>How meaningful and interesting is the learning",
 	"text":"<b>What needs to change for all students to learn?</b>,<br><br>Click on the slider to show how much teaching should change to increase relevance",
 	"optionType":"slider",
-	"options":["No change:Lots of change"]},
-
-	{"title":"<br>Does this &quot;If &quot; affect…",
-	"optionType":"radio",
-	"options":["All students","Some students","One student"]}
+	"options":["No change:Lots of change"]}
 	]}
 
 
