@@ -458,14 +458,14 @@ class App  {
 
 	DrawStudents(pos=[0,0,0,0,0,0,0,0,0,0])															// DRAW STUDENTS	
 	{
-		let i,j;
-		let waver=[ [0,0,2,3,2,1,4,1,0,0],
-					[0,0,3,1,-1,3,0,1,0,0],
-					[0,0,2,-2,1,4,2,1,0,0],
-					[0,0,-2,-1,-3,1,2,-1,0,0],
-					[0,0,1,-2,-3,-2,-1,0,0]]
+		let i,j,p;
+		let waver=[ [0,2,2,3,2,1,4,3,1,0],
+					[0,1,3,1,-1,3,0,-2,1,0],
+					[0,-1,2,-2,1,4,2,-3,1,0],
+					[0,-3,-2,-1,-3,1,2,-3,-1,0],
+					[0,0,-1,-2,-3,-2,-1,-2,0,0]]
 		
-				let str=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
+			let str=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
 			border-radius:8px;background-color:#eee;text-align:center;color:#333;border:1px solid #999;font-size:1vw;
 			text-shadow:0 0 3px #fff, 0 0 3px #fff">
 				<div style="position:absolute;top:1vw;width:70%;right:15%;border-bottom:1px solid #999"
@@ -479,21 +479,22 @@ class App  {
 			let h=(window.innerHeight-window.innerWidth*.11-18-32);										// Bar hgt
 			let xInc=(window.innerWidth*.125-32)/5;														// Student spacing
 			let x=xInc/2,y;																				// Starting positions
-				for (i=0;i<this.stuCols.length;++i) {													// For each student
+			let style=`fill="none" opacity="0.75" stroke-linecap="round" stroke-width="${xInc*2/3}"`
+			for (i=0;i<this.stuCols.length;++i) {														// For each student
 				pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);								// Cap 0-9
-				pos[i]=9;
-				y=h;																					// Start fresh
-				str+=`<path  fill="transparent" stroke="${this.stuCols[i]}" stroke-linecap="round" stroke-width="${xInc*2/3}" 
-					d="M${xInc/2+xInc*i} ${y}`; 														// Start path
-					for (j=0;j<=pos[i];++j) {															// For each leg of progress
+//				pos[i+5]=9
+				y=h; p=[];																				// Start fresh
+					for (j=0;j<=pos[i+5];++j) {															// For each leg of progress
 						x=(xInc*i)+(xInc/2)+waver[i][j]*xInc/2;											// Xpos
-						str+=" L"+x+" "+(y);															// Add seg
+						p.push([x,y]);																	// Add point
 						y-=(h-24)/9;																	// Up a notch
-					}													
-				str+="\"/>"																				// End path
+						}
+				if (pos[i+5])	str+=CurvedSVGPath(p,style+` stroke="${this.stuCols[i]}"`);				// Create SVG path																
+				else			str+=`<circle cx="${p[0][0]}" cy="${p[0][1]}" fill="${this.stuCols[i]}" r="${xInc/3}"/>`;
 				}
 		str+="</sgv></div>";																			// End displat
 		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add frame
+
 /*			
 		<div style="display:grid;width:calc(100% - 32px);height:100%;padding:0 16px;grid-template-columns:1fr 1fr 1fr 1fr 1fr">`;
 		for (i=0;i<this.stuCols.length;++i) {															// For each student
@@ -510,40 +511,6 @@ class App  {
 		str+="</div></div>";	
 		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add dot
 */
-	}
-
-	DrawTrack(pos)																					// DRAW STUDENT TRACK	
-	{
-		let i,sw=8;
-		let left=$(window).width()/8+24;
-		let fs=Math.max($(window).width()/128,10);														// Font size
-		let bend=($(window).height()-48)*.3333;															// Corner size
-		let w=($(window).width()-left-24-bend)															// Straight-away
-		let bh=this.stuCols.length*(sw+2);																// Band height
-		let str=`<text x="${w/2+left}" y="${24+bh+12}" letter-spacing="8" text-anchor="middle" fill="#666" font-size="${fs}">LEARNING</text>`;								
-		str+=`<text x="${w+bend+left-bh-12}" y="${$(window).height()/2}" text-anchor="middle" style="writing-mode: tb;text-orientation:upright" fill="#666" font-size="${fs}">THRIVING</text>`;						
-		str+=`<text x="${w/2+left-8}" y="${$(window).height()-24-bh}" letter-spacing="8" text-anchor="middle" fill="#666" font-size="${fs}">LIBERATING</text>`;						
-
-		for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,"#cccccc", 10);								// Gray base
-		if (this.gs.stuPos)																				// If loaded
-			for (i=0;i<this.stuCols.length;++i) str+=drawBand(i,this.stuCols[i],this.gs.stuPos[i] );	// Colored rings
-		$("#lz-trackSVG").html(str);																	// Set SVG
-		
-		function drawBand(num, col, step) {																// DRAW STUDENT BAND
-			bh=(num*(sw+2));																			// Line offset
-			let y=24+bh;																				// Y pos
-			let x=w/5*Math.min(step,5);																	// Position in straight-away
-			let s=`<path style="fill:none;stroke:${col};stroke-width:${sw};
-				stroke-linecap:round;stroke-linejoin:round"	d="M ${left} ${y} `;						// Start line
-				s+=`L ${x+left} ${y} `;																	// Add straight-away
-				if (step > 5)	s+=` a ${bend-bh} ${bend-bh} 0 0 1 ${bend-bh} ${bend-bh} `;				// Top curve
-				if (step > 6)	s+=` l 0 ${bend} `;														// Middle 
-				if (step > 7)	s+=` a ${-bend+bh} ${-bend+bh} 0 0 1 ${-bend+bh} ${bend-bh} `;			// Bottom curve
-				if (step > 8)	s+=` l ${-w/2} 0 `;														// Add last leg 1
-				if (step > 9)	s+=` l ${-w/2} 0 `;														// Add last leg 1
-				s+=`"/>`;																				// Close line
-				return s;																				// Close path and return band
-			}
 	}
 
 	DrawFlow()																						// DRAW PHASE FLOW CHART
@@ -1049,6 +1016,37 @@ class App  {
 		document.body.appendChild(downloadLink);
 		downloadLink.click();
 	}
+
+	function CurvedSVGPath(points, style) 														// MAKE SVG CURVED PATH
+	{	
+		const d=points.reduce((acc, point, i, a) => i === 0 ? `M ${point[0]},${point[1]}` : `${acc} ${bezierCommand(point, i, a)}`, '');
+  		return `<path d="${d}" ${style}/>`
+
+		function bezierCommand(point, i, a) {														// MAKE BEZIER												
+			const [cpsX, cpsY] = controlPoint(a[i - 1], a[i - 2], point); 							// Start control point
+			const [cpeX, cpeY] = controlPoint(point, a[i - 1], a[i + 1], true);						// End control point
+			return `C ${cpsX},${cpsY} ${cpeX},${cpeY} ${point[0]},${point[1]}`;						// Return bezier in SVG form
+			}
+			
+		function controlPoint(current, previous, next, reverse) {									// GET CONTROL POINT
+			const p=previous || current;															// Get previous point
+			const n=next || current;																// Get next point
+			const smoothing= 0.2;																	// Smoothing
+			const o=line(p, n) 																		// Properties of the opposed-line
+			const angle=o.angle + (reverse ? Math.PI : 0) 											// If is end-control-point, add PI to the angle to go backward
+			const length=o.length * smoothing;														// The control point position is relative to the current point
+			const x=current[0]+Math.cos(angle)*length;												// Get x
+			const y=current[1] + Math.sin(angle)*length;											// Y
+			return [x,y];																			// Return control point
+			}
+
+		function line(p1, p2) {																		// GET PROPERTIES OF LINE
+			const w=p2[0]-p1[0];																	// Get width
+			const h=p2[1]-p1[1];																	// Height
+			return { length:Math.sqrt(Math.pow(w,2)+Math.pow(h,2)), angle:Math.atan2(h,w) };		// Get pythag and angle
+			}
+	}
+
 
 </script>
 </body>
