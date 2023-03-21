@@ -115,6 +115,16 @@
 				}
 			});
 
+		if (window.addEventListener) 																// If supported this way
+			window.addEventListener("message",AssessEventHandler,false);							// Add event handler
+		else																						// Use other method
+			window.attachEvent("message",AssessEventHandler);										// Add handler
+		
+		function AssessEventHandler(e)																// ON ASSESS EVENT
+		{
+			if (e.data && e.data.match(/Assess\|done/)) 	$("#lz-assess").remove();				// Remove old
+		}	
+		
 		$(window).on("keydown",function(e) {														// HANDLE KEYPRESS
 			if ((e.which == 81) && e.ctrlKey)	{													// Test key (CTL-Q)
 					}
@@ -128,9 +138,6 @@
 
 	function JoinTeam(version)																	// JOIN A TEAM
 	{
-//				<iframe width="${w}px" height="${w*.5625}px" src="https://www.youtube.com/embed/hTETYuGXFJU" 
-//				title="About the Agility game" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-//				</iframe>			
 		let w=window.innerWidth/4-64;																// Panel width
 		if (version && version.match(/v=/i)) 	version=version.substring(3);						// Extract version, if set
 		else									version="";											// Use default
@@ -139,7 +146,7 @@
 			<br><br>
 		<div style="display:flex;justify-content:center;color:#000">
 			<div style="width:25%"><p>INTRODUCTORY VIDEO</p>
-<img style="width:${w}px;height:${w*.5625}px" src="temp.jpg"> 
+				<img style="width:${w}px;height:${w*.5625}px" src="temp.jpg"> 
 			</div>
 			<div style="width:25%"><p>CHOOSE A TEAM TO PLAY WITH</b>
 				<div id="lz-teamList" style="width:calc(100% -24px);height:50vh;overflow:auto;border-radius:8px;padding:12px;
@@ -260,6 +267,7 @@ class App  {
 			let s=this.strings["discussIf"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
 			this.curLeader=(1)%app.gs.players.length;													// Choose next leader
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${s}</div>`);									// Show tip
+			this.ShowAssess("poll1");																	// Show assessment
 			this.Draw();																				// Redraw
 			}
 		else if (phase == 2) {																			// DEAL 
@@ -307,8 +315,22 @@ class App  {
 				Sound("clicks"); 																		// Clicks
 				});
 			this.Draw();																				// Redraw
+			this.ShowAssess("poll2");																	// Show assessment
 			}
 	}
+
+	ShowAssess(id, pct=50)																			// RUN ASSESS<<>ENT MODULE
+	{
+		$("#lz-assess").remove();																		// Remove old
+		let wid=$(window).width()*pct/100;																// Set height
+		let url=`assess.htm?i=AGQ&j=${id}&e=${this.id}`;
+		let str=`<div id="lz-assess" style="position:absolute;background-color:#eee;
+			width:${wid}px;height:${wid*.5625}px;top:11vw;left:calc(12.5% + 24px);display:block">
+			<iframe style="width:100%;height:100%" src="${url}" frameborder="0" ></iframe>`;
+		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
+	
+		
+		}
 
 	DealCards()																						// DEAL CARDS
 	{
@@ -459,10 +481,10 @@ class App  {
 	DrawStudents(pos=[0,0,0,0,0,0,0,0,0,0])															// DRAW STUDENTS	
 	{
 		let i,j,p;
-		let waver=[ [0,2,2,3,2,1,4,3,1,0],
+		let waver= [[0,2,2,3,2,1,4,3,1,0],
 					[0,1,3,1,-1,3,0,-2,1,0],
-					[0,-1,2,-2,1,4,2,-3,1,0],
-					[0,-3,-2,-1,-3,1,2,-3,-1,0],
+					[0,-1,2,-1,1,3,2,-3,1,0],
+					[0,-2,-1,0,-2,1,1,-3,-1,0],
 					[0,0,-1,-2,-3,-2,-1,-2,0,0]]
 		
 			let str=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
@@ -479,7 +501,7 @@ class App  {
 			let h=(window.innerHeight-window.innerWidth*.11-18-32);										// Bar hgt
 			let xInc=(window.innerWidth*.125-32)/5;														// Student spacing
 			let x=xInc/2,y;																				// Starting positions
-			let style=`fill="none" opacity="0.75" stroke-linecap="round" stroke-width="${xInc*2/3}"`
+			let style=`fill="none" opacity="0.66" stroke-linecap="round" stroke-width="${xInc*2/3}"`;	// Line style
 			for (i=0;i<this.stuCols.length;++i) {														// For each student
 				pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);								// Cap 0-9
 //				pos[i+5]=9
@@ -1046,7 +1068,6 @@ class App  {
 			return { length:Math.sqrt(Math.pow(w,2)+Math.pow(h,2)), angle:Math.atan2(h,w) };		// Get pythag and angle
 			}
 	}
-
 
 </script>
 </body>
