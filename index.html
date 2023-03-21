@@ -319,19 +319,6 @@ class App  {
 			}
 	}
 
-	ShowAssess(id, pct=50)																			// RUN ASSESS<<>ENT MODULE
-	{
-		$("#lz-assess").remove();																		// Remove old
-		let wid=$(window).width()*pct/100;																// Set height
-		let url=`assess.htm?i=AGQ&j=${id}&e=${this.id}`;
-		let str=`<div id="lz-assess" style="position:absolute;background-color:#eee;
-			width:${wid}px;height:${wid*.5625}px;top:11vw;left:calc(12.5% + 24px);display:block">
-			<iframe style="width:100%;height:100%" src="${url}" frameborder="0" ></iframe>`;
-		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
-	
-		
-		}
-
 	DealCards()																						// DEAL CARDS
 	{
 		let i,num,str="";
@@ -455,6 +442,18 @@ class App  {
 				s=this.strings["chatStart"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
 			$("#lz-infieldDiv").html(`<div style="margin-top:${y}px">${this.strings["help"]}<div class="lz-tip">${s}</div></div>`); // Start with help
 			}
+	}
+
+	ShowAssess(id, pct=50)																			// RUN ASSESSMENT MODULE
+	{
+		$("#lz-assess").remove();																		// Remove old
+		let wid=$(window).width()*pct/100;																// Set height
+		let url=`assess.htm?i=AGQ&j=${id}&e=${this.id}`;												// Assess module url
+		let str=`<div id="lz-assess" style="position:absolute;background-color:#eee;
+			border:1px solid #999;display:block;
+			width:${wid}px;height:${wid*.5625}px;top:11vw;left:calc(12.5% + 24px)">
+			<iframe style="width:100%;height:100%" src="${url}" frameborder="0" ></iframe>`;
+		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
 	}
 
 	VideoChat(focus="",pct=50)																		// OPEN VIDEO CHAT
