@@ -177,9 +177,17 @@
 		let i,ifr,pic,lab,str="",col="#000",sliAns=-1;												
 		let studentRes="";														// Hold's student response
 		if (num >= aData.pages.length) {										// Past last page
-			SendMessage("done",curAssess+"|"+numCorrect/numAnswers);			// Send done message
+			let o,d=[];
+			for (i=0;i<aData.pages.length;++i) {								// For each question
+				o={};															// New obj
+				o.type=aData.pages[i].optionType;								// Save type
+				o.title=aData.pages[i].title.substring(0,128);					// Save answer
+				o.answer=aData.pages[i].answer;									// Save answer
+				d.push(o);														// Add to array
+				}
 			fetch(`//${window.location.host}:8081?q=save&type=AGQ&email=${dbEmail}&password=${curAssess}`,	
-			{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(aData)})	// Save to DB
+			{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(d)}) // Save to DB
+			.then(res => { SendMessage("done",curAssess+"|"+numCorrect/numAnswers); });	 // Send done message
 			return;																// Quit
 			}
 		if (curPage != num)														// If a new page
