@@ -1,17 +1,17 @@
 {"pages":[
 
 	{"title":"<br>PRACTICAL</br></br>Is it a practical solution?",
-	"text":"<b>Rate your teaching solution?</b>,<br><br>Move slider as to how practical it is",
+	"text":"<b>Click on the slider as to how practical it is</b>",
 	"optionType":"slider",
 	"options":["No:Yes"]},
 
 	{"title":"<br>LEARNING</br></br>Is it likely to result in greater student learning?",
-	"text":"<b>Rate your teaching solution?</b>,<br><br>Move slider to what you think is the result",
+	"text":"<b>Click on the slider to what you think is the result</b>",
 	"optionType":"slider",
 	"options":["No:Yes"]},
 
 	{"title":"<br>USEFUL</br></br>Is it useful in your own Context?",
-	"text":"<b>Rate your teaching solution?</b>,<br><br>Move slider as to how useful it is",
+	"text":"<b>Click on the slider as to how useful it is</b>",
 	"optionType":"slider",
 	"options":["No:Yes"]},
 
