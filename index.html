@@ -222,7 +222,8 @@ class App  {
 				for (i=0;i<d.length;++i) {																// For each line
 					if (d[i].type == "if")				this.ifs.push(d[i].title);						// Add if
 					else if (d[i].type == "then") {														// Add then	
-						d[i].time={time:d[i].time, students:d[i].students.split(",") };					// Objectify time + studenta into time obj					
+						d[i].time=d[i].time.replace(/'/g,'"');											// Apos to quotes
+						d[i].time=JSON.parse(d[i].time);												// Objectify					
 						this.thens.push(d[i]);															// Add																
 						}
 					else if (d[i].type == "string")		this.strings[d[i].category]=d[i].title;			// Add string										
