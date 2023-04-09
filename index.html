@@ -222,7 +222,7 @@ class App  {
 				for (i=0;i<d.length;++i) {																// For each line
 					if (d[i].type == "if")				this.ifs.push(d[i].title);						// Add if
 					else if (d[i].type == "then") {														// Add then	
-						d[i].time=JSON.parse(d[i].time);												// Objectify					
+						d[i].time={time:d[i].time, students:d[i].students.split(",") };					// Objectify time + studenta into time obj					
 						this.thens.push(d[i]);															// Add																
 						}
 					else if (d[i].type == "string")		this.strings[d[i].category]=d[i].title;			// Add string										
@@ -579,9 +579,10 @@ class App  {
 
 	DrawCard(num, id, x, y, check, hgt, inline)														// DRAW CARD
 	{
-		let o=this.thens[num];
 		let i,cols=[];
 		let pad=hgt/30;																					// Responsive padding
+		let o=this.thens[num];																			// Point at card
+		if (!o)	return;																					// Nothing to show
 		cols["Structure"]="cyan"; 	cols["Help resource"]="magenta";	
 		cols["Options"]="#d4dd46"; 	cols["Chance"]="#ccc";
 		let title=o.title.split(" ").join("<br>")
@@ -598,7 +599,7 @@ class App  {
 				<div style="width:${hgt/6}px;float:right;line-height:1;color:#666"><b>${oo.time}<br>mins</b></div>
 			</div>
 			<div style="grid-area:pic;text-align:center;padding-top:${pad}px">`;
-				if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/7}px">`;
+				if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/8}px">`;
 			str+=`</div><div style="grid-area:students;padding-left:${pad}px;align-self:end">`;
 			for (i=0;i<oo.students.length;++i)
 				str+=`<div style="display:inline-block;background-color:${this.stuCols[oo.students[i]-1]};
