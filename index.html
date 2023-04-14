@@ -81,7 +81,7 @@
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px""><b>and your email:</b></div>
 			<input class='lz-is'  type='text' id='lz-loginId'>
 			<br><br><br><div class="lz-bs" id='lz-login'>Enter</div> 
-			<br><br><br><br><div style="font-size:11px">&copy; 2022 StageTools </div>
+			<br><br><br><br><div style="font-size:11px">&copy; 2023 StageTools </div>
 		</div>
 	
 <script>
@@ -441,7 +441,7 @@ class App  {
 			$("#lz-ifDiv").html(this.strings["lobby"]);													// Lobby welcome message
 			if (app.gs.players) 																		// If any players active yet
 				s=this.strings["chatStart"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
-			$("#lz-infieldDiv").html(`<div style="margin-top:${y}px">${this.strings["help"]}<div class="lz-tip">${s}</div></div>`); // Start with help
+			$("#lz-infieldDiv").html(`<div style="height:200px;overflow-y:auto;margin-top:${y}px">${this.strings["help"]}<div class="lz-tip">${s}</div></div>`); // Start with help
 			}
 	}
 
@@ -810,11 +810,13 @@ class App  {
 				<div id="lzstab-0" class="lz-tab">This game</div>
 				<div id="lzstab-1" class="lz-tab">My games</div>
 				<div id="lzstab-2" class="lz-tab">All games</div>
+				<div style="float:right">${app.id}</div>
 				</div>
 				<div id='lz-statsDiv' style="width:100%;border:1px solid #999;background-color:#eee;
 					border-top:none; border-radius:6px; border-top-left-radius:0;padding:12px;
 					overflow-y:auto;overflow:x:hidden;height:calc(var(--maxvh) - 11vw - 36px)"
-				</div></div>`;
+				</div>
+				</div>`;
 	
 		$("body").append(str.replace(/\t|\n|\r/g,""));										// Add it
 		$("[id^=lzstab-]").on("click",function(e) {	drawPage($(this)[0].id.substring(7));	});			// ON TAB CLICK
