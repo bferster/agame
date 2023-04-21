@@ -365,8 +365,13 @@ class App  {
 			str+=`<div class="lz-tip">${this.strings["explainMyHand"]}</div>
 				<div id="stopExplainBut" class="lz-bs" style="float:right;margin:-60px 8px 0 0;" 
 				onclick="app.ws.send('${s}')">Click if done sharing</div>`;								// Add button
-		else if (who) str+=`<div class="lz-tip">${who.split("@")[0]+this.strings["explainHand"]}</div>`; // Someone else	
-		else	str+=tip;																				// Just add tip															
+		else if (who) { 																				// Someone else	
+			str+=`<div class="lz-tip">${who.split("@")[0]+this.strings["explainHand"]}</div>
+			<div id="stopExplainBut" class="lz-bs" style="float:right;margin:-60px 8px 0 0;" 
+				onclick="app.ws.send('${s}')">Click if player's absent</div>`;							// Add button
+			}
+		else str+=tip;																					// Just add tip
+															
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 	}
 
