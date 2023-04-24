@@ -174,7 +174,7 @@ try{
 				setTimeout(()=>{ 																// Wait
 					gs.curPhase=3;																// Reset phase
 					Broadcast(gs.id,"NEXT|"+v[1]+"|"+v[2]); 									// Send NEXT message to start explaining
-					}, gs.time*gs.curSpeed);													// Wait, then advance
+					}, gs.time*gs.curSpeed*2);													// Wait, then advance
 				}
 			else if (v[0] == "EXPLAIN") {														// EXPLAIN
 				gs.curPhase++;																	// Advance phase

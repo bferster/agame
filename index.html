@@ -122,7 +122,10 @@
 		
 		function AssessEventHandler(e)																// ON ASSESS EVENT
 		{
-			if (e.data && e.data.match(/Assess\|done/)) 	$("#lz-assess").remove();				// Remove old
+			if (e.data && e.data.match(/Assess\|done/)) {											// If assessment over
+				$("#lz-assess").remove();															// Remove old
+				if (app.gs && app.gs.curPhase == 1) $("#lz-phase-2").css("background-color","#27ae60");	// Hilite DEAL button
+				}							
 		}	
 		
 		$(window).on("keydown",function(e) {														// HANDLE KEYPRESS
@@ -263,7 +266,6 @@ class App  {
 
 		if (phase == 1) {																				// START 
 			Sound("ding");																				// Ding
-			this.HourGlassTimer(this.time/2, ()=>{ Sound("clicks"); $("#lz-phase-2").css("background-color","#27ae60"); });	// Hilite DEAL button							
 			let s=this.strings["discussIf"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
 			this.curLeader=(1)%app.gs.players.length;													// Choose next leader
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${s}</div>`);									// Show tip
@@ -276,7 +278,7 @@ class App  {
 			$("#lz-phase-1").css("background-color","#ccc" ); 											// Set IF button off
 			$("#lz-phase-2").css("background-color","#ccc" ); 											// Set IF button off
 			$("#lz-phase-3").css("background-color","#ea7f1d" ); 										// Set DEAL button active
-			this.HourGlassTimer(this.time*this.curSpeed-2, ()=>{	 									// When time is up (minus 2 secs)
+			this.HourGlassTimer(this.time*2*this.curSpeed-2, ()=>{	 									// When time is up (minus 2 secs)
 				let i,v=[],picks=[];																	
 				$("[id^=lz-cardCheck-]").each( function() {												// For each checkbox image	
 					if ($(this).prop("src").match(/checked/)) 											// If checked
@@ -448,7 +450,7 @@ class App  {
 
 	ShowAssess(id, pct=50)																			// RUN ASSESSMENT MODULE
 	{
-		if (isLocal) return;																			// Not for debugging
+//		if (isLocal) return;																			// Not for debugging
 		$("#lz-assess").remove();																		// Remove old
 		let wid=$(window).width()*pct/100;																// Set height
 		let url=`assess.htm?i=AGQ&j=${id}&e=${this.id}`;												// Assess module url
@@ -492,11 +494,11 @@ class App  {
 			let str=`<div style="position:absolute;top:11vw;width:12.5%;right:24px;height:calc(var(--maxvh) - 11vw - 18px);
 			border-radius:8px;background-color:#eee;text-align:center;color:#333;border:1px solid #999;font-size:1vw;
 			text-shadow:0 0 3px #fff, 0 0 3px #fff">
-				<div style="position:absolute;top:1vw;width:70%;right:15%;border-bottom:1px solid #999"
+				<div style="position:absolute;top:1vw;width:70%;right:15%;border-bottom:0px solid #999"
 					title="Students use their learning to pursue their own interests and further learning goals"></div>
-				<div style="position:absolute;top:20%;width:70%;right:15%;border-bottom:1px solid #999"
+				<div style="position:absolute;top:20%;width:70%;right:15%;border-bottom:0px solid #999"
 					title="Students feel valued and are building relationships within the learning community"></div>
-				<div style="position:absolute;top:50%;width:82%;right:10%;border-bottom:1px solid #999"
+				<div style="position:absolute;top:50%;width:82%;right:10%;border-bottom:0px solid #999"
 					title="Students feel challenged and joy as they build skills, knowledge, and understanding"></div>
 				<div style="position:absolute;bottom:.5vw;width:100%;color:#666">STUDENT&nbsp;PROGRESS</div>
 				<svg width="calc(100% - 32px)" height="calc(100% - 32px)">`;
@@ -518,23 +520,6 @@ class App  {
 				}
 		str+="</sgv></div>";																			// End displat
 		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add frame
-
-/*			
-		<div style="display:grid;width:calc(100% - 32px);height:100%;padding:0 16px;grid-template-columns:1fr 1fr 1fr 1fr 1fr">`;
-		for (i=0;i<this.stuCols.length;++i) {															// For each student
-			pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);									// Cap 0-9
-			str+=`<div style="margin-bottom:2.5vw;align-self:end">
-				<div>	
-					<div style="background-color:${this.stuCols[i]};border-radius:20px 20px 0 0;height:${(pos[i+5]-pos[i])*7.2}vh"></div>
-					<div style="background-color:${this.stuCols[i]};opacity:.75;`;	
-					if (!(pos[i]-pos[i+5]))	str+=`border-radius:20px 20px 0 0;`;						// Add curved top if same
-						str+=`height:${Math.max(2,pos[i]*7.2)}vh"></div>
-					</div>
-			</div>`;
-			}
-		str+="</div></div>";	
-		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add dot
-*/
 	}
 
 	DrawFlow()																						// DRAW PHASE FLOW CHART
