@@ -60,7 +60,7 @@ Anytime you see an hourglass,you have until the sand runs out before going to th
 The clock on the right shows how many minutes left in the class<br><br><br>",,,,,,,
 string,lobby,Welcome to the Agility game lobby!,,,,,
 string,chatStart,"When other players log in, they will join the video chat.<br>When someone presses the PLAY button, the game will start.",,,,,
-string,discussIf,"Discuss the "IF" teaching challenge with your team. Use the survey questions to set goals for your teaching response..<br>Someone should press the <b>DEAL CARDS</b> button when the team is ready.",,,,,
+string,discussIf,"Discuss the "IF" teaching challenge with your team. Use the survey questions to set goals for your teaching response.<br>Someone should press the <b>DEAL CARDS</b> button when the team is ready.",,,,,
 string,pickHand,"You can choose up to three cards to play.<br>When the timer is up, each player will explain their choices.",,,,,
 string,explainMyHand,"It's your turn to share why you chose your cards.<br>If you finish before time is up, click button below.",,,,,
 string,explainHand, is explaining to the team<br>why they chose those cards.,,,,,
