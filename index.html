@@ -76,6 +76,8 @@
 			<div id="splashDiv" class="lz-splash">
 			<img src="img/ACTlogo.png" style='width:200px' alt="logo">
 			<br><p style="color:#000;font-size:14px"><em>A game to practice teaching techniques</em></p>
+			<a style="color:0x00099" href="assets/directions.pdf" target="_blank">See directions</a>
+
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px"><b>Please type in your first name:</b></div>
 			<input class='lz-is'  style="width:100px" type='text' id='lz-loginName'>
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px""><b>and your email:</b></div>
@@ -165,10 +167,10 @@
 		$("#splashDiv").fadeIn(2000);																// Show
 	}
 
-	function ExploreCards()																		// EXPLORE THE CARDS
+	function ExploreCards(markup)																// EXPLORE THE CARDS
 	{
-		$("#lz-infieldOverDiv").remove();															// Remove overlay
-		let i,str=`<div id="lz-infieldOverDiv" style="position:absolute;top:0;left:0;width:100%;height:100%;
+		$("#lz-infieldCardsDiv").remove();															// Remove overlay
+		let i,str=`<div id="lz-infieldCardsDiv" style="position:absolute;top:0;left:0;width:100%;height:100%;
 			text-align:left;background-color:#fff">	
 				<p style="color:#27ae60;font-size:24px;margin-left:24px"><b>EXPLORE THE CARDS</b></p>
 				<div style="margin:24px;height:60vh;overflow:auto;border-radius:8px;border:1px solid #999">
@@ -180,7 +182,9 @@
 					}
 				str+=`</div></div><div class="lz-bs" style="margin-left:24px" onclick="$('#lz-infieldOverDiv').remove()">Done</div>
 		</div>`;
-		$("body").append(str.replace(/\t|\n|\r/g,""));												// Add it
+		str=str.replace(/\t|\n|\r/g,"");															// Remove tabs
+		if (markup)	return str;																		// Return markup
+		$("body").append(str);																		// Add it
 	}
 
 
@@ -345,7 +349,9 @@ class App  {
 		
 		$("[id^=lz-cardCheck-]").on("click", function(e) {												// ON CARD CHECKBOX CLICK 
 			let v=[];
+			let id=e.target.id.substring(13);															// Get card id
 			$(this).prop("src", $(this).prop("src").match(/checked/) ? "img/check.png" : "img/checked.png"); // Set box
+			$(this).css("height", $(this).prop("src").match(/checked/) ? "4vh" : "2vh"); 				// Set box size
 			$(this).data('timeStamp',e.timeStamp);														// Add timeStamp
 				$("[id^=lz-cardCheck-]").each( function() {												// For each checkbox image	
 				if ($(this).prop("src").match(/checked/)) 												// If checked, add to array
@@ -802,6 +808,7 @@ class App  {
 				<div id="lzstab-0" class="lz-tab">This game</div>
 				<div id="lzstab-1" class="lz-tab">My games</div>
 				<div id="lzstab-2" class="lz-tab">All games</div>
+				<div id="lzstab-3" class="lz-tab">See cards</div>
 				<div style="float:right">${app.id}</div>
 				</div>
 				<div id='lz-statsDiv' style="width:100%;border:1px solid #999;background-color:#eee;
@@ -810,7 +817,7 @@ class App  {
 				</div>
 				</div>`;
 	
-		$("body").append(str.replace(/\t|\n|\r/g,""));										// Add it
+		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
 		$("[id^=lzstab-]").on("click",function(e) {	drawPage($(this)[0].id.substring(7));	});			// ON TAB CLICK
 		
 		fetch(`//${window.location.host}:8081?q=loadall&a=b&type=AG`)									// Fetch history
@@ -842,7 +849,8 @@ class App  {
 			else if (num == 2) {																		// All games
 				str="All games data will be displayed";
 				}
-			$("#lz-statsDiv").html(str.replace(/\t|\n|\r/g,""));											// Draw
+			else if (num == 3) 	str=ExploreCards(true);													// Show cards
+			$("#lz-statsDiv").html(str.replace(/\t|\n|\r/g,""));										// Draw
 			}
 
 		function drawProgress(x, y, h, pos) {															// DRAW STUDENT PROGRESS
