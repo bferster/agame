@@ -36,15 +36,11 @@ then,Options,Total student choice,Interest Projects,Students generate their own 
 then,Help resource,Individuals,Word Wall,"Students refer to a visual display of key terms, their meaning, and word relationships.","{'time':2,'students':[1]}",assets/float.png,2
 ,,,,,,,
 ,,,,,,,
-then,Chance,Your Choice,Opportunity,Choose a routine from any card or design your own!  ,"{'time':1,'students':[1,2]}",assets/bolt.png,
-then,Chance,Your Choice,Opportunity,Choose a routine from any card or design your own!  ,"{'time':2,'students':[3,4]}",assets/bolt.png,
-then,Chance,Your Choice,Opportunity,Choose a routine from any card or design your own!  ,"{'time':2,'students':[1,5]}",assets/bolt.png,
-then,Chance,Your Choice,Opportunity,Choose a routine from any card or design your own!  ,"{'time':1,'students':[4,5]}",assets/bolt.png,
-then,Chance,Your Choice,Opportunity,Choose a routine from any card or design your own!  ,"{'time':1,'students':[2,4]}",assets/bolt.png,
-then,Chance,Your Choice,Opportunity,Choose a routine from any card or design your own!  ,"{'time':2,'students':[1,3]}",assets/bolt.png,
-then,Chance,Your Choice,Opportunity,Choose a routine from any card or design your own!  ,"{'time':3,'students':[1,3]}",assets/bolt.png,
-then,Chance,Your Choice,Opportunity,Choose a routine from any card or design your own!  ,"{'time':3,'students':[2,3]}",assets/bolt.png,
-then,Chance,Your Choice,Opportunity,Choose a routine from any card or design your own!  ,"{'time':4,'students':[2,5]}",assets/bolt.png,
+then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':1,'students':[1,2]}",assets/bolt.png,
+then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':2,'students':[3,4]}",assets/bolt.png,
+then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':2,'students':[1,5]}",assets/bolt.png,
+then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':1,'students':[4,5]}",assets/bolt.png,
+then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':1,'students':[2,4]}",assets/bolt.png,type,category,title,subtitle,desc,time,pic,deck
 ,,,,,,,
 string,help,"<ol style=line-height:1.8">
 <li>Press the <b style="color:#009900"">PLAY</b> button to begin the game</li>
