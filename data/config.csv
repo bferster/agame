@@ -17,11 +17,11 @@ then,Structure,Explicit instruction,Mini-lesson,"Teachers demonstrate a concept,
 then,Structure,Individual thinking routine,I used to think... Now I think... So next I will..,"Students, Independently, monitor how and why their thinking has changed by completing the sentence prompt,  ""I used to think...""","{'time':4,'students':[4]}",assets/book.png,1
 then,Structure,Individual thinking routine,Star Most Interesting & Box Most Challenging,Students place a star next to the most interesting word/problem/question and draw a box around the most challenging aspect.,"{'time':2,'students':[1]}",assets/book.png,1
 then,Structure,Discusion routine,Questions Only,"Students work in pairs to generate questions around a prompt, image, or data set. ","{'time':4,'students':[1,4]}",assets/people.png,1
-then,Help resource,Individuals,Concept Map,Students organize their thinking by drawing a visual representation of their ideas. ,"{'time':5,'students':[4]}",assets/float.png,1
-then,Help resource,Individuals,Routine Directions Posted,Studentrs refer to displayed directions to remember steps and/or qualities of responses.,"{'time':1,'students':[1,4]}",assets/float.png,1
+then,Help resource,Individuals,Concept Map,Students organize their thinking by drawing a visual representation of their ideas.,"{'time':5,'students':[4]}",assets/float.png,1
+then,Help resource,Individuals,Routine Directions Posted,Students refer to displayed directions to remember steps and/or qualities of responses.,"{'time':1,'students':[1,4]}",assets/float.png,1
 then,Help resource,Individuals,Dictionary,"Students are given a resource for finding word meanings, pronounciation, and usage.","{'time':1,'students':[1,2]}",assets/float.png,1
-then,Options,Total teacher assignment,Assignment,Teachers assign required task - same task for all students,"{'time':1,'students':[2]}",assets/assign.png,1
-then,Options,Teacher-structured student choice,Practice Problems,Teacher requires 3 and students choose 2 additional questions,"{'time':2,'students':[3,4,5]}",assets/choices.png,1
+then,Options,Total teacher assignment,Assignment,Teachers assign required task - same task for all students.,"{'time':1,'students':[2]}",assets/assign.png,1
+then,Options,Teacher-structured student choice,Practice Problems,Teacher requires 3 and students choose 2 additional questions.,"{'time':2,'students':[3,4,5]}",assets/choices.png,1
 then,Options,Total student choice,"List, Draw, Story","Students respond by drawing, writing, or making a list. ","{'time':3,'students':[1,2]}",assets/pathways.png,1
 then,Structure,Discussion routine,"Questions, Answers, Practice, Switch (Peer Tutoring)",Students who are ready to teach a skill pair up with a student hoping to learn the skills. The Learner asks questions for 30 seconds. The student who is teaching answers the most important question and then practices the skill with the learner. Then roles are switched and the routine repeats where learner must now answer questions to demonstrate learning.,"{'time':2,'students':[1,3,5]}",assets/table.png,2
 then,Structure,Discusion routine,Elbow Exchange & Sort,"Students are assigned the role or listener and speaker, taking turns to exchange their thinking (answer, question, opinion, observation). Then the pair sorts the thinking (prioritize, compare, sequence, or summarize).","{'time':10,'students':[2,3]}",assets/table.png,2
@@ -29,30 +29,30 @@ then,Structure,Explicit instruction,Short Movie Clip,Students watch a short movi
 then,Structure,Individual thinking routine,Silent Think Time,Students silently think or imagine in their head with no writing or speaking.,"{'time':3,'students':[1,4]}",assets/book.png,2
 then,Structure,Discusion routine ,Sort-it-Out,"Students sort words, images, facts or objects into groups and create titles for each group. Students create at least three different sorts. Students share their most effective sort with peers who must guess the titles of the groups.","{'time':15,'students':[1,2,3,4]}",assets/table.png,2
 then,Help resource,Individuals,Learning App,Students use software to practice a skill.,"{'time':3,'students':[4,5]}",assets/float.png,2
-then,Help resource,Individuals,Vocabulary list,"Students use a list of academic words including multisyllabic, abstract meanings, and prefix/suffixes","{'time':2,'students':[3,4]}",assets/float.png,2
-then,Help resource,Individuals,Materials and Tools,"Students use materials and tools to support learning (i.e. calculator, ruler, map, compass, etc.)","{'time':2,'students':[2,3]}",assets/float.png,2
-then,Options,Total teacher assignment,Small Group Instruction,Teacher assigns different required tasks for small group work,"{'time':3,'students':[2,4,5]}",assets/assign.png,2
-then,Options,Total student choice,Interest Projects,Students generate their own project to demonstrate learning,"{'time':15,'students':[2,4,5]}",assets/choices.png,2
+then,Help resource,Individuals,Vocabulary list,"Students use a list of academic words including multisyllabic, abstract meanings, and prefix/suffixes.","{'time':2,'students':[3,4]}",assets/float.png,2
+then,Help resource,Individuals,Materials and Tools,"Students use materials and tools to support learning (i.e. calculator, ruler, map, compass, etc.).","{'time':2,'students':[2,3]}",assets/float.png,2
+then,Options,Total teacher assignment,Small Group Instruction,Teacher assigns different required tasks for small group work.,"{'time':3,'students':[2,4,5]}",assets/assign.png,2
+then,Options,Total student choice,Interest Projects,Students generate their own project to demonstrate learning.,"{'time':15,'students':[2,4,5]}",assets/choices.png,2
 then,Help resource,Individuals,Word Wall,"Students refer to a visual display of key terms, their meaning, and word relationships.","{'time':2,'students':[1]}",assets/float.png,2
 ,,,,,,,
 ,,,,,,,
-then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':1,'students':[1,2]}",assets/bolt.png,
-then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':2,'students':[3,4]}",assets/bolt.png,
-then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':2,'students':[1,5]}",assets/bolt.png,
-then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':1,'students':[4,5]}",assets/bolt.png,
-then,Your Choice,Design Your Own Routine,Opportunity,Choose a routine from any card or design your own!  ,"{'time':1,'students':[2,4]}",assets/bolt.png,type,category,title,subtitle,desc,time,pic,deck
+then,Your Choice,Opportunity,Design Your Own Routine,Choose a routine from any card or design your own!  ,"{'time':1,'students':[1,2]}",assets/bolt.png,
+then,Your Choice,Opportunity,Design Your Own Routine,Choose a routine from any card or design your own!  ,"{'time':2,'students':[3,4]}",assets/bolt.png,
+then,Your Choice,Opportunity,Design Your Own Routine,Choose a routine from any card or design your own!  ,"{'time':2,'students':[1,5]}",assets/bolt.png,
+then,Your Choice,Opportunity,Design Your Own Routine,Choose a routine from any card or design your own!  ,"{'time':1,'students':[4,5]}",assets/bolt.png,
+then,Your Choice,Opportunity,Design Your Own Routine,Choose a routine from any card or design your own!  ,"{'time':1,'students':[2,4]}",assets/bolt.png,type,category,title,subtitle,desc,time,pic,deck
 ,,,,,,,
 string,help,"<ol style=line-height:1.8">
 <li>Press the <b style="color:#009900"">PLAY</b> button to begin the game</li>
 <li>Discuss it,and when you all are ready, a <b style="color:#009900">DEAL CARDS</b> button will appear at the top</li>
-<li>When pressed,six cards will be shown to you. Pick the best three that will move the students forward</li>
-<li>The video chat will reappear,and each player will explain their choices to the other players</li>
+<li>Six different cards will then be shown to each player. Pick up to 3 that will move the students forward</li>
+<li>The video chat will reappear, and each player will explain their choices to the other players</li>
 <li>The screen show the cards you have selected</li>
 <li>You will discuss and then vote on the best player's solution</li>
 <li>After everyone has voted,the student progress is updated and you can discuss it</li>
 <li>Press the <b style="color:#009900">PLAY</b> button to play another round until the the minute period is up</li></ol>
 <p><b><i>Tips</i></b></p>
-Anytime you see an hourglass,you have until the sand runs out before going to the next phase.<br>
+Anytime you see an hourglass, you have until the sand runs out before going to the next phase.<br>
 The clock on the right shows how many minutes left in the class<br><br><br>",,,,,,,
 string,lobby,Welcome to the Agility game lobby!,,,,,
 string,chatStart,"When other players log in, they will join the video chat.<br>When someone presses the PLAY button, the game will start.",,,,,
@@ -61,55 +61,36 @@ string,pickHand,"You can choose up to three cards to play.<br>When the timer is 
 string,explainMyHand,"It's your turn to share why you chose your cards.<br>If you finish before time is up, click button below.",,,,,
 string,explainHand, is explaining to the team<br>why they chose those cards.,,,,,
 string,vote,"Discuss which cards best to address the IF issue,as well as progress the students.<br>When you have decided, someone should check the box to the right of that set.",,,,,
-string,discuss,"Reflect on decisions and student outcomes and consider takeaways for you own teaching.<br>When you are ready play again, someone should press the </i><b>PLAY</b><i> button.",,,,,
+string,discuss,"Reflect on takeaways for your own teaching.<br>When you are ready play again, someone should press the </i><b>PLAY</b><i> button.",,,,,
 ,,,,,,,
-outcome,-1,Students didn't see themselves in the assignment. ,Love,,,,
-outcome,0,Students weren't challenged by this lesson. ,Challenge,,,,
-outcome,1,Students felt challenged by this assignment!,Challenge,,,,
-outcome,2,Students felt joy in this learning! ,Joy,,,,
-outcome,-1,Students didn't feel like they had choices in this assignment. ,Freedom,,,,
-outcome,-1,Students didn't feel connected to each other in this assignment. ,Love,,,,
-outcome,-1,Students didn't feel challenged by this assignment. ,Challenge,,,,
-outcome,-1,Students didn't feel like this assignment was relevant to them. ,Love,,,,
-outcome,-1,Students didn't feel free to take risks in this assignment. ,Freedom,,,,
-outomce,-1,Students didn't feel joy in this assignment. ,Joy,,,,
-outcome,-1,Students didn't feel love in this assignment. ,Love,,,,
-outcome,0,Students need additional skills to access the learning independently,Freedom,,,,
-outcome,0,Students are hanging on to misconceptions,Challenge,,,,
-outcome,0,Students don't see connections between the lesson and their prior knowledge,Love,,,,
-outcome,0,Students don't have a way to apply the skill they're learning to a relevant situation,Love,,,,
-outcome,0,Students don't see why the lesson is important and so don't use it again,Love,,,,
-outcome,0,Students need more help resources to access the material,Freedom,,,,
-outcome,0,Students didn't get a chance to practice the new skill with peers,Love,,,,
-outcome,0,Students didn't get to reflect on and document their learning for the day,Freedom,,,,
-outcome,1,Students knew who was speaking first,Freedom,,,,
-outcome,1,Students knew why they were in a group,Freedom,,,,
-outcome,1,Students understood the directions,Freedom,,,,
-outcome,1,Students got to make choices,Freedom,,,,
-outcome,1,Students could access help resources,Freedom,,,,
-outcome,2,Students saw themselves in the lesson,Love,,,,
-outcome,2,Students knew how to use their feedback,Freedom,,,,
-outcome,2,The lesson built on students' knowledge,Love,,,,
-outcome,2,The lesson was relevant to students' goals,Love,,,,
-outcome,2,The lesson was exciting and joyful for students. ,Joy,,,,
-outcome,2,The lesson pushed students to try something they weren't sure they could do. ,Challenge,,,,
-outcome,2,The lesson ,,,,,
+outcome,0,Students are hanging on to misconceptions.,,,,,
+outcome,0,Students felt dependent on the teacher for help.,,,,,
+outcome,0,Students left the lesson confused.,,,,,
+outcome,1,Students felt challenged by this assignment.,,,,,
+outcome,1,Students pursued their learning with autnomy.,,,,,
+outcome,1,Students could access help resources.,,,,,
+outcome,1,Students knew how to use their feedback.,,,,,
+outcome,1,Students built on previous knowledge.,,,,,
+outcome,2,Students felt the lesson was relevant.,,,,,
+outcome,2,Students felt excitment and joy when learning.,,,,,
+outcome,2,Students tried out new ideas. ,,,,,
+outcome,2,Students tried out new ideas. ,,,,,
 ,,,,,,,
-if,1,Two students were absent yesterday,,,,,
-if,1,Some students need background knowledge,,,,,
-if,1,Some students did not hear the directions,,,,,
-if,1,Students are not furthering partner discussions they are repeating or just agreeing,,,,,
-if,1,One student is not writing,,,,,
-if,1,Two students were absent yesterday,,,,,
-if,1,Students are bored because they know this information,,,,,
-if,1,This information contrasts with one student's life experiences,,,,,
-if,1,Students won't stop raising their hands. They are clearly confused.,,,,,
-if,2,Student questions are off topic and taking time,,,,,
-if,2,Many students are involved in related activities outside of school,,,,,
-if,2,Students need more practice with vocabulary,,,,,
-if,2,Students misunderstand the text,,,,,
-if,2,Some students are making connection to a previous unit,,,,,
-if,2,Students know a lot about this topic and are excited,,,,,
-if,2,Students are bored because they know this information,,,,,
-if,2,This information contrasts with one student's life experiences,,,,,
-if,2,Students won't stop raising their hands. They are clearly confused.,,,,,
+,,,,,,,
+if,1,Two students were absent yesterday.,,,,,
+if,1,Some students need background knowledge.,,,,,
+if,1,Some students did not hear the directions.,,,,,
+if,1,Most students are not furthering partner discussions; they are repeating or just agreeing.,,,,,
+if,1,Everyone except one student is writing.,,,,,
+if,1,This information contrasts with one student's life experiences.,,,,,
+if,1,Many students won't stop raising their hands. They are clearly confused.,,,,,
+if,2,Some student questions are off topic.,,,,,
+if,2,Many students are involved in related activities outside of school.,,,,,
+if,2,Some students need more practice with vocabulary.,,,,,
+if,2,Some students misunderstand the text.,,,,,
+if,2,Some students are making connections to a previous unit.,,,,,
+if,2,Many students know a lot about this topic and are excited,,,,,
+if,2,Some students need to develop foundational skills.,,,,,
+if,2,Some students are looking for a new challenge.,,,,,
+if,2,"All students are engaged, however, student curiousity is taking the lesson in different directions.",,,,,
+IF,2,Some students are distracting focus from their peers.,,,,,

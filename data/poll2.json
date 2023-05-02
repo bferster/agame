@@ -15,24 +15,20 @@
 	"optionType":"slider",
 	"options":["No:Yes"]},
 
-	{"title":"<br>JOY</br></br>Would this teaching lead to joyful learning?",
+	{"title":"<br>USEFUL</br></br>How useful was the discussions with your team?",
 	"text":"<b>Click on the slider below</b>",
 	"optionType":"slider",
-	"options":["No:Yes"]},
-
+	"options":["Not useful:Very useful"]},
 
 	{"title":"<br>What did you learn from playing the game?", 
 	"text":"Check all options that apply",
 	"optionType":"checkbox",
-	"options":["How other teachers think about challenges",
-				"A teaching routine",
+	"options":["A teaching routine",
 				"Something about student learning",
-				"Something about how my teacher colleague think about teaching"
+				"Something about how teachers think about teaching"
 			   ]},
 
 	 {"title":"<br>PLAY AGAIN?",
-			   "text":"Effective teaching responses are <b>Practical, Impact Student Learning,<br></b></b>and lead to <b>Joyful</b> Learning.<br><br>Click on <b>Play</b> to begin another game.<br>You will get a new If Challenge and different Then routine cards.<br>Try to move all students forward in their learning!",
+			   "text":"<br>Click on <b>Play</b> to begin another game.<br>You will get a new IF challenge and different THEN routine cards.<br><br>Try to move all students forward in their learning!",
 			   "options":[]}
 	]}
-
-

@@ -5,27 +5,23 @@
 	"options":["All students","Some students","One student"]},
 
 	{"title":"<br>CLARITY</br></br>Do students understand what they&apos;re learning?",
-	"text":"<b>Click on the slider below</b>",
-	"optionType":"slider",
-	"options":["No teaching change:Lots of teaching change"]},
+	"optionType":"radio",
+	"options":["Yes, keep teaching the same","No, change teaching"]},
 
 	{"title":"<br>ACCESS</br></br>Can students begin on their own?",
-	"text":"<b>Click on the slider below</b>",
-	"optionType":"slider",
-	"options":["No teaching change:Lots of teaching change"]},
+	"optionType":"radio",
+	"options":["Yes, keep teaching the same","No, change teaching"]},
 
-	{"title":"<br>RIGOR</br></br>How is learning challenging (e.g. focus time, complexity, energy needed)?",
-	"text":"<b>Click on the slider below</b>",
-	"optionType":"slider",
-	"options":["No teaching change:Lots of teaching change"]},
+	{"title":"<br>RIGOR</br></br>Is learning challenging (i.e. consider: focus time, complexity, energy needed)?",
+	"optionType":"radio",
+	"options":["Yes, keep teaching the same","No, change teaching"]},
 
-	{"title":"<br>RELEVANCE</br></br>How much should teaching change to ensure learning for all students is meaningful and interesting?",
-	"text":"<b>Click on the slider below</b>",
-	"optionType":"slider",
-	"options":["No teaching change:Lots of teaching change"]},
+	{"title":"<br>RELEVANCE</br></br>Is learning meaningful and interesting?",
+	"optionType":"radio",
+	"options":["Yes, keep teaching the same","No, change teaching"]},
 
 	{"title":"<br>Design a Teaching Response",
-	"text":"Use your analysis of how much teaching should change to increase<br>clarity, access, rigor, and relevance for all, some, and/or individual students <br>to move students forward in their learning.<br><br><b>If you are the dealer and eveyone is ready,<br>Click on the DEAL CARDS button to select up to three routine cards<br>that will make the teaching changes you identified.</b>",
+	"text":"Use your analysis of how much teaching should change to select teaching routine cards<br>.<br><br><b>If you are the dealer the DEAL CARDS button when everyone's ready.</b>",
 	"options":[]}
 	]}
 

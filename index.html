@@ -74,10 +74,10 @@
 			<img src="img/ACTlogo.png" style="position:absolute;left:calc(3.25% + 12px);bottom:12px;width:6vw">
 		</div>
 			<div id="splashDiv" class="lz-splash">
-			<img src="img/ACTlogo.png" style='width:200px' alt="logo">
-			<br><p style="color:#000;font-size:14px"><em>A game to practice teaching techniques</em></p>
-			<a style="color:0x00099" href="assets/directions.pdf" target="_blank">See directions</a>
-
+			<img src="img/ACTlogo.png" style='width:150px' alt="logo">
+			<br><p style="color:#000;font-size:14px"><em>A game to practice teaching techniques</em></p><br>
+			<a style="color:0x00099" href="assets/directions.pdf" target="_blank">See directions</a> and watch a
+			<a style="color:0x00099" href="https://youtu.be/5PKem6wWXGo" target="_blank">3 minute video</a><br>
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px"><b>Please type in your first name:</b></div>
 			<input class='lz-is'  style="width:100px" type='text' id='lz-loginName'>
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px""><b>and your email:</b></div>
@@ -151,7 +151,7 @@
 			<br><br>
 		<div style="display:flex;justify-content:center;color:#000">
 			<div style="width:25%"><p>INTRODUCTORY VIDEO</p>
-				<img style="width:${w}px;height:${w*.5625}px" src="temp.jpg"> 
+				<iframe width="85%" height="40%" src="https://www.youtube.com/embed/5PKem6wWXGo" title="YouTube video player" web-share" allowfullscreen></iframe>
 			</div>
 			<div style="width:25%"><p>CHOOSE A TEAM TO PLAY WITH</b>
 				<div id="lz-teamList" style="width:calc(100% -24px);height:50vh;overflow:auto;border-radius:8px;padding:12px;
@@ -299,7 +299,12 @@ class App  {
 				this.ws.send("PICKS|"+this.gs.gameId+"|"+this.id+"|"+JSON.stringify(this.myPicks));		// Send picked cards to server
 				}
 			this.MoveVideoChat();																		// Full video video
-			this.HourGlassTimer(this.time*3, ()=>{ Sound("ding"); $("#stopExplainBut").trigger("click");  });	// Force quit after time is up
+			this.HourGlassTimer(this.time*3, ()=>{														// Timed out
+				if (this.gs.players[phase-3].name == this.id) {											// If it's me
+					Sound("ding");																		// Ding
+					this.ws.send("EXPLAIN|"+app.gs.gameId+"|"+this.id);									// Force change of explainer
+					}
+				});	
 			Sound("ding"); 																				// Ding
 			this.Draw();																				// Redraw
 			this.ShowCards(this.gs.players[phase-3].picks,this.gs.players[phase-3].name);				// Show picked cards
@@ -337,6 +342,8 @@ class App  {
 		let w=h*.75+12;																					// Width
 		for (i=0;i<6;++i) {																				// For each card
 			num=Math.floor(Math.random()*this.thens.length);											// Random index of thens
+// TBD: REMOVE DUPES
+
 			str+=this.DrawCard(num,i,x,y,1,h);															// Add it
 			x+=w;																						// Shift
 			if (i == 2) x=0,y+=h+12;																	// New line
@@ -372,7 +379,7 @@ class App  {
 			str+=this.DrawCard(cards[i],0,x,y,0,h);														// Add card
 			y+=h+12;
 			}
-		let s='EXPLAIN|'+app.gs.gameId+'|'+app.id;														// Cmd to change phase on server
+		let s='EXPLAIN|'+app.gs.gameId+'|'+who;															// Cmd to change phase on server
 		if (who == this.id) 																			// It's me
 			str+=`<div class="lz-tip">${this.strings["explainMyHand"]}</div>
 				<div id="stopExplainBut" class="lz-bs" style="float:right;margin:-60px 8px 0 0;" 

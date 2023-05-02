@@ -263,7 +263,7 @@ try{
 			let cards=gs.players[gs.winner].picks;												// Get winning cards
 			gs.outcome=getOutcome();															// Get progress amount
 			for (i=0;i<cards.length;++i) {														// For each one											
-				o=thens[cards[i]];																// Point at cad
+				o=thens[cards[i]];																// Point at card
 				gs.curTime+=o.time*60;															// Remove time (in minutes)
 				for (j=0;j<o.students.length;++j) {												// For each student, progress accoring to rule
 					k=o.students[j]-1;															// Student index (0-4)
