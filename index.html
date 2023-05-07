@@ -336,15 +336,14 @@ class App  {
 
 	DealCards()																						// DEAL CARDS
 	{
-		let i,num,str="";
+		let i,num,str="",v=[];
 		let x=0,y=0;																					// TLC
 		let h=$("#lz-infieldDiv").height()/2.5;															// Card height
 		let w=h*.75+12;																					// Width
+		for (i=0;i<12;++i) v.push(Math.floor(Math.random()*this.thens.length));							// Add random cards
+		v=[... new Set(v)];																				// Make unique	
 		for (i=0;i<6;++i) {																				// For each card
-			num=Math.floor(Math.random()*this.thens.length);											// Random index of thens
-// TBD: REMOVE DUPES
-
-			str+=this.DrawCard(num,i,x,y,1,h);															// Add it
+			str+=this.DrawCard(v[i],i,x,y,1,h);															// Add it
 			x+=w;																						// Shift
 			if (i == 2) x=0,y+=h+12;																	// New line
 			}
@@ -814,7 +813,6 @@ class App  {
 			<div style="margin-top:-43px">
 				<div id="lzstab-0" class="lz-tab">This game</div>
 				<div id="lzstab-1" class="lz-tab">My games</div>
-				<div id="lzstab-2" class="lz-tab">All games</div>
 				<div id="lzstab-3" class="lz-tab">See cards</div>
 				<div style="float:right">${app.id}</div>
 				</div>
@@ -830,9 +828,10 @@ class App  {
 		fetch(`//${window.location.host}:8081?q=loadall&a=b&type=AG`)									// Fetch history
 			.then(res => res.json()).then(data => {														// Process
 				let i;
-				for (i=0;i<data.length;++i)	{															// For each round
+				for (i=0;i<data.length;++i)	{															// For each game
 					gd[i]=JSON.parse(data[i].data); 													// Extract game data as an obj
 					gd[i].playerId=data[i].email;														// Get player name+ip
+					gd[i].date=data[i].date.substring(0,10);											// Extract date
 					}
 				drawPage(0);																			// Draw this game stats
 			})										
@@ -851,10 +850,15 @@ class App  {
 				for (i=0;i<rounds.length;++i) str+=drawRound(i);										// Draw each round
 				}
 			else if (num == 1) {																		// My games
-				str="My game data will be displayed";
-				}
-			else if (num == 2) {																		// All games
-				str="All games data will be displayed";
+				let games=[];
+				for (i=0;i<gd.length;++i){																// For each round
+					if (!games["g"+gd[i].gameId])  games["g"+gd[i].gameId]=[];							// Alloc game
+					if (gd[i].playerId ==  app.id) games["g"+gd[i].gameId].push(gd[i]);					// If this is my game, add to list 
+					}
+				for (i in games) {																		// For each game
+					if (!games[i].length)	continue;													// Skip empty games
+					str+=drawGame(games[i]);															// Draw game
+					}
 				}
 			else if (num == 3) 	str=ExploreCards(true);													// Show cards
 			$("#lz-statsDiv").html(str.replace(/\t|\n|\r/g,""));										// Draw
@@ -876,20 +880,28 @@ class App  {
 			}
 
 		function drawGame(o) {																			// DRAW GAME
-			if (o.length < 1)	return "";																	// Nothing to show
-			let i,h=80,w=h*.75+12,str="";
-			str+=`<div style="display:flex"><div class="lz-scoreLabel">Student<br>progress</div>`;
+			if (o.length < 1)	return "";																// Nothing to show
+			let i,j,k,h=80,w=h*.75+12,str="",v=[];
+			str+=`<b> ${o[0].date}</b><div style="display:flex"><div class="lz-scoreLabel">Student<br>progress</div>`;
 			for (i=o.length-1;i>=0;--i) {																// For each round
 				str+=`<div style="position:relative;width:${w}px;height:${h}px">`;						// Container div			
 				str+=drawProgress(0,0,h,o[i].stuPos);													// Draw progress in time order
 				str+="</div>";																			// Close container
+				for (j=0;j<o[i].players.length;++j) {													// For each player
+					for (k=0;k<o[i].players[j].picks.length;++k) {										// For each card picked
+						if (!v["c"+o[i].players[j].picks[k]]) v["c"+o[i].players[j].picks[k]]=0;		// Alloc card slot
+						v["c"+o[i].players[j].picks[k]]++;												// Add to count
+						}
+					}
+				v=v.sort((a,b) => a-b);																	// Sort by count
 				}
-			str+=`</div><div style="display:flex">
-				<div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:16px">Most played<br>cards</div>
-				<div style="position:relative;width:${w}px;height:${h+12}px">${app.DrawCard(o[0].players[0].picks[0],0,0,0,0,h)}</div>
-`;//				<div style="position:relative;width:${w}px;height:${h+12}px">${app.DrawCard(o[0].players[0].picks[1],0,0,0,0,h)}</div>`;
-
-				str+="</div><hr>";																			// End section
+			str+=`</div><div style="display:flex"><div style="font-size:12px;padding-top:24px;text-align:right;width:100px;padding-right:16px">Most played<br>cards</div>`;
+				i=0;																					// No cards shown yet
+				for (j in v) {																			// For each picked card in freq order
+					str+=`<div style="position:relative;width:${w}px;height:${h+12}px">${app.DrawCard(j.substring(1),0,0,0,0,h)}</div>`;
+					if (++i > 2) break;																	// Quit after first 3
+					}
+			str+="</div><hr>";																			// End section
 			return str;		
 			}
 
