@@ -176,7 +176,8 @@
 				<div style="margin:24px;height:60vh;overflow:auto;border-radius:8px;border:1px solid #999">
 				<br><span style="margin-left:16px">HOVER OVER ANY CARD TO ENLARGE IT</span><br>
 				<div style="display:flex;flex-wrap:wrap; m">`
-				for (i=0;i<app.thens.length;++i) {
+				for (i=0;i<app.thens.length;++i) {													// For each card
+						if (!app.ThenMatchesActivity(app.thens[i])) continue;							// If doesn't match grade or subject, skip it
 					str+=`<div style="width:75px;height:100px;margin:16px 0 0 16px">`;
 					str+=app.DrawCard(i,i,0,0,0,100,true)+"</div>";	
 					}
@@ -216,7 +217,14 @@ class App  {
 		this.curLeader=0;																				// Current leader
 		this.InitSocketServer();																		// Start socket server
 		this.myPicks=[];																				// Holds picked cards
+		this.curSub="all";																				// Current subject
+		this.curGrade="0";																				// Current grade
 	}
+
+	ThenMatchesActivity(o) 																			// DOES CARD MATCH GRADE AND SUBJECT?
+	{
+		return ((o.subject == app.curSub) && (o.grade == app.curGrade))									// True if they match grade and subject
+	}	
 
 	LoadConfig(file="")																				// LOAD CONFIG FILE
 	{	
@@ -340,8 +348,9 @@ class App  {
 		let x=0,y=0;																					// TLC
 		let h=$("#lz-infieldDiv").height()/2.5;															// Card height
 		let w=h*.75+12;																					// Width
-		for (i=0;i<12;++i) v.push(Math.floor(Math.random()*this.thens.length));							// Add random cards
+		for (i=0;i<app.thens.length;++i) if (app.ThenMatchesActivity(app.thens[i])) v.push(i);			// If matches grade and subject, use it
 		v=[... new Set(v)];																				// Make unique	
+		shuffleArray(v);																				// Shuffle cards
 		for (i=0;i<6;++i) {																				// For each card
 			str+=this.DrawCard(v[i],i,x,y,1,h);															// Add it
 			x+=w;																						// Shift
@@ -367,7 +376,19 @@ class App  {
 			if (v.length > 3) 	$("#lz-cardCheck-"+v[0].card).prop("src", "img/check.png"); 			// Uncheck first one
 			Sound("click");																				// Click
 			});	
-	}
+
+		function shuffleArray(array) {																	// SHUFFLE ARRAY
+  			for (i=array.length-1;i>0;i--) {															// Walk backwards
+    			const j=Math.floor(Math.random()*(i+1));												// Get random index
+   				const temp=array[i];																	// Copy element
+    			array[i]=array[j];																		// Swap 1
+    			array[j]=temp;																			// Swap 2
+  				}
+			}
+
+
+
+		}
 
 	ShowCards(cards, who="", tip)																	// SHOW PICKED CARDS
 	{
@@ -591,8 +612,8 @@ class App  {
 		let pad=hgt/30;																					// Responsive padding
 		let o=this.thens[num];																			// Point at card
 		if (!o)	return;																					// Nothing to show
-		cols["Structure"]="cyan"; 	cols["Help resource"]="magenta";	
-		cols["Options"]="#d4dd46"; 	cols["Your Choice"]="#ccc";
+		cols["Routine"]="cyan"; 	cols["Help resource"]="magenta";	
+		cols["Options"]="#d4dd46"; 	cols["Choice"]="#ccc";
 		let title=o.title.split(" ").join("<br>")
 		let oo=o.time;																					// Extract time field
 		let str=`<div id="${"lz-cardDiv-"+id}" class="lz-card lz-hover" style="left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px`;
