@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+.<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8">
@@ -77,7 +77,7 @@
 			<img src="img/ACTlogo.png" style='width:150px' alt="logo">
 			<br><p style="color:#000;font-size:14px"><em>A game to practice teaching techniques</em></p><br>
 			<a style="color:0x00099" href="assets/directions.pdf" target="_blank">See directions</a> and watch a
-			<a style="color:0x00099" href="https://youtu.be/5PKem6wWXGo" target="_blank">3 minute video</a><br>
+			<a style="color:0x00099" href="https://youtu.be/0I_ejsk5z5o" target="_blank">3 minute video</a><br>
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px"><b>Please type in your first name:</b></div>
 			<input class='lz-is'  style="width:100px" type='text' id='lz-loginName'>
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px""><b>and your email:</b></div>
@@ -179,10 +179,11 @@
 				for (i=0;i<app.thens.length;++i) {													// For each card
 						if (!app.ThenMatchesActivity(app.thens[i])) continue;							// If doesn't match grade or subject, skip it
 					str+=`<div style="width:75px;height:100px;margin:16px 0 0 16px">`;
-					str+=app.DrawCard(i,i,0,0,0,100,true)+"</div>";	
+					str+=app.DrawCard(i,i,0,0,0,100,true)+"</div>";
 					}
-				str+=`</div></div><div class="lz-bs" style="margin-left:24px" onclick="$('#lz-infieldCardsDiv').remove()">Done</div>
-		</div>`;
+				str+=`</div><br><a style=";margin-left:16px" href="https://agileteacher.org/routines" target="_blank">Learn about the routines</a>
+					</div><div class="lz-bs" style="margin-left:24px" onclick="$('#lz-infieldCardsDiv').remove()">Done</div>
+					</div>`;
 		str=str.replace(/\t|\n|\r/g,"");															// Remove tabs
 		if (markup)	return str;																		// Return markup
 		$("body").append(str);																		// Add it
@@ -237,6 +238,7 @@ class App  {
 				for (i=0;i<d.length;++i) {																// For each line
 					if (d[i].type == "if")				this.ifs.push(d[i].title);						// Add if
 					else if (d[i].type == "then") {														// Add then	
+						trace(d[i])
 						d[i].time=d[i].time.replace(/'/g,'"');											// Apos to quotes
 						d[i].time=JSON.parse(d[i].time);												// Objectify					
 						this.thens.push(d[i]);															// Add																
