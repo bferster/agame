@@ -288,6 +288,7 @@ class App  {
 			this.Draw();																				// Redraw
 			}
 		else if (phase == 2) {																			// DEAL 
+			$("#lz-assess").remove();																	// Remove assess if open
 			this.MoveVideoChat(12.5,"12px",$("#lz-statsBut").offset().top+40+"px");						// Minimize video
 			this.DealCards();																			// Deal cards
 			$("#lz-phase-1").css("background-color","#ccc" ); 											// Set IF button off
