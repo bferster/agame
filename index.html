@@ -588,8 +588,11 @@ class App  {
 		$("#lz-statsBut").css("background-color",(this.inPlay || !this.round)  ? "#ccc" : "#27ae60" ); 	// Set stats button color
 
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if (this.start == 1)  this.start=0; 														// Out of start sequence
-			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length))	this.ws.send("START|"+app.gs.gameId+"|"+app.id);	// New game	
+			if (this.start == 1)  this.start=0; 													// Out of start sequence
+			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length)) {			// Start new game
+				ConfirmBox("WAIT!","This will start the game, and no one else will be able to join you.<br><br>Are you sure you want to start?<br>Is everyone else ready?",
+					()=>{ this.ws.send("START|"+app.gs.gameId+"|"+app.id); });							// Send start	
+				}
 			else if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);				// Deal
 			});										
 		$("#lz-phase-2").on("click", ()=>{ 																// ON TOP CLICK
