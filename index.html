@@ -77,7 +77,7 @@
 			<img src="img/ACTlogo.png" style='width:150px' alt="logo">
 			<br><p style="color:#000;font-size:14px"><em>A game to practice teaching techniques</em></p><br>
 			<a style="color:0x00099" href="assets/directions.pdf" target="_blank">See directions</a> and watch a
-			<a style="color:0x00099" href="https://youtu.be/0I_ejsk5z5o" target="_blank">3 minute video</a><br>
+			<a style="color:0x00099" href="https://youtu.be/-4wqzix9cnU" target="_blank">3 minute video</a><br>
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px"><b>Please type in your first name:</b></div>
 			<input class='lz-is'  style="width:100px" type='text' id='lz-loginName'>
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px""><b>and your email:</b></div>
@@ -151,7 +151,7 @@
 			<br><br>
 		<div style="display:flex;justify-content:center;color:#000">
 			<div style="width:25%"><p>INTRODUCTORY VIDEO</p>
-				<iframe width="85%" height="40%" src="https://www.youtube.com/embed/5PKem6wWXGo" title="YouTube video player" web-share" allowfullscreen></iframe>
+				<iframe width="85%" height="40%" src="https://www.youtube.com/embed/-4wqzix9cnU?si=Cb6og0OFOm22RtYh" web-share" allowfullscreen></iframe>
 			</div>
 			<div style="width:25%"><p>CHOOSE A TEAM TO PLAY WITH</b>
 				<div id="lz-teamList" style="width:calc(100% -24px);height:50vh;overflow:auto;border-radius:8px;padding:12px;
@@ -588,10 +588,13 @@ class App  {
 		$("#lz-statsBut").css("background-color",(this.inPlay || !this.round)  ? "#ccc" : "#27ae60" ); 	// Set stats button color
 
 		$("#lz-topbut").on("click", ()=>{ 																// ON TOP CLICK
-			if (this.start == 1)  this.start=0; 													// Out of start sequence
+			if (this.start == 1)  this.start=0; 														// Out of start sequence
 			if ((this.gs.curPhase == 0) || (this.gs.curPhase == 4+this.gs.players.length)) {			// Start new game
-				ConfirmBox("WAIT!","This will start the game, and no one else will be able to join you.<br><br>Are you sure you want to start?<br>Is everyone else ready?",
-					()=>{ this.ws.send("START|"+app.gs.gameId+"|"+app.id); });							// Send start	
+				if (!this.round) {																		// If first round
+					ConfirmBox("WAIT!","This will start the game, and no one else will be able to join you.<br><br>Are you sure you want to start?<br>Is everyone else ready?",
+						()=>{ this.ws.send("START|"+app.gs.gameId+"|"+app.id); });						// Send start if yes
+					}
+				else this.ws.send("START|"+app.gs.gameId+"|"+app.id);									// Send start if already played one round
 				}
 			else if (this.gs.curPhase == 1) this.ws.send("DEAL|"+app.gs.gameId+"|"+app.id);				// Deal
 			});										
