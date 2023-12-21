@@ -78,12 +78,13 @@
 			<br><p style="color:#000;font-size:14px"><em>A game to practice teaching techniques</em></p><br>
 			<a style="color:0x00099" href="assets/directions.pdf" target="_blank">See directions</a> and watch a
 			<a style="color:0x00099" href="https://youtu.be/-4wqzix9cnU" target="_blank">3 minute video</a><br>
-			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px"><b>Please type in your first name:</b></div>
+			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px"><b>Please type in your first and last name:</b></div>
 			<input class='lz-is'  style="width:100px" type='text' id='lz-loginName'>
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px""><b>and your email:</b></div>
 			<input class='lz-is'  type='text' id='lz-loginId'>
 			<br><br><br><div class="lz-bs" id='lz-login'>Enter</div> 
-			<br><br><br><br><div style="font-size:11px">&copy; 2023 StageTools </div>
+			<br><br><div style="margin-left:25%;width:50%;color:#000">The name that you log in with will appear on a certificate (e.g. first name last nme) verifying your professional development participation in the Agility games</div>
+			<br><br><div style="font-size:11px">&copy; 2024 StageTools </div>
 		</div>
 	
 <script>
@@ -220,7 +221,7 @@ class App  {
 		this.myPicks=[];																				// Holds picked cards
 		this.curSub="all";																				// Current subject
 		this.curGrade="0";																				// Current grade
-		this.badgeLimit=10*60;																			// Badge criterion
+		this.badgeLimit=20*60;																			// Badge criterion
 	}
 
 	ThenMatchesActivity(o) 																			// DOES CARD MATCH GRADE AND SUBJECT?
@@ -566,7 +567,7 @@ class App  {
 
 	DrawFlow()																						// DRAW PHASE FLOW CHART
 	{
-		let i=1,j;
+		let i=1,j,s;
 		let fh=Math.max($(window).width()/120,11);
 		let y=$(window).height()-59;
 		let str=`<div class="lz-bs" id="lz-topbut" style="font-size:${fh}px;margin-top:30px;
@@ -575,9 +576,12 @@ class App  {
 		str+=addItem(i++,"DISCUSS IF...")		 														// Add IF phase
 		str+=addItem(i++,"DEAL CARDS")																	// DEAL
 		str+=addItem(i++,"PICK CARDS")																	// PICK
-			if (this.gs.players)
-		for (j=0;j<this.gs.players.length;++j)															// For each player	
-			str+=addItem(i++,this.gs.players[j].name.split("@")[0]+" EXPLAINS");						// Add player's name
+		if (this.gs.players)																			// If players
+			for (j=0;j<this.gs.players.length;++j) {													// For each player	
+				s=this.gs.players[j].name.split("@")[0];												// Extract naem
+				if (s)	s=s.split(" ")[0];																// Just first name
+				str+=addItem(i++,s+" EXPLAINS");														// Add player's name
+				}
 		str+=addItem(i++,"DECIDE");																		// DECIDE
 		str+=addItem(i++,"REFLECT")	;																	// DISCUSS/REFLECT
 		str+=`<p><div class="lz-bs" id="lz-statsBut" style="font-size:${fh}px">SCORE BOARD</div></p>`;	// STATS
@@ -895,7 +899,7 @@ class App  {
 
 			$("[id^=lz-badge-]").on("click", function(e) {												// ON BADGE CLICK
 				let s=$(this).attr("data-value");														// Get game data
-				let d=`{ email:${app.id}, games: ${s} }`;												// Payload
+				let d=`{ email:"${app.id}", games: ${s} }`;												// Payload
 				window.open("//alled.org/certificate/generate.php,?data="+d,"_blank");					// Get badge
 				});
 			}
@@ -941,7 +945,7 @@ class App  {
 					}
 			str+="</div><b>You played "+Math.round(trt/60)+" minutes in this game</b>";					// Show time
 			if (trt >= app.badgeLimit) 	
-				str+=` <div style="float:right;font-size:13px" class="lz-bs" data-value=${JSON.stringify(o)} id="lz-badge-${i}">Click here to get your badge!</div>`;	// Add button to collect badge						
+				str+=` <div style="float:right;font-size:13px" class="lz-bs" data-value=${JSON.stringify(o)} id="lz-badge-${i}">Download your certificate!</div>`;	// Add button to collect badge						
 			str+="<p><hr></p>";																			// End section
 			return str;		
 			}
