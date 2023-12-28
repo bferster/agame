@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>certificate</title>
+      <link rel="icon" type="image/x-icon" href="favicon.png">
+
+  <style>
+  *{
+    font-family: serif;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+  #container{
+    padding-left: 1in;
+    padding-right: 1in;
+    width: calc(8.5*96)px;
+  }
+
+  #container{
+    height: 1000px;
+    position: relative;
+  }
+  #container > p, table{
+    width: 100%;
+  }
+  #theme-banner{
+    width: 100%;
+    height: 50px;
+    background-color: #a51c30;
+  }
+  #objectives-standards-table, #objectives-standards-table > tr, td, th{
+    border: 1px solid black;
+    padding: 0em;
+  }
+
+  p{
+    margin: 1em 0px 1em 0px;
+  }
+  hr{
+    margin: 0px 0px 0px 0px;
+  }
+
+  a{
+    text-decoration: none;
+  }
+  
+  table, tr, td, th{
+    border-collapse: collapse;
+    border: none;
+  }
+  
+  #objectives-standards-table > tr, td, th{
+    width: 50%;
+  }
+  
+  /* pictures */
+  #signature{
+    height: 50px;
+  }
+  </style>
+</head>
+<body>
+  <div id="container">
+<p style="text-align: center; margin-top: 2em;">
+<img style="margin: 0px 0px 0px 0px; padding; 0px 0px 0px 0px;" 
+id="badge" height="110" src="top-badge.png" /><br>
+</p>
+<p>To Whom it May Concern:</p>
+  <p>This letter acknowledges <b><span class="blank-name">$name</span></b> has completed a <span class="blank-time">$time</span> minute professional learning experience offered through 
+  <a href="https://agileteacher.org/agility-game">Agility</a> [0], 
+  a collaborative game that builds the decision-making skills needed to effectively adjust teaching in response to student learning. </p>
+  <p>Through Agility, teacher teams are given a realistic classroom challenge. Teachers analyze the dilemma and then use evidence-based learning routines to advance the learning of all students. The learning routines are rooted in self-regulated learning and motivational sciences. This unique certificate verifies participation and lists the routines used in the games played.</p>
+  <p>Using the Danielson Rubric, Agility aligns to standard 3c: <a href="https://www.nysed.gov/sites/default/files/danielson-teacher-rubric.pdf#page=75">Engaging Students in Learning</a> [1] and standard 4e: <a href="https://www.nysed.gov/sites/default/files/danielson-teacher-rubric.pdf#page=109">Growing and Developing Professionally</a> [2]. Agility can be aligned to other state and local standards.</p><hr>
+  <p><b><span class="blank-name">$name</span></b> demonstrated use of the following teaching routines:</p>
+  <span class="blank-cards">$cards</span>
+    <hr>
+  <p>More information about all of Agility's learning routines can be found at the <a href="https://agileteacher.org/routines/" > Agility Routines</a> [3] website. For additional information about 
+    standards alignment and learning activities, visit www.agileteacher.org.
+    Please contact the professional learning team at 
+    <a href="rb4016@hunter.cuny.edu">rb4016@hunter.cuny.edu</a>
+    with any questions or if you require further information. 
+  </p>
+  <table style="width: 100%;">
+    <tr>
+      <td>
+  <p>Sincerely,<br><br>
+  <img height="50px" id="signature" src="signature.jpg">
+  <br><br>
+  Rhonda Bondie, Ph.D.<br>
+  Hunter College, City University of New York
+</p>
+</td>
+<td>
+</tr>
+</table>
+  <p>Certificate ID <span class="blank-hash">$hash</span></p>
+  <p style="line-height: 1.5">
+    [0]: https://agileteacher.org/agility-game<br>
+    [1]: https://www.nysed.gov/sites/default/files/danielson-teacher-rubric.pdf#page=75 <br>
+    [2]: https://www.nysed.gov/sites/default/files/danielson-teacher-rubric.pdf#page=109 <br>
+    [3]: https://agileteacher.org/routines/
+  </p>
+  </div>
+  <script>
+    const query = window.location.search;
+const params = new URLSearchParams(query);
+const dataAsString = params.get('data');
+
+// for some reason, in order for JSON.parse() to work with quoted strings,
+// the quotes need to be double escaped. odd. below is invalid JSON but 
+// returns valid JSON when parsed with JSON.parse()
+
+// it's easier to have the card info like this than to configure something
+// to serve it
+
+const jsonCardString = `{"0": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "Sentence Frames", "desc": "Students are given a partial sentence that can be used in many situations and that teaches something about grammar or academic language construction.", "time": "{'time':2,'students':[3]}", "pic": "assets/float.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/resource-help-sentence-frames/"}, "1": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "Graphic Organizer", "desc": "Students are given a visual organizer that illustrates the type of thinking required for a task (e.g. Venn Diagram for comparison or story map for sequencing)", "time": "{'time':2,'students':[5]}", "pic": "assets/float.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/graphic-organizer/"}, "2": {"type": "then", "category": "Help resource", "title": "Whole Class", "subtitle": "Must Haves & Amazing Criteria", "desc": "Students use a list of required and optional beyond criteria to annotate their own work for specific qualities.", "time": "{'time':3,'students':[1]}", "pic": "assets/book.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/criteria/"}, "3": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "Annotate Image", "desc": "Students circle evidence related to a specific concept or topic in an image or data table.", "time": "{'time':1,'students':[1,2]}", "pic": "assets/float.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/resource-help-annotated-image/"}, "4": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "Fact Card", "desc": "Students are given facts to increase their knowledge on the topic.", "time": "{'time':3,'students':[1]}", "pic": "assets/book.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/resource-help-fact-card/"}, "5": {"type": "then", "category": "Choice", "title": "Teacher-structured student choice", "subtitle": "Tic Tac Toe Choice Board", "desc": "Students choose 3 out of 9 tasks and the teacher requires the center box.", "time": "{'time':15,'students':[3,5]}", "pic": "assets/teacher.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/resource-choice-tic-tac-toe-choice-board/"}, "6": {"type": "then", "category": "Choice", "title": "Total teacher assignment", "subtitle": "Skill Practice Activities", "desc": "Teachers assign each student specific practice tasks to be completed alone or in assigned small groups.", "time": "{'time':5,'students':[4]}", "pic": "assets/teacher.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/skill-practice-activities/"}, "7": {"type": "then", "category": "Choice", "title": "Total student choice", "subtitle": "Reading, Research, or Problem Sets", "desc": "Students choose according to their interests.", "time": "{'time':4,'students':[3]}", "pic": "assets/teacher.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/resource-choice-reading-research-or-problem-sets/"}, "8": {"type": "then", "category": "Routine", "title": "Discusion routine", "subtitle": "Domino Discover", "desc": "Students, individually, or a reporter from each group, share a response without interruption. Reporters contribute a new idea or repeat a previous response. Everyone's response is heard before discussion.", "time": "{'time':5,'students':[1,4,5]}", "pic": "assets/table.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/domino-discover-2/"}, "9": {"type": "then", "category": "Routine", "title": "Discussion routine", "subtitle": "Dialogue Lines", "desc": "Students form two lines to allow for rotating partnerships. All students in one line speak first then the opposite line responds. There may be free discussion before one line moves one step to form new partnerships and the process repeats allowing for 2-3 different conversations in pairs.", "time": "{'time':7,'students':[1,4,2]}", "pic": "assets/table.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/dialogue-lines-2/"}, "10": {"type": "then", "category": "Routine", "title": "Discusion routine", "subtitle": "Rumors", "desc": "Students circulate around the room carrying their response written on a paper. They listen to a partner's idea, share their own idea, and swap papers. Then they find a new partner to: listen, share, & swap - looking for patterns in responses.", "time": "{'time':15,'students':[1]}", "pic": "assets/table.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/rumors-2/"}, "11": {"type": "then", "category": "Routine", "title": "Discusion routine", "subtitle": "Think - Talk - Open Exchange", "desc": "Students take turns sharing for an equal amount of time in groups of three. The teacher ensures silent thinking time before and after each speaker. After sharing, the group works to form a response.", "time": "{'time':7,'students':[4,5]}", "pic": "assets/table.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/routine-think-talk-open-exchange/"}, "12": {"type": "then", "category": "Routine", "title": "Individual thinking routine", "subtitle": "Check and Circle", "desc": "Students independently read or scan a text. They put a check next to at least three familiar words and circle one word that seems new.", "time": "{'time':7,'students':[1,2,4]}", "pic": "assets/book.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/routine-check-and-circle/"}, "13": {"type": "then", "category": "Routine", "title": "Individuals", "subtitle": "Take Five Deep Breaths", "desc": "Students breathe in through their noses for a count of five, hold the air for three, and then breathe out through their mouths for 7 counts. Each time, ask students to fill more of their body with breath.", "time": "{'time':2,'students':[2]}", "pic": "assets/book.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/routine-take-five-deep-breaths/"}, "14": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "Concept Map", "desc": "Students organize their thinking by drawing a visual representation of their ideas.", "time": "{'time':5,'students':[4]}", "pic": "assets/float.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/concept-map/"}, "15": {"type": "then", "category": "Help resource", "title": "Whole Class", "subtitle": "Routine Directions Posted", "desc": "Students refer to displayed directions to remember steps and/or qualities of responses.", "time": "{'time':1,'students':[1,4]}", "pic": "assets/float.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/directions-posted"}, "16": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "Dictionary", "desc": "Students are given a resource for finding word meanings, pronounciation, and usage.", "time": "{'time':1,'students':[1,2]}", "pic": "assets/float.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/dictionary/"}, "17": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "T-Chart Organizer", "desc": "Students organize their thinking by drawing a visual representation of their ideas.", "time": "{'time':5,'students':[4]}", "pic": "assets/float.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/t-chart/"}, "18": {"type": "then", "category": "Choice", "title": "Total teacher assignment", "subtitle": "Assignment", "desc": "Teachers assign required task - same task for all students.", "time": "{'time':1,'students':[2]}", "pic": "assets/assign.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/resource-choice-assignment/"}, "19": {"type": "then", "category": "Choice", "title": "Teacher-structured student choice", "subtitle": "Practice Problems", "desc": "Teacher requires 3 and students choose 2 additional questions.", "time": "{'time':2,'students':[3,4,5]}", "pic": "assets/choices.png", "grade": "0", "subject": "all", "link": "https://agileteacher.org/resource-choice-practice-problems/"}, "20": {"type": "then", "category": "Choice", "title": "Total student choice", "subtitle": "List, Draw, Story", "desc": "Students respond by drawing, writing, or making a list. ", "time": "{'time':3,'students':[1,2]}", "pic": "assets/pathways.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/resource-choice-list-draw-story/"}, "21": {"type": "then", "category": "Routine", "title": "Discussion routine", "subtitle": "Elbow Exchange and Sort", "desc": "Students are assigned the role of listener or speaker, taking turns to exchange their thinking (answer, question, opinion, observation). Then the pair sorts their ideas by a type of thinking (e.g. prioritize, compare, sequence, or summarize).", "time": "{'time':10,'students':[1,2]}", "pic": "assets/people.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/elbow-exchange-and-sort-2/"}, "22": {"type": "then", "category": "Routine", "title": "Discussion routine", "subtitle": "Idea Carousel", "desc": "Teachers post chart papers with different topics around the room. Then ask students to stand by the most interesting topic and direct students to write on chart paper knowledge, questions, or concerns about the topic. Teachers stop the work and ask students to rotate to the next chart and repeat this process.", "time": "{'time':15,'students':[1,2,3,4]}", "pic": "assets/people.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/idea-carousel-2/"}, "23": {"type": "then", "category": "Routine", "title": "Explicit instruction", "subtitle": "Mini-lesson", "desc": "Teachers demonstrate a concept, defines vocabulary, or provides an example.", "time": "{'time':8,'students':[5]}", "pic": "assets/teacher.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/routine-mini-lesson/"}, "24": {"type": "then", "category": "Routine", "title": "Individual thinking routine", "subtitle": "I used to think... Now I think... So next I will..", "desc": "Students independently monitor how and why their thinking has changed and plan next steps by completing the sentence prompt, \\"I used to think...now I think\u2026so next I will\u2026\\"", "time": "{'time':4,'students':[4]}", "pic": "assets/book.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/routine-i-used-to-think-now-i-think/"}, "25": {"type": "then", "category": "Routine", "title": "Individual thinking routine", "subtitle": "Star Most Interesting & Box Most Challenging", "desc": "Students place a star next to the most interesting word/problem/question and draw a box around the most challenging aspect.", "time": "{'time':2,'students':[1]}", "pic": "assets/book.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/routine-star-and-box/"}, "26": {"type": "then", "category": "Routine", "title": "Discusion routine", "subtitle": "Questions Only", "desc": "Students work in pairs to generate questions around a prompt, image, or data set. ", "time": "{'time':4,'students':[1,4]}", "pic": "assets/people.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/questions-only-2/"}, "27": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "Learning App", "desc": "Students use software to practice a skill.", "time": "{'time':3,'students':[4,5]}", "pic": "assets/float.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/learning-app/"}, "28": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "Vocabulary list", "desc": "Students use a list of academic words including multisyllabic, abstract meanings, and prefix/suffixes.", "time": "{'time':2,'students':[3,4]}", "pic": "assets/float.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/vocabulary/"}, "29": {"type": "then", "category": "Help resource", "title": "Individuals", "subtitle": "Materials and Tools", "desc": "Students use materials and tools to support learning (i.e. calculator, ruler, map, compass, etc.).", "time": "{'time':2,'students':[2,3]}", "pic": "assets/float.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/resource-help-materials/"}, "30": {"type": "then", "category": "Help resource", "title": "Whole Class", "subtitle": "Word Wall", "desc": "Students refer to a visual display of key terms, their meaning, and word relationships.", "time": "{'time':2,'students':[1]}", "pic": "assets/float.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/resource-help-word-wall/"}, "31": {"type": "then", "category": "Choice", "title": "Total teacher assignment", "subtitle": "Small Group Instruction", "desc": "Teacher assigns different required tasks for small group work.", "time": "{'time':3,'students':[2,4,5]}", "pic": "assets/assign.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/resource-choice-small-group-instruction/"}, "32": {"type": "then", "category": "Choice", "title": "Total student choice", "subtitle": "Interest Projects", "desc": "Students generate their own project to demonstrate learning.", "time": "{'time':15,'students':[2,4,5]}", "pic": "assets/choices.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/resource-choice-interest-projects/"}, "33": {"type": "then", "category": "Routine", "title": "Discussion routine", "subtitle": "Questions, Answers, Practice, Switch (Peer Tutoring)", "desc": "Students who are ready to teach a skill pair up with a student hoping to learn the skills. The Learner asks questions for 30 seconds. The student who is teaching answers the most important question and then practices the skill with the learner. Then roles are switched and the routine repeats where learner must now answer questions to demonstrate learning.", "time": "{'time':2,'students':[1,3,5]}", "pic": "assets/table.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/routine-peer-tutoring/"}, "34": {"type": "then", "category": "Routine", "title": "Explicit instruction", "subtitle": "Short Movie Clip", "desc": "Students watch a short movie clip to find information to answer a question.", "time": "{'time':4,'students':[3,5]}", "pic": "assets/teacher.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/routine-short-movie-clip/"}, "35": {"type": "then", "category": "Routine", "title": "Individual thinking routine", "subtitle": "Silent Think Time", "desc": "Students silently think or imagine in their head with no writing or speaking.", "time": "{'time':3,'students':[1,4]}", "pic": "assets/book.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/routine-silent-think-time/"}, "36": {"type": "then", "category": "Routine", "title": "Discusion routine", "subtitle": "Sort-it-Out", "desc": "Students sort words, images, facts or objects into groups and create titles for each group. Students create at least three different sorts. Students share their most effective sort with peers who must guess the titles of the groups.", "time": "{'time':15,'students':[1,2,3,4]}", "pic": "assets/table.png", "grade": "1", "subject": "all", "link": "https://agileteacher.org/routine-sort-it-out/"}}`;
+
+
+
+const jsonCards = JSON.parse(jsonCardString);
+
+let d = JSON.parse(dataAsString)
+
+  const nameAndEmail = d.email;
+
+  const blankName = nameAndEmail.split("@")[0];
+  const email = nameAndEmail.split("@")[1];
+  const date = d.games[0]["date"];
+  let time_s = 0
+  d.games.forEach(game => {
+    time_s += game["curTime"];
+  })
+  const gameId = d.games[0]["gameId"];
+
+  const hashCode = s => s.split('').reduce((a,b) => (((a << 5) - a) + b.charCodeAt(0))|0, 0)
+  const blankHash = hashCode(gameId +  name) & 0xfffffff;
+
+  let cardsUsed = []
+  d.games.forEach(game => {
+    game["players"].forEach(p => {
+      if (p['name'] == nameAndEmail){
+        p['picks'].forEach(pick => {
+          if (!cardsUsed.includes(pick)){
+            cardsUsed.push(pick);
+          }
+        })
+      }
+    })
+  })
+  let blank_cards_used = ""
+  let count = 1
+  //console.log(cardsUsed)
+  cardsUsed.forEach(cardId => {
+    if (`${cardId}` in jsonCards){
+      let card = jsonCards[`${cardId}`]
+      let subtitle = card['subtitle'];
+      let description = card['desc'];
+      let link = card['link'];
+      let line = `<p><b>${count}. ${subtitle}</b> - `;
+      line += `${description}`;
+      line += "</p>";
+      blank_cards_used += line;
+      count++;
+    }
+  })
+  const blankCards = blank_cards_used;
+  const blankTime = (Math.floor((time_s / 60) / 20) + 1)* 20;
+
+
+document.querySelectorAll(".blank-name").forEach(e => {
+  e.innerHTML = blankName;
+})
+document.querySelectorAll(".blank-cards").forEach(e => {
+  e.innerHTML = blankCards;
+})
+document.querySelectorAll(".blank-time").forEach(e => {
+  e.innerHTML = blankTime;
+})
+document.querySelectorAll(".blank-hash").forEach(e => {
+  e.innerHTML = blankHash;
+})
+  </script>
+  <script type="module" src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script type="module" src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+  <script>
+
+
+    window.onload = () => {
+
+  window.jsPDF = window.jspdf.jsPDF;
+
+  const doc = new jsPDF({
+    orientation: "portrait",
+    unit: "in",
+    format: [8.5, 11]
+  });
+
+  doc.html(document.body, {
+   callback: function (doc) {
+    let finalIframe = document.createElement('iframe');
+    finalIframe.style.position = "fixed";
+    finalIframe.style.zIndex = "3000";
+    finalIframe.style.top = "0px";
+    finalIframe.style.width = "100%";
+    finalIframe.style.height = "100%";
+    finalIframe.style.border = "none";
+    finalIframe.setAttribute('src', doc.output('bloburl'));
+    document.body.appendChild(finalIframe);
+    let container = document.getElementById("container");
+    container.style.display = "none";
+   },
+   x: 0,
+   y: 0,
+   margin: 0,
+   width: 8.5,
+   windowWidth: 8.5*96,
+});
+
+}
+
+  </script>
+  </body>
+</html>

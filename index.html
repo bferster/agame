@@ -900,7 +900,7 @@ class App  {
 			$("[id^=lz-badge-]").on("click", function(e) {												// ON BADGE CLICK
 				let s=$(this).attr("data-value");														// Get game data
 				let d=`{ email:"${app.id}", games: ${s} }`;												// Payload
-				window.open("//alled.org/certificate/generate.php,?data="+d,"_blank");					// Get badge
+				window.open("certificate/index.html?data="+d,"_blank");									// Get badge
 				});
 			}
 
