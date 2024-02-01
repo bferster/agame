@@ -83,7 +83,7 @@
 			<br><br><div style="color:#000;font-size:14px;margin-bottom:8px""><b>and your email:</b></div>
 			<input class='lz-is'  type='text' id='lz-loginId'>
 			<br><br><br><div class="lz-bs" id='lz-login'>Enter</div> 
-			<br><br><div style="margin-left:25%;width:50%;color:#000">The name that you log in with will appear on a certificate (e.g. first name last nme) verifying your professional development participation in the Agility games</div>
+			<br><br><div style="margin-left:25%;width:50%;color:#000">The name that you log in with will appear on a certificate (e.g. first name last name) verifying your professional development participation in the Agility games</div>
 			<br><br><div style="font-size:11px">&copy; 2024 StageTools </div>
 		</div>
 	
@@ -899,10 +899,11 @@ class App  {
 
 			$("[id^=lz-badge-]").on("click", function(e) {												// ON BADGE CLICK
 				let s=$(this).attr("data-value");														// Get game data
-				let d=`{ email:"${app.id}", games: ${s} }`;												// Payload
+				let d=`{ "email":"${app.id}", "games": ${s} }`;											// Payload
 				window.open("certificate/index.html?data="+d,"_blank");									// Get badge
 				});
 			}
+
 
 		function drawProgress(x, y, h, pos) {															// DRAW STUDENT PROGRESS
 			let i;
