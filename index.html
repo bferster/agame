@@ -71,7 +71,7 @@
 			<div id="lz-flowDiv" class="lz-flow"></div>
 			<div id="lz-ifDiv" class="lz-if"></div>
 			<div id="lz-infieldDiv" class="lz-infield"></div>
-			<img src="img/ACTlogo.png" style="position:absolute;left:calc(3.25% + 12px);bottom:12px;width:6vw">
+			<img src="img/ACTlogo.png" style="position:absolute;left:calc(3.25% + 12px);bottom:32px;width:6vw">
 		</div>
 			<div id="splashDiv" class="lz-splash">
 			<img src="img/ACTlogo.png" style='width:150px' alt="logo">
@@ -430,7 +430,7 @@ class App  {
 				x+=w;																					// Shift over
 				}
 			str+=`<div style="position:absolute;left:${x+12}px;top:${y+h/2-8}px">
-			<img id="${"lz-voteCheck-"+i}" src="img/check.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
+			<img id="${"lz-voteCheck-"+i}" src="img/checkbox.png" style="height:24px;vertical-align:-6px;cursor:pointer"></div>`;
 			y+=h+16;																					// Next row
 			}
 		let s=this.strings["vote"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
@@ -439,7 +439,7 @@ class App  {
 		$("#lz-infieldDiv").html(str.replace(/\t|\n|\r/g,""));											// Add cards
 		
 		$("[id^=lz-voteCheck-]").on("click", function() {												// ON CHECKBOX CLICK 
-			$("[id^=lz-voteCheck-]").prop("src","img/check.png" );										// Turn all off
+			$("[id^=lz-voteCheck-]").prop("src","img/checkbox.png" );									// Turn all off
 			$(this).prop("src", "img/checked.png");														// Highlight
 			winner=this.id.substring(13)-0;																// Set winner
 			app.ws.send("WINNER|"+app.gs.gameId+"|"+app.id+"|"+winner);									// Send winner to server
@@ -875,7 +875,7 @@ class App  {
 			let i,str="";
 			$("[id^=lzstab-]").css({"background-color":"#fff","font-weight":"normal",color:"#999"});	// Reset all
 			$("#lzstab-"+num).css({"background-color":"#eee","font-weight":"bold",color:"#27ae60"});	// Set current one
-		
+			rounds=[];																					// Reset rounds
 			if (num == 0) {																				// If this game
 				for (i=0;i<gd.length;++i)																// For each round
 					if ((gd[i].gameId == gameId) && (gd[i].playerId == app.id)) rounds.push(gd[i]);		// If this game and my entry, add to list 
@@ -952,6 +952,7 @@ class App  {
 			}
 
 		function drawRound(num) {																		// DRAW ROUND
+			
 			let i,j,k;
 			let h=80,w=h*.75+12;
 			let o=rounds[num];																			// Point at round
