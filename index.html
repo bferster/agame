@@ -509,7 +509,8 @@ class App  {
 		$("#lz-videoChat").remove(); 																	// Remove old one
 		let wid=$(window).width()*pct/100;																// Set height
 		let hgt=wid*.5625;																				// Width
-		let link="japp.htm?AgileGameChat"+("~"+app.gs.gameId).substring(8)+"&"+this.me+"&"+focus.toLowerCase();	// Make link
+		let name=this.me ? this.me.split(" ")[0] : "";													// First name only
+		let link="japp.htm?AgileGameChat"+("~"+app.gs.gameId).substring(8)+"&"+name+"&"+focus.toLowerCase();	// Make link
 		if (isLocal)	link="";																		// Debugging has no video
 		let str=`<div id="lz-videoChat" style="position:absolute;background-color:#999;
 			width:${wid}px;height:${hgt}px;top:11vw;left:calc(12.5% + 24px);display:block">
@@ -779,13 +780,14 @@ class App  {
 				for (j=0;j<4;++j) {
 					if (app.id == games[i].players[j]) {												// If already in a game
 						k=i;																			// Sve current index
-						ConfirmBox("You're are already in a game!","Do you want to rejoin it?",()=>{	// Ask to rejoin
-							app.ws.send("JOIN|"+app.id+"|"+games[k].id);								// Join a game																
-							app.start=1; 																// Set start phase
-							$("#splashDiv").remove();													// Remove splash
-							$("#mainDiv").fadeIn(2000);													// Fade in main
-							if (app.glassTimer) window.clearInterval(app.glassTimer);					// Stop games refresh timer
-							app.Draw();																	// Draw
+						if (!app.admin)																	// Not for admins
+							ConfirmBox("You're are already in a game!","Do you want to rejoin it?",()=>{ // Ask to rejoin
+								app.ws.send("JOIN|"+app.id+"|"+games[k].id);							// Join a game																
+								app.start=1; 															// Set start phase
+								$("#splashDiv").remove();												// Remove splash
+								$("#mainDiv").fadeIn(2000);												// Fade in main
+								if (app.glassTimer) window.clearInterval(app.glassTimer);				// Stop games refresh timer
+								app.Draw();																// Draw
 							});
 						}
 					}
