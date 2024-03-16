@@ -866,14 +866,14 @@ class App  {
 				let i;
 				for (i=0;i<data.length;++i)	{															// For each game
 					gd[i]=JSON.parse(data[i].data); 													// Extract game data as an obj
-					gd[i].playerId=data[i].email;														// Get player name+ip
+					gd[i].playerId=data[i].email.replace(/%20/g," ");									// Get player name+email
 					gd[i].date=data[i].date.substring(0,10);											// Extract date
 					}
+				gd.sort((a,b) => { return (b.date < a.date) ? -1 : 1 });								// Sort by newest first
 				drawPage(0);																			// Draw this game stats
 			})										
 	
 		function drawPage(num) {																		// DRAW STATS PAGE
-			
 			let i,str="";
 			$("[id^=lzstab-]").css({"background-color":"#fff","font-weight":"normal",color:"#999"});	// Reset all
 			$("#lzstab-"+num).css({"background-color":"#eee","font-weight":"bold",color:"#27ae60"});	// Set current one
@@ -881,7 +881,6 @@ class App  {
 			if (num == 0) {																				// If this game
 				for (i=0;i<gd.length;++i)																// For each round
 					if ((gd[i].gameId == gameId) && (gd[i].playerId == app.id)) rounds.push(gd[i]);		// If this game and my entry, add to list 
-						rounds.sort((a,b) => b.curTime-a.curTime);										// Sort by newest first
 				str+=drawGame(rounds);																	// Draw game
 				for (i=0;i<rounds.length;++i) str+=drawRound(i);										// Draw each round
 				}
@@ -905,7 +904,6 @@ class App  {
 				window.open("certificate/index.html?data="+d,"_blank");									// Get badge
 				});
 			}
-
 
 		function drawProgress(x, y, h, pos) {															// DRAW STUDENT PROGRESS
 			let i;
