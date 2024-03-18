@@ -890,7 +890,7 @@ class App  {
 				let games=[];
 				for (i=0;i<gd.length;++i){																// For each round
 					if (!games["g"+gd[i].gameId])  games["g"+gd[i].gameId]=[];							// Alloc game
-					if (gd[i].email == email) games["g"+gd[i].gameId].push(gd[i]);					// If this is my game, add to list 
+					if (gd[i].email == email) games["g"+gd[i].gameId].push(gd[i]);						// If this is my game, add to list 
 					}
 				for (i in games) {																		// For each game
 					if (!games[i].length)	continue;													// Skip empty games
@@ -901,7 +901,7 @@ class App  {
 			$("#lz-statsDiv").html(str.replace(/\t|\n|\r/g,""));										// Draw
 
 			$("[id^=lz-badge-]").on("click", function(e) {												// ON BADGE CLICK
-				let s=$(this).attr("data-value");														// Get game data
+				let s=JSON.stringify($(this).data("value"));											// Get stringified data
 				let d=`{ "email":"${app.id}", "games": ${s} }`;											// Payload
 				window.open("certificate/index.html?data="+d,"_blank");									// Get badge
 				});
@@ -948,7 +948,7 @@ class App  {
 					}
 			str+="</div><b>You played "+Math.round(trt/60)+" minutes in this game</b>";					// Show time
 			if (trt >= app.badgeLimit) 	
-				str+=` <div style="float:right;font-size:13px" class="lz-bs" data-value=${JSON.stringify(o)} id="lz-badge-${i}">Download your certificate!</div>`;	// Add button to collect badge						
+				str+=` <div style="float:right;font-size:13px" class="lz-bs" data-value='${JSON.stringify(o)}' id="lz-badge-${i}">Download your certificate!</div>`;	// Add button to collect badge						
 			str+="<p><hr></p>";																			// End section
 			return str;		
 			}
