@@ -866,7 +866,8 @@ class App  {
 				let i;
 				for (i=0;i<data.length;++i)	{															// For each game
 					gd[i]=JSON.parse(data[i].data); 													// Extract game data as an obj
-					gd[i].playerId=data[i].email.replace(/%20/g," ");									// Get player name+email
+					gd[i].email=data[i].email.match(/@.*/);												// Try to extract email
+					gd[i].email=gd[i].email ? gd[i].email[0].substring(1) : "";							// Get from result if valid
 					gd[i].date=data[i].date.substring(0,10);											// Extract date
 					}
 				gd.sort((a,b) => { return (b.date < a.date) ? -1 : 1 });								// Sort by newest first
@@ -878,9 +879,10 @@ class App  {
 			$("[id^=lzstab-]").css({"background-color":"#fff","font-weight":"normal",color:"#999"});	// Reset all
 			$("#lzstab-"+num).css({"background-color":"#eee","font-weight":"bold",color:"#27ae60"});	// Set current one
 			rounds=[];																					// Reset rounds
+			let email=app.id.match(/@.*/)[0].substring(1);												// Extract email	
 			if (num == 0) {																				// If this game
 				for (i=0;i<gd.length;++i)																// For each round
-					if ((gd[i].gameId == gameId) && (gd[i].playerId == app.id)) rounds.push(gd[i]);		// If this game and my entry, add to list 
+					if ((gd[i].gameId == gameId) && (gd[i].email == email)) rounds.push(gd[i]);			// If this game and my entry, add to list 
 				str+=drawGame(rounds);																	// Draw game
 				for (i=0;i<rounds.length;++i) str+=drawRound(i);										// Draw each round
 				}
@@ -888,7 +890,7 @@ class App  {
 				let games=[];
 				for (i=0;i<gd.length;++i){																// For each round
 					if (!games["g"+gd[i].gameId])  games["g"+gd[i].gameId]=[];							// Alloc game
-					if (gd[i].playerId ==  app.id) games["g"+gd[i].gameId].push(gd[i]);					// If this is my game, add to list 
+					if (gd[i].email == email) games["g"+gd[i].gameId].push(gd[i]);					// If this is my game, add to list 
 					}
 				for (i in games) {																		// For each game
 					if (!games[i].length)	continue;													// Skip empty games
