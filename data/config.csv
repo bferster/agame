@@ -43,7 +43,8 @@ then,Your Choice,Opportunity,Design Your Own Routine,Choose a routine from any c
 then,Your Choice,Opportunity,Design Your Own Routine,Choose a routine from any card or design your own!,"{'time':1,'students':[4,5]}",assets/bolt.png,,,
 ,,,,,,,
 ,,,,,,,
-string,help,"<ol style=line-height:1.8">
+string,help,"<ol style=line-height:1.8"
+<b>DIRECTIONS</b>
 <li>Press the <b style="color:#009900"">PLAY</b> button to begin the game</li>
 <li>Discuss it,and when you all are ready, a <b style="color:#009900">DEAL CARDS</b> button will appear at the top</li>
 <li>Six different cards will then be shown to each player. Pick up to 3 that will move the students forward</li>
@@ -93,5 +94,5 @@ if,2,Some students are making connections to a previous unit.,,,,,
 if,2,Many students know a lot about this topic and are excited,,,,,
 if,2,Some students need to develop foundational skills.,,,,,
 if,2,Some students are looking for a new challenge.,,,,,
-if,2,"All students are engaged, however, student curiousity is taking the lesson in different directions.",,,,,
+if,2,"All students are engaged, but lession is taking a different directions.",,,,,
 IF,2,Some students are distracting focus from their peers.,,,,,

@@ -147,18 +147,20 @@
 		let w=window.innerWidth/4-64;																// Panel width
 		if (version && version.match(/v=/i)) 	version=version.substring(3);						// Extract version, if set
 		else									version="";											// Use default
-		
+	//	https://docs.google.com/document/d/1YgvZpDwLE-AIJLCIfy0FQXeNfBJT_OgOMRK64YNlOQM/edit	@@ add aater vide
 		let str=`<img src="img/AGlogo.png" style="height:18vh;margin-top:-6vh">	
 			<br><br>
 		<div style="display:flex;justify-content:center;color:#000">
-			<div style="width:25%"><p>INTRODUCTORY VIDEO</p>
+			<div style="width:25%"><p>LEARN HOW TO PLAY</p>
 				<iframe width="85%" height="40%" src="https://www.youtube.com/embed/-4wqzix9cnU?si=Cb6og0OFOm22RtYh" web-share" allowfullscreen></iframe>
-			</div>
+			
+			
+				</div>
 			<div style="width:25%"><p>CHOOSE A TEAM TO PLAY WITH</b>
 				<div id="lz-teamList" style="width:calc(100% -24px);height:50vh;overflow:auto;border-radius:8px;padding:12px;
 				border:1px solid #999;background-color:#f8f8f8;text-align:left">
 			</div></div>
-			<div style="width:25%"><p>EXPLORE THE CARDS</p>
+			<div style="width:25%"><p>EXPLORE THE LEARNING ROUTINE CARDS</p>
 				<img src="img/cards.png" style="width:${w}px;cursor:pointer" onclick="ExploreCards()"></div>`;
 		$("#splashDiv").html(str.replace(/\t|\n|\r/g,""));											// Add  markup
 		app.LoadConfig(version);																	// Load config to start round	
@@ -173,7 +175,7 @@
 		$("#lz-infieldCardsDiv").remove();															// Remove overlay
 		let i,str=`<div id="lz-infieldCardsDiv" style="position:absolute;top:0;left:0;width:100%;height:100%;
 			text-align:left;background-color:#fff">	
-				<p style="color:#27ae60;font-size:24px;margin-left:24px"><b>EXPLORE THE CARDS</b></p>
+				<p style="color:#27ae60;font-size:24px;margin-left:24px"><b>EXPLORE THE LEARNING ROUTINE CARDS</b></p>
 				<div style="margin:24px;height:60vh;overflow:auto;border-radius:8px;border:1px solid #999">
 				<br><span style="margin-left:16px">HOVER OVER ANY CARD TO ENLARGE IT</span><br>
 				<div style="display:flex;flex-wrap:wrap; m">`
@@ -490,7 +492,7 @@ class App  {
 
 	ShowAssess(id, pct=50)																			// RUN ASSESSMENT MODULE
 	{
-		if (isLocal) return;																			// Not for debugging
+//		if (isLocal) return;																			// Not for debugging
 		try{
 			$("#lz-assess").remove();																	// Remove old
 			let wid=$(window).width()*pct/100;															// Set height
