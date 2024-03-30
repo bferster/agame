@@ -4,9 +4,9 @@
 	"optionType":"radio",
 	"options":["<b>All</b> students","<b>Some</b> students","<b>One</b> student"]},
 
-	{"title":"<br>We need to adjust teaching to increase student progress",
+	{"title":"<br>Check the goal(s) that teaching needs to address",
 	"optionType":"checkbox",
-	"options":[ "<b>Clarity</b> - (e.g. Do students understand what they are learning?",
+	"options":[ "<b>Clarity</b> - (e.g. Do students understand what they are learning?)",
 				"<b>Access</b> - (e.g. Can students begin on their own?)",
 				"<b>Rigor</b> - (e.g. Is learning too challenging or too easy?)", 
 				"<b>Relevant</b> - (e.g. How meaningful and interesting is the learning?)"]},

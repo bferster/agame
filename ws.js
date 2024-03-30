@@ -50,9 +50,10 @@ class Game {
 
 	constructor()   																				// CONSTRUCTOR
 	{
+		let i;
 		this.started=false;																				// Game started flag
 		this.id=new Date().getTime();																	// Get id as start time in mseconds
-		this.ifs=new Array(numIfs);																		// Clone outcomes
+		this.ifs=[];																					// Clone outcomes
 		this.outcomes=JSON.parse(JSON.stringify(outcomes));												// Outcomes active array
 		this.thens=new Array(thens.length);																// Thens
 		this.players=[];																				// Holds player info
@@ -65,6 +66,7 @@ class Game {
 		this.time=(local ? 8 : 30)*1000;																// Base time in ms
 		this.round=0;																					// First round
 		this.outcome=0;																					// Outcome
+		for (i=0;i<numIfs;++i) this.ifs[i]=i;															// Make array of ifs
 	}
 
 	PlayerIndex(name)																				// GET PLAYER'S INDEX FROM NAME
@@ -170,8 +172,9 @@ try{
 			if (v[0] == "START") {	  															// START
 				gs.curPhase=1;																	// Set phase
 				gs.started=true;																// Close game for new entrants
-				gs.curIf=Math.floor(Math.random()*gs.ifs.length);								// Set if with random number
-				gs.ifs.splice(this.curIf,1);													// Remove it
+				let rn=Math.floor(Math.random()*gs.ifs.length-1);									// Gert random index	
+				gs.curIf=gs.ifs[rn];															// Set if with random number
+				gs.ifs.splice(rn,1);															// Remove it
 				this.numVotes=0;																// No votes
 				Broadcast(gs.id,"START|"+v[1]+"|"+v[2]); 										// Send START message
 				}					
@@ -269,6 +272,7 @@ try{
 		if (gs.winner != -1) {																	// If a winner
 			let cards=gs.players[gs.winner].picks;												// Get winning cards
 			gs.outcome=getOutcome();															// Get progress amount
+			
 			for (i=0;i<cards.length;++i) {														// For each one											
 				o=thens[cards[i]];																// Point at card
 				gs.curTime+=o.time*60;															// Remove time (in minutes)
@@ -286,7 +290,8 @@ try{
 				if (gs.outcomes[i].amt == r) v.push(i);											// Add to array
 			r=Math.floor(Math.random()*v.length);												// Get random outcome
 			if (v[r] > 3)	gs.outcomes[v[r]].amt=100;											// Remove it from picking again
-			return v[r];																		// Return outcome index 
+			if (!v[r])		return 0;															// Bad one
+			return v[r];																		// Return outcome index (capped)
 			}
 		}
 	}	
