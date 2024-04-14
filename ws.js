@@ -172,7 +172,7 @@ try{
 			if (v[0] == "START") {	  															// START
 				gs.curPhase=1;																	// Set phase
 				gs.started=true;																// Close game for new entrants
-				let rn=Math.floor(Math.random()*gs.ifs.length-1);									// Gert random index	
+				let rn=Math.floor(Math.random()*(gs.ifs.length-1));								// Get random index	
 				gs.curIf=gs.ifs[rn];															// Set if with random number
 				gs.ifs.splice(rn,1);															// Remove it
 				this.numVotes=0;																// No votes
