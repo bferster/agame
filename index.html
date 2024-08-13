@@ -96,7 +96,6 @@
 	var app=null;																					// Holds app
 	var isMobile=false;																				// Mobile?
 	var isLocal=window.location.host == "localhost" ? true : false;
-
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
 		let url=window.location.search.substring(1);												// Get query line
@@ -861,8 +860,8 @@ class App  {
 				</div>`;
 	
 		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
-		$("[id^=lzstab-]").on("click",function(e) {	drawPage($(this)[0].id.substring(7));	});			// ON TAB CLICK
-		
+		$("[id^=lzstab-]").on("click",function(e) {	drawPage($(this)[0].id.substring(7));	});			// ON TAB CLICK	
+	
 		fetch(`//${window.location.host}:8081?q=loadall&a=b&type=AG`)									// Fetch history
 			.then(res => res.json()).then(data => {														// Process
 				let i;
@@ -905,7 +904,7 @@ class App  {
 			$("[id^=lz-badge-]").on("click", function(e) {												// ON BADGE CLICK
 				let s=JSON.stringify($(this).data("value"));											// Get stringified data
 				let d=`{ "email":"${app.id}", "games": ${s} }`;											// Payload
-				window.open("certificate/index.html?data="+d,"_blank");									// Get badge
+				window.open(window.location.host+"/utilities/certificates/agility/index.html?data="+d,"_blank"); // Get badge
 				});
 			}
 

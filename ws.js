@@ -20,9 +20,14 @@ node ws.js
 	cd /opt/bitnami/wordpress/game
 	forever stop ws.js 
 	forever start ws.js
+	cd /opt/bitnami/wordpress/grace
+	forever stop ws.js 
+	forever start ws.js
+ 	cd /opt/bitnami/wordpress/db
+	forever stop sql.js
+	forever start sql.js 
 
-	Ports: 8080,8085
-	A Records: @.agileteacher.org -> AgileTeacherIP     www.agileteacher.org -> AgileTeacherIP
+	Ports: 8080, 8081, 8085
 	sudo apt update
 	sudo apt upgrade
 	sudo apt install nodejs
@@ -35,6 +40,11 @@ node ws.js
 	PASS=prename
 	
 	ssh -i c:/Bill/CC/js/agile.pem bitnami@54.88.128.161
+
+//	NEW SERVER:
+//	ssh rhobon@agileteacherlab.org
+//	cd /var/www/wordpress/game
+
 
 	RENEW LETSENCRYPT SSL (installed with bncert-tool)
 	sudo /opt/bitnami/ctlscript.sh stop
@@ -85,8 +95,10 @@ class Game {
 
 	if (!local) {																				// If on web
 		const server = https.createServer({														// Create an https server
-			cert: fs.readFileSync("/opt/bitnami/apache/conf/agileteacher.org.crt"),				// Point at cert
-			key: fs.readFileSync("/opt/bitnami/apache/conf/agileteacher.org.key")				// And key
+//			cert: fs.readFileSync("/opt/bitnami/apache/conf/agileteacher.org.crt"),				// Point at cert
+//			key: fs.readFileSync("/opt/bitnami/apache/conf/agileteacher.org.key")				// And key
+			cert: fs.readFileSync("/etc/letsencrypt/live/agileteacherlab.org/cert.pem"), 		// Point at cert
+			key: fs.readFileSync("/etc/letsencrypt/live/agileteacherlab.org/privkey.pem") 		// And key
 			});
 		webSocketServer= new WebSocket.Server({ server });										// Open it
 		server.listen(8085);																	// Listen on port 8085
