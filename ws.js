@@ -60,7 +60,7 @@ class Game {
 		this.id=new Date().getTime();																	// Get id as start time in mseconds
 		this.ifs=[];																					// Clone outcomes
 		this.outcomes=JSON.parse(JSON.stringify(outcomes));												// Outcomes active array
-		this.thens=new Array(thens.length);																// Thens
+		this.thens=JSON.parse(JSON.stringify(thens));													// Thens
 		this.players=[];																				// Holds player info
 		this.stuPos=[0,0,5,2,1,0,0,5,2,1];																// Student track positions [ ...last, ...current]
 		this.curPhase=0;																				// Phase
@@ -72,6 +72,7 @@ class Game {
 		this.round=0;																					// First round
 		this.outcome=0;																					// Outcome
 		for (i=0;i<numIfs;++i) this.ifs[i]=i;															// Make array of ifs
+		this.version=1;																					// Version
 	}
 
 	PlayerIndex(name)																				// GET PLAYER'S INDEX FROM NAME
@@ -156,15 +157,15 @@ try{
 				SendData(webSocket,"GAMES|"+JSON.stringify(g));									// Send to client					
 				return;																			// Quit
 				}	
-			else if (v[0] == "INIT") {															// INIT
+			else if (v[0] == "INIT") {															// INIT PLAYER
 				webSocket.player=v[1];															// Set player name													
 				webSocket.playerId=v[2];														// Set player id													
 				SendData(webSocket,"INIT|"+v[2]+"|"+webSocket.clientIp); 						// Send INIT message
 				return;																			// Quit
 				}
 			else if (v[0] == "JOIN") {															// JOIN
-				gs=FindGame(v[2]-0);															// Find named game or open a new one
-				if (gs.players.findIndex(x => x.name == v[1]) == -1)							// If playernot already in game
+				gs=FindGame(v[2]-0,v[3]-0);														// Find named game or open a new one
+				if (gs.players.findIndex(x => x.name == v[1]) == -1)							// If player not already in game
 					gs.players.push( {name:v[1],picks:[]});										// Add player to game
 				webSocket.gameId=gs.id;															// Set game id
 				Broadcast(gs.id,"JOIN|"+v[1]+"|"+v[2]); 										// Send START message
@@ -235,27 +236,29 @@ try{
 		} catch(e) { console.log(e) }
 	}
 
-	function FindGame(id)																	// FIND GAME BY ID OR CREATE ONE IF NOT FOUND
+	function FindGame(id,version=1)															// FIND GAME BY ID OR CREATE ONE IF NOT FOUND
 	{	
 		let gs;
 		let i=games.findIndex(x => x.id == id);													// Find array index by id
 		if (i != -1)	gs=games[i];															// Get pointer to game
 		else{																					// Start a new game		
+			LoadConfig(version);																// Load proper version of config
 			gs=new Game();																		// Alloc new game
+			gs.numIfs=numIfs;																	// Number of ifs
 			games.push(gs);																		// Add to games array
 			trace("NEW GAME",games.length,gs.id);												// Log
 			}
 		return gs;																				// Return game pointer
 	}
 	
-	function LoadConfig()																	// LOAD CONFIG.CSV FILE
+	function LoadConfig(version=1)															// LOAD CONFIG.CSV FILE
 	{
 		let i,v;
 		params=[];																				// Holds params
 		outcomes=[];																			// No outcomes yet
 		thens=[];																				// No thens yet
 		numIfs=0;																				// Assume no ifs
-		let d=fs.readFileSync("data/config.csv","utf8").split("\n");							// Get config file
+		let d=fs.readFileSync("data/config-"+version+".csv","utf8").split("\n");				// Get config file
 		for (i=0;i<d.length;++i) {																// For each line
 			d[i]=d[i].replace(/\r/g,"");														// No CRs
 			if (d[i].match(/^param/)) {															// If a parameter
@@ -281,13 +284,12 @@ try{
 		if (gs.winner != -1) {																	// If a winner
 			let cards=gs.players[gs.winner].picks;												// Get winning cards
 			gs.outcome=getOutcome();															// Get progress amount
-			
 			for (i=0;i<cards.length;++i) {														// For each one											
-				o=thens[cards[i]];																// Point at card
+				o=gs.thens[cards[i]];																// Point at card
 				gs.curTime+=o.time*60;															// Remove time (in minutes)
 				for (j=0;j<o.students.length;++j) {												// For each student, progress accoring to rule
 					k=o.students[j]-1;															// Student index (0-4)
-					gs.stuPos[k+5]+=(outcomes[gs.outcome].amt-0);								// Advance now portion of index
+					gs.stuPos[k+5]+=(gs.outcomes[gs.outcome].amt-0);								// Advance now portion of index
 					}
 				}
 					

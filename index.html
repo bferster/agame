@@ -785,7 +785,7 @@ class App  {
 						k=i;																			// Sve current index
 						if (!app.admin)																	// Not for admins
 							ConfirmBox("You're are already in a game!","Do you want to rejoin it?",()=>{ // Ask to rejoin
-								app.ws.send("JOIN|"+app.id+"|"+games[k].id);							// Join a game																
+								app.ws.send("JOIN|"+app.id+"|"+games[k].id+"|"+app.version);			// Join a game																
 								app.start=1; 															// Set start phase
 								$("#splashDiv").remove();												// Remove splash
 								$("#mainDiv").fadeIn(2000);												// Fade in main
@@ -827,7 +827,7 @@ class App  {
 
 			$("[id^=lz-team-]").on("click",function(e) {												// ON CHOICE
 				let i=e.target.id.substring(8);															// Get id
-				app.ws.send("JOIN|"+app.id+"|"+games[i].id);											// Join a game																
+				app.ws.send("JOIN|"+app.id+"|"+games[i].id+"|"+app.version);							// Join a game																
 				app.start=1; 																			// Set start phase
 				$("#splashDiv").remove();																// Remove splash
 				$("#mainDiv").fadeIn(2000);																// Fade in main
