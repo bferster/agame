@@ -39,7 +39,6 @@ node ws.js
 	sudo /opt/bitnami/bncert-tool
 	PASS=prename
 	
-	ssh -i c:/Bill/CC/js/agile.pem bitnami@54.88.128.161
 
 //	NEW SERVER:
 //	ssh rhobon@agileteacherlab.org
@@ -47,10 +46,6 @@ node ws.js
 
 
 	RENEW LETSENCRYPT SSL (installed with bncert-tool)
-	sudo /opt/bitnami/ctlscript.sh stop
-	sudo /opt/bitnami/letsencrypt/lego --tls --email="bferster@stagetools.com" --domains="agileteacher.org" --path="/opt/bitnami/letsencrypt" renew --days 90
-	sudo /opt/bitnami/letsencrypt/lego --path /opt/bitnami/letsencrypt list
- 	sudo /opt/bitnami/ctlscript.sh start
     restart grace/ws/ja, game/ws.js, db/sql.js
 
 	
@@ -95,8 +90,6 @@ class Game {
 
 	if (!local) {																				// If on web
 		const server = https.createServer({														// Create an https server
-//			cert: fs.readFileSync("/opt/bitnami/apache/conf/agileteacher.org.crt"),				// Point at cert
-//			key: fs.readFileSync("/opt/bitnami/apache/conf/agileteacher.org.key")				// And key
 			cert: fs.readFileSync("/etc/letsencrypt/live/agileteacherlab.org/cert.pem"), 		// Point at cert
 			key: fs.readFileSync("/etc/letsencrypt/live/agileteacherlab.org/privkey.pem") 		// And key
 			});
@@ -258,13 +251,17 @@ try{
 	function LoadConfig()																	// LOAD CONFIG.CSV FILE
 	{
 		let i,v;
+		params=[];																				// Holds params
 		outcomes=[];																			// No outcomes yet
 		thens=[];																				// No thens yet
 		numIfs=0;																				// Assume no ifs
 		let d=fs.readFileSync("data/config.csv","utf8").split("\n");							// Get config file
 		for (i=0;i<d.length;++i) {																// For each line
 			d[i]=d[i].replace(/\r/g,"");														// No CRs
-			if (d[i].match(/^if/i))				numIfs++;										// Add to if count
+			if (d[i].match(/^param/)) {															// If a parameter
+				params=d[i].split(",");															// Get params
+				if (params[2].toLowerCase() == "numifs")	numIfs=params[4];					// Set number of ifs
+				}
 			else if (d[i].match(/^then/i))	{													// Get then							
 				v=d[i].match(/{.*}/)[0];														// Pull out time field
 				v=v.replace(/'/g,'"');															// Apos to quotes

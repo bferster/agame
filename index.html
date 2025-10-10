@@ -95,19 +95,20 @@
 
 	var app=null;																					// Holds app
 	var isMobile=false;																				// Mobile?
-	var isLocal=window.location.host == "localhost" ? true : false;
+	var isLocal=window.location.host == "127.0.0.1:5500" ? true : false;							// On localhost
 	$(document).ready(function() {								           							// ON PAGE LOADED
 		app=new App();																				// Load app
 		let url=window.location.search.substring(1);												// Get query line
 		let v=url.split("&");																		// Get options
 		if (url.match("admin")) app.admin=true;														// Admin mode
-
+		if (url.match("sub=")) 	app.curSub=v[0].substring(4);										// Change subject
+		if (url.match("v=")) 	app.version=v[0].substring(2);										// Change version
 		$("#splashDiv").fadeIn(2000);																// Fade in splash page
 	
 		$("#lz-login").on("click",()=> { 															// ON LOG IN
 			app.me=$("#lz-loginName").val().trim().toLowerCase();									// Set player name
 			app.id=app.me+"@"+$("#lz-loginId").val().trim().toLowerCase();							// Add email to make id
-			$("#splashDiv").fadeOut(()=>{ JoinTeam(v[0]); })										// Fade out splash
+			$("#splashDiv").fadeOut(()=>{ JoinTeam(app.version); })									// Fade out splash
 			});
 
 		$("#lz-ifDiv").on("click",(e)=> { 															// ON LOG IN
@@ -144,9 +145,6 @@
 	function JoinTeam(version)																	// JOIN A TEAM
 	{
 		let w=window.innerWidth/4-64;																// Panel width
-		if (version && version.match(/v=/i)) 	version=version.substring(3);						// Extract version, if set
-		else									version="";											// Use default
-	//	https://docs.google.com/document/d/1YgvZpDwLE-AIJLCIfy0FQXeNfBJT_OgOMRK64YNlOQM/edit	@@ add aater vide
 		let str=`<img src="img/AGlogo.png" style="height:18vh;margin-top:-6vh">	
 			<br><br>
 		<div style="display:flex;justify-content:center;color:#000">
@@ -179,11 +177,11 @@
 				<br><span style="margin-left:16px">HOVER OVER ANY CARD TO ENLARGE IT</span><br>
 				<div style="display:flex;flex-wrap:wrap; m">`
 				for (i=0;i<app.thens.length;++i) {													// For each card
-						if (!app.ThenMatchesActivity(app.thens[i])) continue;							// If doesn't match grade or subject, skip it
+						if (!app.ThenMatchesActivity(app.thens[i])) continue;						// If doesn't match grade or subject, skip it
 					str+=`<div style="width:75px;height:100px;margin:16px 0 0 16px">`;
 					str+=app.DrawCard(i,i,0,0,0,100,true)+"</div>";
 					}
-				str+=`</div><br><a style=";margin-left:16px" href="https://agileteacher.org/routines" target="_blank">Learn about the routines</a>
+				str+=`</div><br><a style=";margin-left:16px" href="https://agileteacherlab.org/index.php/routines" target="_blank">Learn about the routines</a>
 					</div><div class="lz-bs" style="margin-left:24px" onclick="$('#lz-infieldCardsDiv').remove()">Done</div>
 					</div>`;
 		str=str.replace(/\t|\n|\r/g,"");															// Remove tabs
@@ -223,23 +221,26 @@ class App  {
 		this.curSub="all";																				// Current subject
 		this.curGrade="0";																				// Current grade
 		this.badgeLimit=20*60;																			// Badge criterion
+		this.version=1;
 	}
 
 	ThenMatchesActivity(o) 																			// DOES CARD MATCH GRADE AND SUBJECT?
 	{
-		return ((o.subject == app.curSub) && (o.grade == app.curGrade))									// True if they match grade and subject
+		return true;																					// Ignore grade
+		return (o.grade == app.curGrade)																// True if they match grade
 	}	
 
-	LoadConfig(file="")																				// LOAD CONFIG FILE
+	LoadConfig(version=1)																			// LOAD CONFIG FILE
 	{	
 		let i;
-		if (!file)	file="config";																		// If no file spec'd, use default														
+		let file="config-"+version;																		// Add version												
 		fetch("data/"+file+".csv#"+Math.floor(Math.random()*100000))									// Load file and twart caching
 			.then(res => res.text())																	// Get as text
 			.then(res =>{																				// Process																	
 				let d=Papa.parse(res, { header:true, skipEmptyLines:true }).data;						// Parse CSV using papa lib
 				for (i=0;i<d.length;++i) {																// For each line
-					if (d[i].type == "if")				this.ifs.push(d[i].title);						// Add if
+					if ((d[i].type == "if") && (this.curSub == d[i].subject))							// An if in this subject					
+						this.ifs.push(d[i].title)														// Add if
 					else if (d[i].type == "then") {														// Add then	
 						d[i].time=d[i].time.replace(/'/g,'"');											// Apos to quotes
 						d[i].time=JSON.parse(d[i].time);												// Objectify					
@@ -255,7 +256,7 @@ class App  {
 	Save() 																							// SAVE DATA
 	{
 		this.gs.round=this.round;
-		fetch(`//${window.location.host}:8081?q=save&email=${app.id}&type=AG`,							// Save to DB
+			fetch(`//${window.location.host}:8081?q=save&email=${app.id}&type=AG`,							// Save to DB
 			{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(app.gs)})
 				.then(res => res.text())																// Get as text
 				.then(text =>{																			// Process																	
@@ -286,7 +287,7 @@ class App  {
 			let s=this.strings["discussIf"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
 			this.curLeader=(1)%app.gs.players.length;													// Choose next leader
 			$("#lz-infieldDiv").html(`<div class="lz-tip">${s}</div>`);									// Show tip
-			this.ShowAssess("poll1");																	// Show assessment
+			this.ShowAssess("poll1-"+app.version);														// Show assessment
 			this.Draw();																				// Redraw
 			}
 		else if (phase == 2) {																			// DEAL 
@@ -343,7 +344,7 @@ class App  {
 				Sound("clicks"); 																		// Clicks
 				});
 			this.Draw();																				// Redraw
-			this.ShowAssess("poll2");																	// Show assessment
+			this.ShowAssess("poll2-"+app.version);														// Show assessment
 			}
 	}
 
@@ -731,7 +732,8 @@ class App  {
 	{
 		this.secs=0;																					// Time
 		this.retryWS=false;																				// Reconnecting to web socket
-		this.ws=new WebSocket(((window.location.host == "localhost") ?'ws' : 'wss')+'://'+window.location.host+':8085');	// Open  websocket											
+		let host=isLocal ? "localhost" : window.location.host;											// Set host
+		this.ws=new WebSocket((isLocal ? 'ws' : 'wss')+'://'+host+':8085');								// Open  websocket											
 		this.ws.onmessage=(e)=>{ this.SocketIn(e); };													// ON INCOMING MESSAGE
 		this.ws.onclose=()=>   { console.log('disconnected'); this.ws=null; this.retryWS=true; Sound("delete") };			// ON CLOSE
 		this.ws.onerror=(e)=>  { console.log('error',e);	};											// ON ERROR
@@ -740,7 +742,7 @@ class App  {
 			this.pollTimer= window.setInterval( ()=>{													// INIT POLLING SERVER
 			++this.secs;																				// Another second 
 			if (this.retryWS) {																			// If reconnecting to websocket
-				this.ws=new WebSocket(((window.location.host == "localhost") ?'ws' : 'wss')+'://'+window.location.host+':8085');	// Open  websocket											
+				this.ws=new WebSocket((isLocal ?'ws' : 'wss')+'://'+host+':8085');						// Open  websocket											
 				this.ws.onmessage=(e)=>{ this.SocketIn(e); };											// ON INCOMING MESSAGE
 				this.ws.onclose=()=>   { this.retryWS=true; console.log('disconnected'); };				// ON CLOSE
 				this.ws.onopen=()=>    { console.log('re-connected'); };								// ON OPEN  
@@ -861,7 +863,7 @@ class App  {
 	
 		$("body").append(str.replace(/\t|\n|\r/g,""));													// Add it
 		$("[id^=lzstab-]").on("click",function(e) {	drawPage($(this)[0].id.substring(7));	});			// ON TAB CLICK	
-	
+		if (isLocal) return;																			// Not if local
 		fetch(`//${window.location.host}:8081?q=loadall&a=b&type=AG`)									// Fetch history
 			.then(res => res.json()).then(data => {														// Process
 				let i;

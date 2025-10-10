@@ -81,6 +81,7 @@
 	let dbEmail="";																// Email holder
 	let dbAddress="";															// Database endpoint															
 	let dbType="AGQ";															// Database type
+	var isLocal=window.location.host == "127.0.0.1:5500" ? true : false;		// On localhost
 
 	$(document).ready(function() {											// WHEN PAGE LOADED
 		let i;
@@ -185,9 +186,11 @@
 				o.answer=aData.pages[i].answer;									// Save answer
 				d.push(o);														// Add to array
 				}
-			fetch(`//${window.location.host}:8081?q=save&type=AGQ&email=${dbEmail}&password=${curAssess}`,	
-			{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(d)}) // Save to DB
-			.then(res => { SendMessage("done",curAssess+"|"+numCorrect/numAnswers); });	 // Send done message
+			if (!isLocal)														// Don't save if local
+				fetch(`//${window.location.host}:8081?q=save&type=AGQ&email=${dbEmail}&password=${curAssess}`,	
+				{ method:"POST", "Content-Type":"application/json", body:JSON.stringify(d)}) // Save to DB
+				.then(res => { SendMessage("done",curAssess+"|"+numCorrect/numAnswers); });	 // Send done message
+			else SendMessage("done",curAssess+"|"+numCorrect/numAnswers);
 			return;																// Quit
 			}
 		if (curPage != num)														// If a new page
@@ -462,7 +465,6 @@
 			}
 		var str="Assess|"+cmd;													// Add header				
 		if (msg) str+="|"+msg;													// If more to it, add
-		trace(str)
 		if (window.parent)														// If has a parent
 			window.parent.postMessage(str,"*");									// Send message to parent wind
 		else																	// Local	
