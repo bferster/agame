@@ -552,17 +552,19 @@ class App  {
 			let xInc=(window.innerWidth*.125-32)/5;														// Student spacing
 			let x=xInc/2,y;																				// Starting positions
 			let style=`fill="none" opacity="0.66" stroke-linecap="round" stroke-width="${xInc*2/3}"`;	// Line style
+			let t=this.strings["progress"].split(',')
 			for (i=0;i<this.stuCols.length;++i) {														// For each student
 				pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);								// Cap 0-9
-//				pos[i+5]=9
 				y=h; p=[];																				// Start fresh
 					for (j=0;j<=pos[i+5];++j) {															// For each leg of progress
 						x=(xInc*i)+(xInc/2)+waver[i][j]*xInc/2;											// Xpos
 						p.push([x,y]);																	// Add point
 						y-=(h-24)/9;																	// Up a notch
 						}
-				if (pos[i+5])	str+=CurvedSVGPath(p,style+` stroke="${this.stuCols[i]}"`);				// Create SVG path																
+				str+="<g>"
+				if (pos[i+5])	str+=CurvedSVGPath(p,style+` stroke="${this.stuCols[i]}"`);		// Create SVG path																
 				else			str+=`<circle cx="${p[0][0]}" cy="${p[0][1]}" fill="${this.stuCols[i]}" r="${xInc/3}"/>`;
+				str+="<title>"+t[i]+"</title>/g>";														// Add tool tip
 				}
 		str+="</sgv></div>";																			// End displat
 		$("#lz-students").html(str.replace(/\t|\n|\r/g,""));											// Add frame
@@ -626,9 +628,11 @@ class App  {
 		let pad=hgt/30;																					// Responsive padding
 		let o=this.thens[num];																			// Point at card
 		if (!o)	return;																					// Nothing to show
-		cols["Routine"]="cyan"; 	cols["Help resource"]="magenta";	
-		cols["Options"]="#d4dd46"; 	cols["Choice"]="#ccc";
-		let title=o.title.split(" ").join("<br>")
+		let c=this.strings["thenTitles"].split(',');													// Colors into array
+		cols[c[0]]="cyan"; 		cols[c[1]]="magenta";	cols[c[2]]="#d4dd46"; 		cols[c[3]]="#ccc";
+		cols[c[4]]="DarkGoldenRod"; cols[c[5]]="pink";	cols[c[6]]="lightGreen"; 	cols[c[7]]="orange";
+		cols[c[8]]="lightBlue"; 	cols[c[9]]="yellow";	
+		let title=o.title.split(" ").join("<br>");
 		let oo=o.time;																					// Extract time field
 		let str=`<div id="${"lz-cardDiv-"+id}" class="lz-card lz-hover" style="left:${x}px;top:${y}px;width:${hgt*.75}px;height:${hgt}px`;
 		if (inline) str+=";position:static";															// Not absolute
@@ -639,13 +643,14 @@ class App  {
 			<div style="grid-area:subtitle;padding:0 ${pad}px;text-align:center;color:#000;font-size:${hgt/20}px"><b>${o.subtitle}</b></div>
 			<div style="grid-area:desc;padding:0 ${pad}px;overflow:hidden;font-size:${hgt/26}px">${o.desc}</div>
 			<div style="grid-area:time;padding:${pad}px;font-size:${hgt/18}px;text-align:center">
-				<div style="width:${hgt/6}px;float:right;line-height:1;color:#666"><b>${oo.time}<br>mins</b></div>
+				<div style="width:${hgt/6}px;float:right;line-height:1;color:#666"><b>${oo.time}${title ? "<br>" :" "}mins</b></div>
 			</div>
 			<div style="grid-area:pic;text-align:center;padding-top:${pad}px">`;
 				if (o.pic)	str+=`<img src="${o.pic}" style="width:${hgt/8}px">`;
 			str+=`</div><div style="grid-area:students;padding-left:${pad}px;align-self:end">`;
+			let t=this.strings["progress"].split(',')
 			for (i=0;i<oo.students.length;++i)
-				str+=`<img src="img/stuicon${[oo.students[i]]}.png" style="width:${hgt/15}px;margin-right:1px">`;
+				str+=`<div style="display:inline-block;border-radius:100px;width:${hgt/15};height:${hgt/15}px;margin:1px;background-color:${this.stuCols[i]}" title="${t[i]}"></div>`;
 			str+="</div></div>";
 			return str;
 	}

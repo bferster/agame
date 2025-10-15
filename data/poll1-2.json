@@ -1,18 +1,14 @@
 {"pages":[
-
-	{"title":"<br>Does this <span style='color:#27ae60'>*IF* challenge</span> affect…",
-	"optionType":"radio",
-	"options":["<b>All</b> students","<b>Some</b> students","<b>One</b> student"]},
-
-	{"title":"<br>Check the goal(s) that teaching needs to address",
-	"optionType":"checkbox",
-	"options":[ "<b>Clarity</b> - (e.g. Do students understand what they are learning?)",
-				"<b>Access</b> - (e.g. Can students begin on their own?)",
-				"<b>Rigor</b> - (e.g. Is learning too challenging or too easy?)", 
-				"<b>Relevant</b> - (e.g. How meaningful and interesting is the learning?)"]},
-	{"title":"<br>Design a Teaching Response",
-	"text":"Use your analysis of how much teaching should change to select teaching routine cards.<br><br><br><b>If you are asked to be the dealer</b> <i>(see above)</i>:<br><br>Click on the DEAL CARDS button when everyone has finished this survey and is ready to play!",
-	"options":[]}
-	]}
-
-
+    {"title":"<br>What type of thinking <span style='color:#27ae60'></span> are you noticing from students? ",
+    "optionType":"radio",
+    "options":["<b>Careless</b>","<b>Inaccurate</b>","<b>Non-Academic Langauge</b>"]},
+    {"title":"<br>Check the thinking goal(s) that teaching needs to address",
+    "optionType":"checkbox",
+    "options":[ "<b>Clarity</b> - (e.g. Are students curious about the topic?)",
+                "<b>Access</b> - (e.g. Are students thinking carefully?)",
+                "<b>Rigor</b> - (e.g. Are their responses accurate?)",
+                "<b>Relevant</b> - (e.g. What academic vocabulary is being used?)"]},
+    {"title":"<br>Design a Teaching Response",
+    "text":"Use your analysis of current student thinking and thinking goals to select teaching routine cards.<br><br><br><b>If you are asked to be the dealer</b> <i>(see above)</i>:<br><br>Click on the DEAL CARDS button when everyone has finished this survey and is ready to play!",
+    "options":[]}
+    ]}

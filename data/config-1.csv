@@ -42,6 +42,9 @@ then,Help resource,Whole Class,Snack and Water Break,Students satisfy hunger wit
 then,Help resource,Individual,Calm Area,Students move to a space where they can be alone with their thoughts.,"{'time':2,'students':[2,3]}",assets/float.png,1,all
 then,Help resource,Individual,Fidgets,Students use an object to support regulation and concentration.,"{'time':2,'students':[1]}",assets/float.png,1,all
 then,Routine,Individual,Tapping,Students tap on tense areas to relieve stress and relax muscles.,"{'time':2,'students':[1]}",assets/float.png,1,all
+string,thenTitles,"Help resource,Routine,Choice"
+
+
 
 param,-1,numifs,number of ifs,17
 string,help,"<ol style=line-height:1.8"
@@ -65,6 +68,7 @@ string,explainMyHand,"It's your turn to share why you chose your cards.<br>If yo
 string,explainHand, is explaining to the team<br>why they chose those cards.,,,,,
 string,vote,"Discuss which cards best to address the IF issue,as well as progress the students.<br>When you have decided, someone should check the box to the right of that set.",,,,,
 string,discuss,"Reflect on takeaways for your own teaching.<br>When you are ready play again, someone should press the </i><b>PLAY</b><i> button.",,,,,
+string,progress,"Student 1,Student 2,Student 3,Student 4,Student 5"
 
 outcome,0,Students are hanging on to misconceptions.,,,,,
 outcome,0,Students felt dependent on the teacher for help.,,,,,
