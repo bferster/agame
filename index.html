@@ -650,7 +650,7 @@ class App  {
 			str+=`</div><div style="grid-area:students;padding-left:${pad}px;align-self:end">`;
 			let t=this.strings["progress"].split(',')
 			for (i=0;i<oo.students.length;++i)
-				str+=`<div style="display:inline-block;border-radius:100px;width:${hgt/15};height:${hgt/15}px;margin:1px;background-color:${this.stuCols[i]}" title="${t[i]}"></div>`;
+				str+=`<div style="display:inline-block;border-radius:100px;width:${hgt/15};height:${hgt/15}px;margin:1px;background-color:${this.stuCols[oo.students[i]-1]}" title="${t[i]}"></div>`;
 			str+="</div></div>";
 			return str;
 	}

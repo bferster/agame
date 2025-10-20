@@ -103,32 +103,13 @@ class Game {
 	
 	setInterval(()=>{																			// GAME/PLAYER PURGER TIMER
 		try{
-/*			let i,j,o;
-			let activePlayers=[];
-			webSocketServer.clients.forEach((client)=>{											// For each client active on server
-				activePlayers.push(client.playerId); 											// Add active players to list
-				});
-			for (i=0;i<games.length;++i) {														// For each game										
-				o=games[i].players;																// Point at players in game
-				for (j=0;j<o.length;++j) {														// For each player
-					if (activePlayers.findIndex(x => x == o[j].name) == -1)	{					// Not found in game
-						trace(o[j].name+" REMOVED!");											// Log
-						o.splice(j,1);															// Purge player from game if not in active list
-						}
-					}
-				if (!o.length) {	
-					trace(i+" GAME REMOVED!");													// Log
-					games.splice(i,1);															// Purge game if no players in game
-					}
-				}	
-*/
 		let d=new Date();																		// Get  time	
 		if (d.getUTCHours() == 8) {																// 3am our time
 			games=[];																			// Remove all games
 			trace("GAMES PURGED!");																// Log
 			}
 
-} catch(e) { console.log(e) }
+	} catch(e) { console.log(e) }
 		}, 1*60*1000);																			// Every 50 minutes
 
 try{
@@ -272,7 +253,7 @@ try{
 				}
 			else if (d[i].match(/^outcome/i))  {												// Get outcome
 				v=d[i].split(",");																// Get fields
-				outcomes.push({ amt: v[1], msg:v[2]} );											// Add outcome										
+				outcomes.push({ amt: v[1], used:false} );										// Add outcome										
 				}
 			}	
 		}	
@@ -285,11 +266,11 @@ try{
 			let cards=gs.players[gs.winner].picks;												// Get winning cards
 			gs.outcome=getOutcome();															// Get progress amount
 			for (i=0;i<cards.length;++i) {														// For each one											
-				o=gs.thens[cards[i]];																// Point at card
+				o=gs.thens[cards[i]];															// Point at card
 				gs.curTime+=o.time*60;															// Remove time (in minutes)
 				for (j=0;j<o.students.length;++j) {												// For each student, progress accoring to rule
 					k=o.students[j]-1;															// Student index (0-4)
-					gs.stuPos[k+5]+=(gs.outcomes[gs.outcome].amt-0);								// Advance now portion of index
+					gs.stuPos[k+5]+=(gs.outcomes[gs.outcome].amt-0);							// Advance now portion of index
 					}
 				}
 					
@@ -298,9 +279,10 @@ try{
 			if (gs.round < 3)	r=Math.floor(Math.random()*2)+1;								// First 2 rounds are always +1 or +2
 			else				r=Math.floor(Math.random()*4)-1;								// -1 to +2
 			for (i=0;i<gs.outcomes.length;++i)													// Get all outcomes that match
-				if (gs.outcomes[i].amt == r) v.push(i);											// Add to array
+				if (!gs.outcomes[i].used)														// If not used already
+					if (gs.outcomes[i].amt == r) v.push(i);										// Add to array
 			r=Math.floor(Math.random()*v.length);												// Get random outcome
-			if (v[r] > 3)	gs.outcomes[v[r]].amt=100;											// Remove it from picking again
+			if (v[r] > 3)	gs.outcomes[v[r]].used=true;										// Remove it from picking again
 			if (!v[r])		return 0;															// Bad one
 			return v[r];																		// Return outcome index (capped)
 			}

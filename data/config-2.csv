@@ -66,18 +66,18 @@ string,vote,"Discuss which cards best to address the IF issue,as well as progres
 string,discuss,"Reflect on takeaways for your own teaching.<br>When you are ready play again, someone should press the </i><b>PLAY</b><i> button.",,,,,
 string,progress,"Accuracy,Vocabulary,Careful thinking,Curiosity,Belonging"
 
-outcome,0,Students are hanging on to misconceptions.,,,,,,,,,,
-outcome,0,Students felt dependent on the teacher for help.,,,,,,,,,,
-outcome,0,Students left the lesson confused.,,,,,,,,,,
-outcome,1,Students felt challenged by this assignment.,,,,,,,,,,
-outcome,1,Students pursued their learning with autnomy.,,,,,,,,,,
-outcome,1,Students could access help resources.,,,,,,,,,,
-outcome,1,Student responses changed from one word to complete sentences,,,,,,,,,,
-outcome,1,Students built on previous knowledge.,,,,,,,,,,
-outcome,2,Students felt the lesson was relevant.,,,,,,,,,,
-outcome,2,Students felt excitment and joy when learning.,,,,,,,,,,
-outcome,2,Students tried out new ideas.,,,,,,,,,,
-outcome,2,Students used more vocabulary,,,,,,,,,,
+outcome,0,Students are hanging on to misconceptions.
+outcome,0,Students felt dependent on the teacher for help.
+outcome,0,Students left the lesson confused.
+outcome,1,Students felt challenged by this assignment.
+outcome,1,Students pursued their learning with autonomy.
+outcome,1,Students could access help resources.
+outcome,1,Student responses changed from one word to complete sentences.
+outcome,1,Students built on previous knowledge.
+outcome,2,Students felt the lesson was relevant.
+outcome,2,Students felt excitment and joy when learning.
+outcome,2,Students tried out new ideas.
+outcome,2,Students used more vocabulary.
 
 if,1,Students responded "I don't Know",,,,,,all
 if,1,Students have inaccurate information.,,,,,,all
