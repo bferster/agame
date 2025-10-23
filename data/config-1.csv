@@ -43,7 +43,7 @@ then,Help resource,Individual,Calm Area,Students move to a space where they can 
 then,Help resource,Individual,Fidgets,Students use an object to support regulation and concentration.,"{'time':2,'students':[1]}",assets/float.png,1,all
 then,Routine,Individual,Tapping,Students tap on tense areas to relieve stress and relax muscles.,"{'time':2,'students':[1]}",assets/float.png,1,all
 string,thenTitles,"Help resource,Routine,Choice"
-
+string,firstPrompt,""
 
 
 param,-1,numifs,number of ifs,17

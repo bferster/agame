@@ -1,14 +1,20 @@
-{"pages":[
-    {"title":"<br>What type of thinking <span style='color:#27ae60'></span> are you noticing from students? ",
-    "optionType":"radio",
-    "options":["<b>Careless</b>","<b>Inaccurate</b>","<b>Non-Academic Langauge</b>"]},
-    {"title":"<br>Check the thinking goal(s) that teaching needs to address",
-    "optionType":"checkbox",
-    "options":[ "<b>Clarity</b> - (e.g. Are students curious about the topic?)",
-                "<b>Access</b> - (e.g. Are students thinking carefully?)",
-                "<b>Rigor</b> - (e.g. Are their responses accurate?)",
-                "<b>Relevant</b> - (e.g. What academic vocabulary is being used?)"]},
-    {"title":"<br>Design a Teaching Response",
-    "text":"Use your analysis of current student thinking and thinking goals to select teaching routine cards.<br><br><br><b>If you are asked to be the dealer</b> <i>(see above)</i>:<br><br>Click on the DEAL CARDS button when everyone has finished this survey and is ready to play!",
-    "options":[]}
-    ]}
+    {"pages":[
+	{"title":"<br>Look at the <span style='color:#27ae60'> <b>IF statement</b></span>.<br>What type of thinking are you noticing from students?",
+    	"optionType":"radio",
+    	"options":[ "<b>Careless</b> - There is no evidence of careful thinking in the student response.",
+					"<b>Inaccurate</b> - The response contains incorrect information.",
+					"<b>Non-Academic</b> - The response uses solely casual language."]
+				}, 
+    {"title":"<br>Check the type of thinking you want to grow<br>with your feedback",
+    	"optionType":"checkbox",
+    	"options":["<b>Curious</b> - The student asks questions about the topic.",
+               	 "<b>Careful</b> - The student takes time to think or look closely before responding.",
+               	 "<b>Accurate</b> - The student includes facts or inferences based on evidence in their response.",
+               	 "<b>Academic</b> - The student uses academic vocabulary and sentence structure.",
+				 "<b>Reflective </b> - The student is thinking about their connection to the topic or learning."]
+			},
+    {"title":"<br>Design Feedback Based on Student Responses",
+	  	"text":"<b>IF</b> you pulled a small group of students whose responses all showed the quality listed above, what feedback strategies would you employ?  Use your analysis of the type of student thinking you’re noticing and what you want to deepen to choose three relevant feedback cards.<br><br><br><b>If you are asked to be the dealer</b> <i>(see above)</i>:<br><br>Click on the DEAL CARDS button when everyone has finished this survey and is ready to play!",
+    	"options":[]
+			}
+		]}

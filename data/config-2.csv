@@ -65,6 +65,7 @@ string,explainHand, is explaining to the team<br>why they chose those cards.,,,,
 string,vote,"Discuss which cards best to address the IF issue,as well as progress the students.<br>When you have decided, someone should check the box to the right of that set.",,,,,
 string,discuss,"Reflect on takeaways for your own teaching.<br>When you are ready play again, someone should press the </i><b>PLAY</b><i> button.",,,,,
 string,progress,"Accuracy,Vocabulary,Careful thinking,Curiosity,Belonging"
+string,firstPrompt,"You have completed a Crop-It activity asking students to look closely at an image and respond to prompts.<br><br>You noticed a diversity of response qualities and have pulled a small group of students who demonstrated similar types of thinking.<br><br>This quality will show up in the “IF” condition at the top of the page."
 
 outcome,0,Students are hanging on to misconceptions.
 outcome,0,Students felt dependent on the teacher for help.
@@ -83,4 +84,10 @@ if,1,Students responded "I don't Know",,,,,,all
 if,1,Students have inaccurate information.,,,,,,all
 if,1,Students have accurate but incomplete sentences.,,,,,,all
 if,1,Students are missing academic language/vocabulary.,,,,,,all
+if,1,Students responded, "IDK" to multiple prompts.,,,,,,all
+if,1,Students have inaccurate information in their response.,,,,,,all
+if,1,Students have accurate but incomplete sentences.,,,,,,all
+if,1,Students are missing academic language/vocabulary.,,,,,,all
+if,1,Students gave responses disconnected from the prompt.,,,,,,all
+ 
 param,-1,numifs,number of ifs,4

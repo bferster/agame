@@ -41,10 +41,10 @@
 							}				
 		.lz-hover:hover {	transform:scale(3); z-index:100; 
 							}
-		.lz-confirm {		position:absolute;  width:300px; padding: 16px; left:calc(50% - 150px); top:calc(50vh - 50px); user-select: none;	
+		.lz-confirm {		position:absolute;  width:300px; padding: 16px; left:calc(50% - 17px); top:calc(50vh - 50px); user-select: none;	
 							border-radius: 8px; background-color: #fff; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
 							}
-		.lz-popup {			position:absolute;  width: auto; max-width:200px; padding: 12px; left: calc(50% - 100px); top: calc(66% - 50px);
+		.lz-popup {			position:absolute;  width: auto; max-width:300px; padding: 12px; left: calc(50% - 162px); top:12.5%;
 							border-radius: 8px; background-color: #eee; border: 1px solid #999; box-shadow: 4px 2px 12px 2px #aaa; 
 							font-size: 14px; text-align:center; display:none;
 			}
@@ -475,6 +475,7 @@ class App  {
 		$("#lz-ifDiv").html(this.gs.curIf != -1 ? str+this.ifs[this.gs.curIf] : "");					// Show if
 
 		$("#lz-infieldOverDiv").remove();																// Remove overlay
+		 $("#popupDiv").remove();																		// Remove popup
 		this.DrawStudents(this.gs.stuPos);																// Draw students
 		this.DrawFlow();																				// Draw phase flow chart
 		this.DrawClock(Math.floor(this.gs.curTime/60));													// Draw clock
@@ -487,6 +488,7 @@ class App  {
 			if (app.gs.players) 																		// If any players active yet
 				s=this.strings["chatStart"].replace(/someone/i,"<b style='font-style:normal;color:#27ae60'>"+app.gs.players[this.curLeader].name.split("@")[0].toUpperCase()+"</b>");
 			$("#lz-infieldDiv").html(`<div style="height:200px;overflow-y:auto;margin-top:${y}px">${this.strings["help"]}<div class="lz-tip">${s}</div></div>`); // Start with help
+			if (app.strings.firstPrompt)	PopUp(app.strings.firstPrompt,-1,"lz-videoChat");			// First prompts
 			}
 	}
 
@@ -551,8 +553,9 @@ class App  {
 			let h=(window.innerHeight-window.innerWidth*.11-18-32);										// Bar hgt
 			let xInc=(window.innerWidth*.125-32)/5;														// Student spacing
 			let x=xInc/2,y;																				// Starting positions
+			let t="";
 			let style=`fill="none" opacity="0.66" stroke-linecap="round" stroke-width="${xInc*2/3}"`;	// Line style
-			let t=this.strings["progress"].split(',')
+			if (app.strings.length)	t=app.strings["progress"].split(',');								// Get line name
 			for (i=0;i<this.stuCols.length;++i) {														// For each student
 				pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);								// Cap 0-9
 				y=h; p=[];																				// Start fresh

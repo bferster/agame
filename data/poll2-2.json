@@ -1,5 +1,6 @@
 {"pages":[
-    {"title":"<br>PRACTICAL</br></br>Is it a practical solution?",
+	
+    {"title":"<br>PRACTICAL</br></br>Is the feedback accessible to students?",
     "text":"<b>Click on the slider below</b>",
     "optionType":"slider",
     "options":["No:Yes"]},
@@ -9,25 +10,25 @@
     "optionType":"slider",
     "options":["No:Yes"]},
 
-    {"title":"<br>JOY</br></br>Would this teaching lead to joyful learning?",
+    {"title":"<br>JOY</br></br>Would this feedback lead to joyful learning?",
     "text":"<b>Click on the slider below</b>",
     "optionType":"slider",
     "options":["No:Yes"]},
 
-    {"title":"<br>USEFUL</br></br>How useful was the discussions with your team?",
+    {"title":"<br>USEFUL</br></br>How useful was the discussion with your team?",
     "text":"<b>Click on the slider below</b>",
     "optionType":"slider",
     "options":["Not useful:Very useful"]},
-	
+
     {"title":"<br>What did you learn from playing the game?",
     "text":"Check all options that apply",
     "optionType":"checkbox",
-    "options":["A teaching routine",
+    "options":["A feedback strategy",
                 "Something about student learning",
                 "Something about how teachers think about teaching"
                ]},
 
      {"title":"<br>PLAY AGAIN?",
-               "text":"<br>Click on <b>Play</b> to begin another game.<br>You will get a new IF challenge and different THEN routine cards.<br><br>Try to move all students forward in their learning!",
-              "options":[]}
+               "text":"<br>Click on <b>Play</b> to begin another game.<br>You will get a new IF challenge and different THEN feedback cards.<br><br>Try to move all students forward in their learning!",
+               "options":[]}
     ]}
