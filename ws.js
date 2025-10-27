@@ -226,8 +226,9 @@ try{
 			LoadConfig(version);																// Load proper version of config
 			gs=new Game();																		// Alloc new game
 			gs.numIfs=numIfs;																	// Number of ifs
+			gs.version=version;																	// Set version
 			games.push(gs);																		// Add to games array
-			trace("NEW GAME",games.length,gs.id);												// Log
+			trace("NEW GAME",games.length,gs.id,gs.version);									// Log
 			}
 		return gs;																				// Return game pointer
 	}

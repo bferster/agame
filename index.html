@@ -150,8 +150,6 @@
 		<div style="display:flex;justify-content:center;color:#000">
 			<div style="width:25%"><p>LEARN HOW TO PLAY</p>
 				<iframe width="85%" height="40%" src="https://www.youtube.com/embed/-4wqzix9cnU?si=Cb6og0OFOm22RtYh" web-share" allowfullscreen></iframe>
-			
-			
 				</div>
 			<div style="width:25%"><p>CHOOSE A TEAM TO PLAY WITH</b>
 				<div id="lz-teamList" style="width:calc(100% -24px);height:50vh;overflow:auto;border-radius:8px;padding:12px;
@@ -494,7 +492,7 @@ class App  {
 
 	ShowAssess(id, pct=50)																			// RUN ASSESSMENT MODULE
 	{
-//		if (isLocal) return;																			// Not for debugging
+		if (isLocal) return;																			// Not for debugging
 		try{
 			$("#lz-assess").remove();																	// Remove old
 			let wid=$(window).width()*pct/100;															// Set height
@@ -785,12 +783,14 @@ class App  {
 			}
 
 		function showTeams(games) {																		// SHOW LIST OF TEAMS
+			
+			trace(games)
 			let i,j,k,str="";
 			games.sort((a,b) => b.id-a.id);																// Sort by newest first
 			for (i=0;i<games.length;++i) {																// For each team
 				for (j=0;j<4;++j) {
 					if (app.id == games[i].players[j]) {												// If already in a game
-						k=i;																			// Sve current index
+						k=i;																			// Save current index
 						if (!app.admin)																	// Not for admins
 							ConfirmBox("You're are already in a game!","Do you want to rejoin it?",()=>{ // Ask to rejoin
 								app.ws.send("JOIN|"+app.id+"|"+games[k].id+"|"+app.version);			// Join a game																
@@ -803,7 +803,7 @@ class App  {
 						}
 					}
 				}
-			games.push({ id:-1, players:[], started:false });											// Add empty game
+			games.push({ id:-1, players:[], started:false, version:app.version });						// Add empty game
 			for (i=0;i<games.length;++i) {																// For each team
 				if (!app.admin && games[i].players.length > 3)	continue;								// Skip filled games, if player
 				if (!app.admin && games[i].started)				continue;								// Skip started. if player
