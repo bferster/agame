@@ -42,6 +42,7 @@ then,Your Choice,,Design Your Own Routine,Choose a routine from any card or desi
 then,Your Choice,,Design Your Own Routine,Choose a routine from any card or design your own!,"{'time':3,'students':[1,2,3]}",,0
 then,Your Choice,,Design Your Own Routine,Choose a routine from any card or design your own!,"{'time':3,'students':[1,2,3]}",,0
 string,thenTitles,"Help resource,Your Choice,Synthesize,Extend,Challenge,Elaborate,Explore,Redirect,Reflect,Clarify"
+string,progress,"Accuracy,Vocabulary,Careful thinking,Curiosity,Belonging"
 
 string,help,"<ol style=line-height:1.8"
 <b>DIRECTIONS</b>

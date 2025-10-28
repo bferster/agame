@@ -13,41 +13,28 @@
 
 /* SOCKET SERVER  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-node ws.js
-
- 	forever logs | sudo cat /home/bitnami/.forever/<id>.log
+	LOCAL: 
+	node ws.js
 	
-	cd /opt/bitnami/wordpress/game
+	SERVER:
+	Ports: 8080, 8081, 8085
+	
+	cd /var/www/wordpress/game	
 	forever stop ws.js 
 	forever start ws.js
-	cd /opt/bitnami/wordpress/grace
 	forever stop ws.js 
 	forever start ws.js
- 	cd /opt/bitnami/wordpress/db
+ 	cd /var/www/wordpress/db
 	forever stop sql.js
 	forever start sql.js 
-
-	Ports: 8080, 8081, 8085
-	sudo apt update
-	sudo apt upgrade
-	sudo apt install nodejs
-	sudo apt install npm
-	npm install https
-	npm install fs
-	npm install ws
-	npm install os
-	sudo /opt/bitnami/bncert-tool
-	PASS=prename
 	
+	ssh rhobon@agileteacherlab.org p/w
+	ps -aux
+	get pid
+	sudo kill pid
+	forever start ws.js
 
-//	NEW SERVER:
-//	ssh rhobon@agileteacherlab.org
-//	cd /var/www/wordpress/game
-
-
-	RENEW LETSENCRYPT SSL (installed with bncert-tool)
-    restart grace/ws/ja, game/ws.js, db/sql.js
-
+	CONSOLE:
 	
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 	

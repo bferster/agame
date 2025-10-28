@@ -553,7 +553,7 @@ class App  {
 			let x=xInc/2,y;																				// Starting positions
 			let t="";
 			let style=`fill="none" opacity="0.66" stroke-linecap="round" stroke-width="${xInc*2/3}"`;	// Line style
-			if (app.strings.length)	t=app.strings["progress"].split(',');								// Get line name
+			if (app.strings["progress"]) t=app.strings["progress"].split(',');							// Get line name
 			for (i=0;i<this.stuCols.length;++i) {														// For each student
 				pos[i]=Math.min(pos[i],9);	pos[i+5]=Math.min(pos[i+5],9);								// Cap 0-9
 				y=h; p=[];																				// Start fresh
